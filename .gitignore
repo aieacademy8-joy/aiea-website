@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Local dev / tooling (not needed in production)
+.claude/
+aiea-site-deploy.zip
+
+# Source artwork kept in the project root — the site only uses the copies in assets/
+/*.png
+/*.PNG
