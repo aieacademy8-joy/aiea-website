@@ -49,14 +49,6 @@
       var btn = form.querySelector('button[type="submit"]');
       var action = form.getAttribute("action") || "";
 
-      // Not configured yet — remind whoever is setting it up.
-      if (!action || action.indexOf("YOUR_FORM_ID") !== -1) {
-        note.textContent = "Contact form isn't connected yet — add your Formspree form ID to the form's action.";
-        note.style.color = "var(--red)";
-        return;
-      }
-
-      var type = document.getElementById("inq").value;
       if (btn) { btn.disabled = true; }
       note.style.color = "var(--ink-soft)";
       note.textContent = "Sending…";
@@ -68,20 +60,16 @@
       })
         .then(function (res) {
           if (res.ok) {
-            note.textContent = "Thank you! Your " + type.toLowerCase() + " has been received. We'll be in touch soon.";
+            note.textContent = "Thank you! Your message has been sent successfully. We'll get back to you soon.";
             note.style.color = "var(--gold)";
             form.reset();
           } else {
-            return res.json().then(function (d) {
-              note.textContent = (d && d.errors && d.errors.length)
-                ? d.errors.map(function (x) { return x.message; }).join(", ")
-                : "Something went wrong. Please email missjoy@aiexplorersacademy.org.";
-              note.style.color = "var(--red)";
-            });
+            note.textContent = "Something went wrong. Please try again later.";
+            note.style.color = "var(--red)";
           }
         })
         .catch(function () {
-          note.textContent = "Network error. Please email missjoy@aiexplorersacademy.org.";
+          note.textContent = "Something went wrong. Please try again later.";
           note.style.color = "var(--red)";
         })
         .then(function () { if (btn) { btn.disabled = false; } });
