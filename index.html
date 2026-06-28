@@ -512,7 +512,20 @@
       <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
       <div class="field"><label for="name">Name</label><input id="name" name="name" type="text" placeholder="Your name" required></div>
       <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" placeholder="you@example.com" required></div>
-      <div class="field"><label for="org">Organization</label><input id="org" name="organization" type="text" placeholder="School, district, or company"></div>
+      <div class="field"><label for="org">Organization / School</label><input id="org" name="organization" type="text" placeholder="School, district, or company"></div>
+      <div class="field">
+        <label for="inq">Inquiry Type</label>
+        <select id="inq" name="inquiry">
+          <option>General Inquiry</option>
+          <option>School Partnership</option>
+          <option>Teacher Training</option>
+          <option>Speaking Invitation</option>
+          <option>Consulting</option>
+          <option>Media / Press</option>
+          <option>Book &amp; Resources</option>
+          <option>Other</option>
+        </select>
+      </div>
       <div class="field"><label for="msg">Message</label><textarea id="msg" name="message" placeholder="Tell us how we can help…" required></textarea></div>
       <button type="submit" class="btn btn-gold">Send Inquiry <span class="arrow">→</span></button>
       <p class="form-note" id="formNote"></p>
