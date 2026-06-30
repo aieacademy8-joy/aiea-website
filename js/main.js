@@ -75,4 +75,18 @@
         .then(function () { if (btn) { btn.disabled = false; } });
     });
   }
+
+  /* ---------- Universal "← Back" link (sub-pages) ---------- */
+  var backLink = document.getElementById("backLink");
+  if (backLink) {
+    backLink.addEventListener("click", function (e) {
+      // If the visitor arrived from elsewhere on this site, go back in history;
+      // otherwise let the link fall back to its href (index.html).
+      var sameSiteReferrer = document.referrer && document.referrer.indexOf(window.location.origin) === 0;
+      if (sameSiteReferrer && window.history.length > 1) {
+        e.preventDefault();
+        window.history.back();
+      }
+    });
+  }
 })();
