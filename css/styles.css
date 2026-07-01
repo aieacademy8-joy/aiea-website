@@ -689,6 +689,13 @@ section { position: relative; padding-block: clamp(70px, 9vw, 140px); }
 .standard-card .go { color: var(--gold); font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 @media (max-width: 900px) { .standards-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .standards-grid { grid-template-columns: 1fr; } }
+
+/* Legal documents (Privacy Policy, Terms of Use) */
+.legal-updated { color: var(--ink-faint); font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 30px; }
+.legal-doc .legal-block { margin-bottom: 30px; }
+.legal-doc .legal-block h2 { font-family: var(--serif); font-size: 1.4rem; color: var(--ink); margin-bottom: 12px; }
+.legal-doc .legal-block p { color: var(--ink-soft); font-size: 1.02rem; line-height: 1.7; margin-bottom: 12px; }
+.legal-doc .legal-block ul { margin: 6px 0 14px; }
 .footer-motto .d{color:var(--blue);} .footer-motto .i{color:var(--purple);} .footer-motto .c{color:var(--gold);}
 
 /* ============================================================
