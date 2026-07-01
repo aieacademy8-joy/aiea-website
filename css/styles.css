@@ -673,6 +673,22 @@ section { position: relative; padding-block: clamp(70px, 9vw, 140px); }
 .muted-link { color: var(--ink-faint); font-size: .88rem; text-decoration: underline; text-decoration-color: var(--stroke-2); text-underline-offset: 3px; transition: color .25s; }
 .muted-link:hover { color: var(--gold); text-decoration-color: var(--gold); }
 .perm-note { text-align: center; margin-top: 26px; }
+
+/* Educational Standards — navigation cards */
+.standards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.standard-card {
+  display: flex; flex-direction: column; gap: 10px;
+  border: 1px solid var(--stroke); border-radius: 18px; padding: 28px 26px;
+  background: var(--card); color: var(--ink);
+  transition: transform .4s var(--ease), border-color .4s, box-shadow .4s;
+}
+.standard-card:hover { transform: translateY(-6px); border-color: color-mix(in srgb, var(--gold) 50%, transparent); box-shadow: 0 20px 48px rgba(0,0,0,.4); }
+.standard-card .ic { font-size: 1.5rem; }
+.standard-card h3 { font-size: 1.15rem; }
+.standard-card p { color: var(--ink-soft); font-size: .9rem; flex: 1; }
+.standard-card .go { color: var(--gold); font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+@media (max-width: 900px) { .standards-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .standards-grid { grid-template-columns: 1fr; } }
 .footer-motto .d{color:var(--blue);} .footer-motto .i{color:var(--purple);} .footer-motto .c{color:var(--gold);}
 
 /* ============================================================
