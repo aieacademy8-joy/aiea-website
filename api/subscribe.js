@@ -58,6 +58,9 @@ module.exports = async (req, res) => {
         email: email,
         fields: { name: firstName },
         groups: [String(groupId)],
+        // Consent is captured via the required checkbox, so activate immediately
+        // rather than waiting on double opt-in — this ensures the group automation fires.
+        status: "active",
       }),
     });
 
