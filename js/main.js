@@ -86,6 +86,21 @@
     var rmForm = document.getElementById("resourceForm");
     var rmThanks = document.getElementById("modalThanks");
     var rmClose = document.getElementById("modalClose");
+    var rmSubmit = document.getElementById("resourceSubmit");
+    var rmFirst = document.getElementById("mFirst");
+    var rmEmail = document.getElementById("mEmail");
+    var rmOptin = document.getElementById("mOptin");
+
+    // Enable "Send Me the PDF" only when First Name + Email are filled and consent is checked.
+    var validateResourceForm = function () {
+      if (!rmSubmit) return;
+      var ready = !!(rmFirst && rmFirst.value.trim()) &&
+                  !!(rmEmail && rmEmail.value.trim()) &&
+                  !!(rmOptin && rmOptin.checked);
+      rmSubmit.disabled = !ready;
+    };
+    [rmFirst, rmEmail].forEach(function (el) { if (el) el.addEventListener("input", validateResourceForm); });
+    if (rmOptin) rmOptin.addEventListener("change", validateResourceForm);
 
     var openResourceModal = function (row) {
       resourceModal.dataset.pdf = row.getAttribute("data-pdf") || "";
@@ -93,6 +108,7 @@
       if (rmName) rmName.textContent = row.getAttribute("data-resource") || "your free resource";
       if (rmForm) { rmForm.reset(); rmForm.hidden = false; }
       if (rmThanks) rmThanks.hidden = true;
+      validateResourceForm();
       resourceModal.classList.add("open");
       resourceModal.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";

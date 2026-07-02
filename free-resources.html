@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=24">
+<link rel="stylesheet" href="css/styles.css?v=25">
 </head>
 <body>
 
@@ -168,13 +168,13 @@
     <form class="modal-form" id="resourceForm">
       <div class="field"><label for="mFirst">First Name</label><input id="mFirst" name="first_name" type="text" placeholder="Your first name" required></div>
       <div class="field"><label for="mEmail">Email Address</label><input id="mEmail" name="email" type="email" placeholder="you@example.com" required></div>
-      <label class="checkbox-row"><input type="checkbox" id="mOptin" name="opt_in"><span>I'd like to receive future AI Literacy resources and Academy updates.</span></label>
-      <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;">Send Me the PDF <span class="arrow">→</span></button>
+      <label class="checkbox-row"><input type="checkbox" id="mOptin" name="opt_in" required><span>I agree to receive this free PDF and occasional AI Literacy resources from AI Explorers Academy.</span></label>
+      <button type="submit" id="resourceSubmit" class="btn btn-gold" style="width:100%;justify-content:center;" disabled>Send Me the PDF <span class="arrow">→</span></button>
     </form>
 
     <div class="modal-thanks" id="modalThanks" hidden>
       <div class="thanks-ic">✅</div>
-      <p>Thank you! Please check your email. Your free resource is on its way.</p>
+      <p>Thank you! Please check your email. Your free PDF is on its way.</p>
     </div>
   </div>
 </div>
@@ -208,6 +208,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=24"></script>
+<script src="js/main.js?v=25"></script>
 </body>
 </html>

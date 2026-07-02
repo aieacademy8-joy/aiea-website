@@ -752,6 +752,10 @@ a.free-card { color: inherit; text-decoration: none; }
 .modal-thanks .thanks-ic { font-size: 2.2rem; margin-bottom: 10px; }
 .modal-thanks p { color: var(--ink); font-size: 1.05rem; line-height: 1.5; }
 @media (max-width: 560px) { .resource-row { justify-content: flex-start; } .modal-card { padding: 30px 24px; } }
+
+/* Disabled buttons (e.g. modal submit before consent) */
+.btn:disabled, .btn[disabled] { opacity: .45; cursor: not-allowed; box-shadow: none; }
+.btn:disabled:hover, .btn[disabled]:hover { transform: none; box-shadow: none; }
 .footer-motto .d{color:var(--blue);} .footer-motto .i{color:var(--purple);} .footer-motto .c{color:var(--gold);}
 
 /* ============================================================
