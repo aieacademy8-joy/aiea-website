@@ -697,9 +697,61 @@ section { position: relative; padding-block: clamp(70px, 9vw, 140px); }
 .legal-doc .legal-block p { color: var(--ink-soft); font-size: 1.02rem; line-height: 1.7; margin-bottom: 12px; }
 .legal-doc .legal-block ul { margin: 6px 0 14px; }
 
-/* Free-resource lead-magnet cards: make the CTA render as a full-width button */
-button.pcard-cta { width: 100%; border: none; border-top: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); cursor: pointer; font-family: inherit; }
-.lead-note { text-align: center; margin-top: 22px; min-height: 1.2em; color: var(--gold); font-size: .92rem; }
+/* ============================================================
+   FREE AI LITERACY LIBRARY (resource list + request modal)
+   ============================================================ */
+
+/* Pathway cards can be links to their category */
+a.free-card { color: inherit; text-decoration: none; }
+.free-card .go { display: inline-block; margin-top: 8px; color: var(--accent); font-size: .78rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+
+/* Category + resource list */
+.lib-category { margin-bottom: 46px; }
+.lib-category h2 { font-size: clamp(1.5rem,2.6vw,2rem); margin-bottom: 8px; }
+.lib-category .cat-sub { color: var(--ink-soft); margin-bottom: 20px; }
+.resource-list { list-style: none; display: grid; gap: 14px; }
+.resource-row {
+  --accent: var(--gold);
+  display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
+  padding: 20px 24px; border: 1px solid var(--stroke); border-radius: 16px; background: var(--card);
+  transition: border-color .3s, transform .3s, box-shadow .3s;
+}
+.resource-row:hover { border-color: color-mix(in srgb, var(--accent) 55%, transparent); transform: translateY(-2px); box-shadow: 0 16px 40px rgba(0,0,0,.3), 0 0 26px -12px var(--accent); }
+.resource-title {
+  display: inline-flex; align-items: center; gap: 12px; background: none; border: none; padding: 0; cursor: pointer;
+  font-family: var(--serif); font-size: 1.12rem; color: var(--ink); text-align: left; transition: color .25s;
+}
+.resource-title:hover { color: var(--gold); }
+.resource-title .res-ic { color: var(--accent); font-size: 1.15rem; }
+.resource-title .res-text { border-bottom: 1px solid transparent; transition: border-color .25s; }
+.resource-title:hover .res-text { border-bottom-color: color-mix(in srgb, var(--gold) 55%, transparent); }
+.btn-sm { padding: 11px 20px; font-size: .8rem; }
+.cat-parents .resource-row { --accent: var(--gold); }
+.cat-educators .resource-row { --accent: var(--purple); }
+.cat-schools .resource-row { --accent: var(--blue); }
+
+/* Request modal */
+.modal { position: fixed; inset: 0; z-index: 300; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(3,10,28,.75); backdrop-filter: blur(6px); }
+.modal.open { display: flex; }
+.modal-card {
+  width: 100%; max-width: 460px; position: relative;
+  background: linear-gradient(180deg, var(--navy-3), var(--navy-2));
+  border: 1px solid var(--stroke-2); border-radius: var(--radius); padding: 38px 34px;
+  box-shadow: 0 40px 90px rgba(0,0,0,.6), 0 0 50px -14px rgba(212,175,79,.4);
+}
+.modal-close { position: absolute; top: 14px; right: 18px; font-size: 1.3rem; line-height: 1; color: var(--ink-soft); background: none; border: none; cursor: pointer; }
+.modal-close:hover { color: var(--ink); }
+.modal-card .eyebrow { color: var(--gold); }
+.modal-card h3 { font-size: 1.5rem; margin: 10px 0 6px; }
+.modal-resource { color: var(--ink-soft); font-size: .95rem; margin-bottom: 22px; }
+.modal-resource strong { color: var(--gold); }
+.modal-form { display: grid; gap: 14px; }
+.checkbox-row { display: flex; align-items: flex-start; gap: 10px; font-size: .88rem; color: var(--ink-soft); cursor: pointer; line-height: 1.45; }
+.checkbox-row input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--gold); flex-shrink: 0; }
+.modal-thanks { text-align: center; padding: 12px 0; }
+.modal-thanks .thanks-ic { font-size: 2.2rem; margin-bottom: 10px; }
+.modal-thanks p { color: var(--ink); font-size: 1.05rem; line-height: 1.5; }
+@media (max-width: 560px) { .resource-row { justify-content: flex-start; } .modal-card { padding: 30px 24px; } }
 .footer-motto .d{color:var(--blue);} .footer-motto .i{color:var(--purple);} .footer-motto .c{color:var(--gold);}
 
 /* ============================================================

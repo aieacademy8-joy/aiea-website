@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Free AI Literacy Resources — AI Explorers Academy™</title>
-<meta name="description" content="Free AI Literacy resources for parents, teachers, and schools. Start your AI Literacy journey today with AI Explorers Academy™.">
+<title>Free AI Literacy Library — AI Explorers Academy™</title>
+<meta name="description" content="The Free AI Literacy Library — practical, ready-to-use resources for parents, educators, and school leaders from AI Explorers Academy™.">
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=23">
+<link rel="stylesheet" href="css/styles.css?v=24">
 </head>
 <body>
 
@@ -45,55 +45,139 @@
   <a href="index.html#contact">Contact</a>
 </div>
 
-<!-- ================= PAGE HEAD ================= -->
+<!-- Universal back link -->
 <div class="back-bar"><a href="index.html" class="back-link" id="backLink"><span class="arrow-l">←</span> Back</a></div>
 
+<!-- ================= PAGE HEAD ================= -->
 <header class="page-head" id="top">
   <span class="eyebrow">🎁 Free to Begin</span>
-  <h1>Free AI Literacy Resources</h1>
-  <p>Choose the pathway that fits you best.</p>
+  <h1>Free AI Literacy Library</h1>
+  <p>Choose your pathway and get practical, ready-to-use resources — delivered straight to your inbox.</p>
 </header>
 
-<!-- ================= FREE RESOURCE CARDS ================= -->
-<section>
+<!-- ================= PATHWAY CARDS ================= -->
+<section style="padding-top:24px;">
   <div class="wrap">
-    <!-- Free lead-magnet cards. Buttons carry the target PDF in data-pdf but do NOT download yet.
-         To connect MailerLite: see the single .lead-magnet handler in js/main.js (one place to edit). -->
-    <div class="free-detail-grid">
-
-      <article class="pcard p-parents reveal">
-        <div class="pcard-img" style="background-image:url('resources/free/images/card-parents.jpg')" role="img" aria-label="Free AI resource for parents"></div>
-        <button type="button" class="pcard-cta lead-magnet"
-                data-audience="parents"
-                data-resource="Parent AI Scorecard"
-                data-pdf="resources/free/parents/Parent-AI-Scorecard.pdf">Get Instant Access <span class="arrow">→</span></button>
-      </article>
-
-      <article class="pcard p-educators reveal">
-        <div class="pcard-img" style="background-image:url('resources/free/images/card-educators.jpg')" role="img" aria-label="Free AI resource for teachers"></div>
-        <button type="button" class="pcard-cta lead-magnet"
-                data-audience="teachers"
-                data-resource="Teacher AI Scorecard"
-                data-pdf="resources/free/teachers/Teacher-AI-Scorecard.pdf">Get Instant Access <span class="arrow">→</span></button>
-      </article>
-
-      <article class="pcard p-leaders reveal">
-        <div class="pcard-img" style="background-image:url('resources/free/images/card-leaders.jpg')" role="img" aria-label="Free AI resource for schools"></div>
-        <button type="button" class="pcard-cta lead-magnet"
-                data-audience="schools"
-                data-resource="School AI Readiness Scorecard"
-                data-pdf="resources/free/schools/School-AI-Readiness-Scorecard.pdf">Get Instant Access <span class="arrow">→</span></button>
-      </article>
-
-    </div>
-
-    <p class="lead-note reveal" id="leadMagnetNote" role="status" aria-live="polite"></p>
-
-    <div class="free-cta reveal">
-      <a href="index.html#resources" class="btn btn-ghost">Browse All Resources <span class="arrow">→</span></a>
+    <div class="free-grid">
+      <a href="#for-parents" class="free-card f-parents reveal">
+        <span class="free-ic" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20 20 8l14 12"/><path d="M9 18v14h22V18"/><path d="M20 32v-7"/><path d="M16 25h8"/></svg>
+        </span>
+        <h3>Parents</h3>
+        <p>Simple, practical resources to help your family begin the AI Literacy journey with confidence.</p>
+        <span class="go">Browse resources →</span>
+      </a>
+      <a href="#for-educators" class="free-card f-teachers reveal">
+        <span class="free-ic" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15 20 8l16 7-16 7-16-7Z"/><path d="M11 18v8c0 2 4 4 9 4s9-2 9-4v-8"/><path d="M36 15v9"/></svg>
+        </span>
+        <h3>Educators</h3>
+        <p>Classroom-friendly activities to introduce AI literacy in an age-appropriate way.</p>
+        <span class="go">Browse resources →</span>
+      </a>
+      <a href="#for-schools" class="free-card f-schools reveal">
+        <span class="free-ic" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 33h30"/><path d="M9 33V14l11-6 11 6v19"/><path d="M16 33v-9h8v9"/><path d="M20 11V7"/></svg>
+        </span>
+        <h3>School Leaders</h3>
+        <p>Starter tools to help school leaders plan responsible AI literacy implementation.</p>
+        <span class="go">Browse resources →</span>
+      </a>
     </div>
   </div>
 </section>
+
+<!-- ================= RESOURCE LISTS =================
+     To add a new free resource later, copy one <li class="resource-row"> inside the correct
+     category's <ul class="resource-list"> and update the data-resource, data-pdf, and title.
+     Nothing else needs to change. -->
+
+<!-- For Parents -->
+<section class="lib-category cat-parents" id="for-parents">
+  <div class="wrap" style="max-width:900px;">
+    <div class="section-head reveal" style="text-align:left;margin-bottom:14px;">
+      <span class="eyebrow">For Parents</span>
+      <h2 style="margin-top:10px;">Family Resources</h2>
+    </div>
+    <ul class="resource-list reveal">
+      <li class="resource-row" data-audience="parents" data-resource="The AI-Ready Family Scorecard" data-pdf="resources/free/parents/Parent-AI-Scorecard.pdf">
+        <button type="button" class="resource-title resource-trigger"><span class="res-ic" aria-hidden="true">📄</span><span class="res-text">The AI-Ready Family Scorecard</span></button>
+        <button type="button" class="btn btn-gold btn-sm resource-trigger">Get PDF <span class="arrow">→</span></button>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- For Educators -->
+<section class="lib-category cat-educators" id="for-educators">
+  <div class="wrap" style="max-width:900px;">
+    <div class="section-head reveal" style="text-align:left;margin-bottom:14px;">
+      <span class="eyebrow">For Educators</span>
+      <h2 style="margin-top:10px;">Classroom Resources</h2>
+    </div>
+    <ul class="resource-list reveal">
+      <li class="resource-row" data-audience="educators" data-resource="The AI-Ready Classroom Scorecard" data-pdf="resources/free/teachers/Teacher-AI-Scorecard.pdf">
+        <button type="button" class="resource-title resource-trigger"><span class="res-ic" aria-hidden="true">📄</span><span class="res-text">The AI-Ready Classroom Scorecard</span></button>
+        <button type="button" class="btn btn-gold btn-sm resource-trigger">Get PDF <span class="arrow">→</span></button>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- For School Leaders -->
+<section class="lib-category cat-schools" id="for-schools">
+  <div class="wrap" style="max-width:900px;">
+    <div class="section-head reveal" style="text-align:left;margin-bottom:14px;">
+      <span class="eyebrow">For School Leaders</span>
+      <h2 style="margin-top:10px;">School Resources</h2>
+    </div>
+    <ul class="resource-list reveal">
+      <li class="resource-row" data-audience="schools" data-resource="The AI Readiness Scorecard for Schools" data-pdf="resources/free/schools/School-AI-Readiness-Scorecard.pdf">
+        <button type="button" class="resource-title resource-trigger"><span class="res-ic" aria-hidden="true">📄</span><span class="res-text">The AI Readiness Scorecard for Schools</span></button>
+        <button type="button" class="btn btn-gold btn-sm resource-trigger">Get PDF <span class="arrow">→</span></button>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section style="padding-top:0;">
+  <div class="wrap" style="text-align:center;">
+    <a href="index.html#resources" class="btn btn-ghost">Browse the Full Library <span class="arrow">→</span></a>
+  </div>
+</section>
+
+<!-- ================= REQUEST MODAL ================= -->
+<div class="modal" id="resourceModal" role="dialog" aria-modal="true" aria-labelledby="modalHeading" aria-hidden="true">
+  <div class="modal-card">
+    <button type="button" class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    <span class="eyebrow">Free Resource</span>
+    <h3 id="modalHeading">Get your free PDF</h3>
+    <p class="modal-resource">You're requesting: <strong id="modalResourceName">—</strong></p>
+
+    <!-- ============================================================
+         MailerLite integration point — NOT connected yet.
+         Replace this <form> (or its submit handler in js/main.js) with your
+         MailerLite embedded form / API subscribe call. Available on submit:
+           first name  → #mFirst
+           email       → #mEmail
+           opt-in      → #mOptin (checkbox)
+           audience    → resourceModal.dataset.audience
+           file to send→ resourceModal.dataset.pdf   (email it via MailerLite;
+                          do NOT expose a direct download link on the page)
+         ============================================================ -->
+    <form class="modal-form" id="resourceForm">
+      <div class="field"><label for="mFirst">First Name</label><input id="mFirst" name="first_name" type="text" placeholder="Your first name" required></div>
+      <div class="field"><label for="mEmail">Email Address</label><input id="mEmail" name="email" type="email" placeholder="you@example.com" required></div>
+      <label class="checkbox-row"><input type="checkbox" id="mOptin" name="opt_in"><span>I'd like to receive future AI Literacy resources and Academy updates.</span></label>
+      <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;">Send Me the PDF <span class="arrow">→</span></button>
+    </form>
+
+    <div class="modal-thanks" id="modalThanks" hidden>
+      <div class="thanks-ic">✅</div>
+      <p>Thank you! Please check your email. Your free resource is on its way.</p>
+    </div>
+  </div>
+</div>
 
 <!-- ================= FOOTER ================= -->
 <footer class="footer">
@@ -124,6 +208,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=23"></script>
+<script src="js/main.js?v=24"></script>
 </body>
 </html>

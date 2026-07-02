@@ -76,26 +76,60 @@
     });
   }
 
-  /* ---------- Free-resource lead magnets ----------
-     NOT connected yet: clicking does NOT download. Each button carries its target file in
-     data-pdf, plus data-audience and data-resource.
-     >>> MailerLite integration point <<<
-     To go live, replace the body of the handler below with your MailerLite signup flow
-     (e.g. open the MailerLite form/popup for btn.dataset.audience), and on successful
-     subscription deliver the file, e.g.:  window.location.href = btn.dataset.pdf;
-     Everything else (markup, styling, data attributes) can stay exactly as-is. */
-  var leadMagnets = document.querySelectorAll(".lead-magnet");
-  var leadNote = document.getElementById("leadMagnetNote");
-  if (leadMagnets.length) {
-    leadMagnets.forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var name = btn.getAttribute("data-resource") || "resource";
-        // Placeholder action (no download yet). Replace this block to connect MailerLite.
-        if (leadNote) {
-          leadNote.textContent = "Free access to the " + name + " is opening soon — email sign-up is being connected.";
-        }
+  /* ---------- Free AI Literacy Library: resource request modal ----------
+     No direct download is exposed. Each resource row carries data-resource / data-pdf /
+     data-audience; clicking the title or "Get PDF" opens a modal that (later) collects the
+     visitor before the PDF is emailed to them. */
+  var resourceModal = document.getElementById("resourceModal");
+  if (resourceModal) {
+    var rmName = document.getElementById("modalResourceName");
+    var rmForm = document.getElementById("resourceForm");
+    var rmThanks = document.getElementById("modalThanks");
+    var rmClose = document.getElementById("modalClose");
+
+    var openResourceModal = function (row) {
+      resourceModal.dataset.pdf = row.getAttribute("data-pdf") || "";
+      resourceModal.dataset.audience = row.getAttribute("data-audience") || "";
+      if (rmName) rmName.textContent = row.getAttribute("data-resource") || "your free resource";
+      if (rmForm) { rmForm.reset(); rmForm.hidden = false; }
+      if (rmThanks) rmThanks.hidden = true;
+      resourceModal.classList.add("open");
+      resourceModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      var first = document.getElementById("mFirst");
+      if (first) first.focus();
+    };
+    var closeResourceModal = function () {
+      resourceModal.classList.remove("open");
+      resourceModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    };
+
+    document.querySelectorAll(".resource-trigger").forEach(function (t) {
+      t.addEventListener("click", function () {
+        var row = t.closest(".resource-row");
+        if (row) openResourceModal(row);
       });
     });
+    if (rmClose) rmClose.addEventListener("click", closeResourceModal);
+    resourceModal.addEventListener("click", function (e) { if (e.target === resourceModal) closeResourceModal(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && resourceModal.classList.contains("open")) closeResourceModal();
+    });
+
+    if (rmForm) {
+      rmForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        /* === MailerLite integration point ===
+           Replace this block with your MailerLite subscribe call using:
+             first name → #mFirst, email → #mEmail, opt-in → #mOptin,
+             audience   → resourceModal.dataset.audience
+           On success, MailerLite emails the file at resourceModal.dataset.pdf.
+           Do NOT expose a direct download link on the page. */
+        rmForm.hidden = true;
+        if (rmThanks) rmThanks.hidden = false;
+      });
+    }
   }
 
   /* ---------- Universal "← Back" link (sub-pages) ---------- */
