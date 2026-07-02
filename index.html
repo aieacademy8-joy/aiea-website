@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=26">
+<link rel="stylesheet" href="css/styles.css?v=27">
 </head>
 <body>
 
@@ -491,10 +491,10 @@
       <span class="c-ai">Discover</span>
       <span class="c-explore">Imagine</span>
       <span class="c-acad">Create</span>
-      <span class="c-white">with AI™</span>
+      <span class="c-white">with AI<sup class="tm">™</sup></span>
     </div>
     <p class="sub">Preparing the First AI-Native Generation.</p>
-    <a href="#contact" class="btn btn-gold" style="font-size:1.05rem;padding:18px 36px;">Join the Movement <span class="arrow">→</span></a>
+    <a href="#join" class="btn btn-gold newsletter-trigger" style="font-size:1.05rem;padding:18px 36px;">Join the Movement <span class="arrow">→</span></a>
   </div>
 </section>
 
@@ -575,6 +575,42 @@
   </div>
 </section>
 
+<!-- ================= COMMUNITY / NEWSLETTER MODAL ================= -->
+<div class="modal" id="newsletterModal" role="dialog" aria-modal="true" aria-labelledby="nlHeading" aria-hidden="true">
+  <div class="modal-card">
+    <button type="button" class="modal-close" id="nlClose" aria-label="Close">✕</button>
+    <span class="eyebrow">Join Us</span>
+    <h3 id="nlHeading">Join the AI Explorers Community</h3>
+    <p class="modal-resource">Stay connected with AI Explorers Academy. Join a growing community of parents, educators, and school leaders preparing children to think, create, and thrive in an AI-powered world.</p>
+
+    <p class="modal-benefits-lead">You'll receive:</p>
+    <ul class="modal-benefits">
+      <li>New AI literacy resources</li>
+      <li>Book launch announcements</li>
+      <li>Practical classroom ideas</li>
+      <li>Parenting insights</li>
+      <li>School implementation updates</li>
+      <li>Workshops &amp; speaking announcements</li>
+    </ul>
+
+    <form class="modal-form" id="newsletterForm">
+      <div class="field"><label for="nlFirst">First Name</label><input id="nlFirst" name="first_name" type="text" placeholder="Your first name" required></div>
+      <div class="field"><label for="nlEmail">Email Address</label><input id="nlEmail" name="email" type="email" placeholder="you@example.com" required></div>
+      <label class="checkbox-row"><input type="checkbox" id="nlOptin" name="opt_in" required><span>I agree to receive occasional emails from AI Explorers Academy.</span></label>
+      <button type="submit" id="newsletterSubmit" class="btn btn-gold" style="width:100%;justify-content:center;" disabled>Join the Community <span class="arrow">→</span></button>
+    </form>
+
+    <p class="modal-note" id="nlResubNote"><strong>Already unsubscribed?</strong> Simply enter your email address above and click Join the Community. If you previously unsubscribed, we'll automatically restore your subscription so you can continue receiving future updates and resources.</p>
+
+    <p class="modal-error" id="nlError" hidden></p>
+
+    <div class="modal-thanks" id="nlThanks" hidden>
+      <div class="thanks-ic">✅</div>
+      <p id="nlThanksMsg"><strong>Welcome to the AI Explorers Community!</strong><br>Thank you for joining us. You'll now receive AI literacy resources, updates, and announcements from AI Explorers Academy.</p>
+    </div>
+  </div>
+</div>
+
 <!-- ================= FOOTER ================= -->
 <footer class="footer">
   <div class="footer-grid">
@@ -604,6 +640,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=26"></script>
+<script src="js/main.js?v=27"></script>
 </body>
 </html>

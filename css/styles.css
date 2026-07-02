@@ -634,6 +634,8 @@ section { position: relative; padding-block: clamp(70px, 9vw, 140px); }
 .final-cta { text-align: center; }
 .final-cta .motto-stack { font-size: clamp(2.6rem, 7vw, 5.5rem); line-height: 1.05; font-family: var(--serif); font-weight: 600; }
 .final-cta .motto-stack span { display: block; }
+/* Trademark as a true superscript (~38% cap height) — reads "AI™", not "AITM" */
+.tm { font-size: 0.38em; vertical-align: super; line-height: 0; letter-spacing: 0; }
 .final-cta .sub { color: var(--ink-soft); font-size: 1.2rem; margin: 28px 0 36px; }
 
 /* ============================================================
@@ -735,6 +737,7 @@ a.free-card { color: inherit; text-decoration: none; }
 .modal.open { display: flex; }
 .modal-card {
   width: 100%; max-width: 460px; position: relative;
+  max-height: 90vh; overflow-y: auto;
   background: linear-gradient(180deg, var(--navy-3), var(--navy-2));
   border: 1px solid var(--stroke-2); border-radius: var(--radius); padding: 38px 34px;
   box-shadow: 0 40px 90px rgba(0,0,0,.6), 0 0 50px -14px rgba(212,175,79,.4);
@@ -752,6 +755,12 @@ a.free-card { color: inherit; text-decoration: none; }
 .modal-thanks .thanks-ic { font-size: 2.2rem; margin-bottom: 10px; }
 .modal-thanks p { color: var(--ink); font-size: 1.05rem; line-height: 1.5; }
 .modal-error { color: var(--red); font-size: .88rem; text-align: center; margin-top: 12px; line-height: 1.5; }
+.modal-benefits-lead { color: var(--ink-soft); font-size: .9rem; margin: 4px 0 10px; }
+.modal-benefits { list-style: none; display: grid; gap: 8px; margin: 0 0 22px; padding: 0; }
+.modal-benefits li { position: relative; padding-left: 24px; color: var(--ink-soft); font-size: .92rem; line-height: 1.4; }
+.modal-benefits li::before { content: "✓"; position: absolute; left: 0; top: 0; color: var(--gold); font-weight: 700; }
+.modal-note { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--stroke); color: var(--ink-faint); font-size: .82rem; line-height: 1.5; }
+.modal-note strong { color: var(--ink-soft); display: block; margin-bottom: 3px; }
 @media (max-width: 560px) { .resource-row { justify-content: flex-start; } .modal-card { padding: 30px 24px; } }
 
 /* Disabled buttons (e.g. modal submit before consent) */

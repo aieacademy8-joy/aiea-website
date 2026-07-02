@@ -177,6 +177,106 @@
     }
   }
 
+  /* ---------- Community / Newsletter modal (homepage "Join the Movement") ----------
+     Same look & interaction as the resource modal. Posts to /api/newsletter, which
+     adds the visitor to the MailerLite "Newsletter" group — creating, re-adding, or
+     (where allowed) automatically restoring an unsubscribed contact. */
+  var nlModal = document.getElementById("newsletterModal");
+  if (nlModal) {
+    var nlForm = document.getElementById("newsletterForm");
+    var nlThanks = document.getElementById("nlThanks");
+    var nlThanksMsg = document.getElementById("nlThanksMsg");
+    var nlNote = document.getElementById("nlResubNote");
+    var nlClose = document.getElementById("nlClose");
+    var nlSubmit = document.getElementById("newsletterSubmit");
+    var nlFirst = document.getElementById("nlFirst");
+    var nlEmail = document.getElementById("nlEmail");
+    var nlOptin = document.getElementById("nlOptin");
+    var nlError = document.getElementById("nlError");
+    var nlSubmitHTML = nlSubmit ? nlSubmit.innerHTML : "";
+
+    var WELCOME_HTML = "<strong>Welcome to the AI Explorers Community!</strong><br>Thank you for joining us. You'll now receive AI literacy resources, updates, and announcements from AI Explorers Academy.";
+    var RECONFIRM_HTML = "It looks like you've unsubscribed from our emails before.<br>To respect your previous preference, we've sent you a confirmation email — please click the link inside to restore your subscription, or contact us if you need assistance.";
+
+    // Enable "Join the Community" only when First Name + Email are filled and consent is checked.
+    var validateNewsletter = function () {
+      if (!nlSubmit) return;
+      var ready = !!(nlFirst && nlFirst.value.trim()) &&
+                  !!(nlEmail && nlEmail.value.trim()) &&
+                  !!(nlOptin && nlOptin.checked);
+      nlSubmit.disabled = !ready;
+    };
+    [nlFirst, nlEmail].forEach(function (el) { if (el) el.addEventListener("input", validateNewsletter); });
+    if (nlOptin) nlOptin.addEventListener("change", validateNewsletter);
+
+    var openNewsletter = function () {
+      if (nlForm) { nlForm.reset(); nlForm.hidden = false; }
+      if (nlNote) nlNote.hidden = false;
+      if (nlThanks) nlThanks.hidden = true;
+      if (nlError) nlError.hidden = true;
+      if (nlSubmit) nlSubmit.innerHTML = nlSubmitHTML;
+      validateNewsletter();
+      nlModal.classList.add("open");
+      nlModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      if (nlFirst) nlFirst.focus();
+    };
+    var closeNewsletter = function () {
+      nlModal.classList.remove("open");
+      nlModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    };
+
+    document.querySelectorAll(".newsletter-trigger").forEach(function (t) {
+      t.addEventListener("click", function (e) { e.preventDefault(); openNewsletter(); });
+    });
+    if (nlClose) nlClose.addEventListener("click", closeNewsletter);
+    nlModal.addEventListener("click", function (e) { if (e.target === nlModal) closeNewsletter(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && nlModal.classList.contains("open")) closeNewsletter();
+    });
+
+    if (nlForm) {
+      nlForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (nlSubmit && nlSubmit.disabled) return;
+
+        var payload = {
+          first_name: nlFirst ? nlFirst.value.trim() : "",
+          email: nlEmail ? nlEmail.value.trim() : "",
+          consent: nlOptin ? nlOptin.checked : false
+        };
+
+        if (nlError) nlError.hidden = true;
+        if (nlSubmit) { nlSubmit.disabled = true; nlSubmit.textContent = "Joining…"; }
+
+        fetch("/api/newsletter", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        })
+          .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, data: d }; }); })
+          .then(function (res) {
+            if (!res.ok) throw new Error("subscribe_failed");
+            var reconfirm = res.data && res.data.status === "reconfirm_required";
+            if (nlForm) nlForm.hidden = true;
+            if (nlNote) nlNote.hidden = true;
+            if (nlThanksMsg) nlThanksMsg.innerHTML = reconfirm ? RECONFIRM_HTML : WELCOME_HTML;
+            if (nlThanks) nlThanks.hidden = false;
+            // Auto-close after the welcome; leave the re-confirm note up so it can be read.
+            if (!reconfirm) setTimeout(closeNewsletter, 3500);
+          })
+          .catch(function () {
+            if (nlSubmit) { nlSubmit.innerHTML = nlSubmitHTML; nlSubmit.disabled = false; }
+            if (nlError) {
+              nlError.textContent = "Sorry — something went wrong. Please try again, or email missjoy@aiexplorersacademy.org.";
+              nlError.hidden = false;
+            }
+          });
+      });
+    }
+  }
+
   /* ---------- Universal "← Back" link (sub-pages) ---------- */
   var backLink = document.getElementById("backLink");
   if (backLink) {
