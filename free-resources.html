@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=22">
+<link rel="stylesheet" href="css/styles.css?v=23">
 </head>
 <body>
 
@@ -57,51 +57,37 @@
 <!-- ================= FREE RESOURCE CARDS ================= -->
 <section>
   <div class="wrap">
+    <!-- Free lead-magnet cards. Buttons carry the target PDF in data-pdf but do NOT download yet.
+         To connect MailerLite: see the single .lead-magnet handler in js/main.js (one place to edit). -->
     <div class="free-detail-grid">
 
-      <article class="fd-card fd-parents reveal">
-        <div class="fd-media">
-          <div class="img-ph">
-            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="9" width="28" height="22" rx="3"/><circle cx="15" cy="17" r="3"/><path d="M9 29l8-8 6 5 4-3 4 4"/></svg>
-            <span>Image coming soon</span>
-          </div>
-        </div>
-        <div class="fd-body">
-          <h3>For Parents</h3>
-          <p>Simple, practical resources to help your family begin the AI Literacy journey at home with confidence.</p>
-          <a href="#" class="btn btn-gold">Get Instant Access <span class="arrow">→</span></a>
-        </div>
+      <article class="pcard p-parents reveal">
+        <div class="pcard-img" style="background-image:url('resources/free/images/card-parents.jpg')" role="img" aria-label="Free AI resource for parents"></div>
+        <button type="button" class="pcard-cta lead-magnet"
+                data-audience="parents"
+                data-resource="Parent AI Scorecard"
+                data-pdf="resources/free/parents/Parent-AI-Scorecard.pdf">Get Instant Access <span class="arrow">→</span></button>
       </article>
 
-      <article class="fd-card fd-teachers reveal">
-        <div class="fd-media">
-          <div class="img-ph">
-            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="9" width="28" height="22" rx="3"/><circle cx="15" cy="17" r="3"/><path d="M9 29l8-8 6 5 4-3 4 4"/></svg>
-            <span>Image coming soon</span>
-          </div>
-        </div>
-        <div class="fd-body">
-          <h3>For Teachers</h3>
-          <p>Classroom-friendly activities to introduce AI literacy in an age-appropriate, engaging way.</p>
-          <a href="#" class="btn btn-gold">Get Instant Access <span class="arrow">→</span></a>
-        </div>
+      <article class="pcard p-educators reveal">
+        <div class="pcard-img" style="background-image:url('resources/free/images/card-educators.jpg')" role="img" aria-label="Free AI resource for teachers"></div>
+        <button type="button" class="pcard-cta lead-magnet"
+                data-audience="teachers"
+                data-resource="Teacher AI Scorecard"
+                data-pdf="resources/free/teachers/Teacher-AI-Scorecard.pdf">Get Instant Access <span class="arrow">→</span></button>
       </article>
 
-      <article class="fd-card fd-schools reveal">
-        <div class="fd-media">
-          <div class="img-ph">
-            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="9" width="28" height="22" rx="3"/><circle cx="15" cy="17" r="3"/><path d="M9 29l8-8 6 5 4-3 4 4"/></svg>
-            <span>Image coming soon</span>
-          </div>
-        </div>
-        <div class="fd-body">
-          <h3>For Schools</h3>
-          <p>Starter tools to help school leaders plan responsible, future-ready AI literacy implementation.</p>
-          <a href="#" class="btn btn-gold">Get Instant Access <span class="arrow">→</span></a>
-        </div>
+      <article class="pcard p-leaders reveal">
+        <div class="pcard-img" style="background-image:url('resources/free/images/card-leaders.jpg')" role="img" aria-label="Free AI resource for schools"></div>
+        <button type="button" class="pcard-cta lead-magnet"
+                data-audience="schools"
+                data-resource="School AI Readiness Scorecard"
+                data-pdf="resources/free/schools/School-AI-Readiness-Scorecard.pdf">Get Instant Access <span class="arrow">→</span></button>
       </article>
 
     </div>
+
+    <p class="lead-note reveal" id="leadMagnetNote" role="status" aria-live="polite"></p>
 
     <div class="free-cta reveal">
       <a href="index.html#resources" class="btn btn-ghost">Browse All Resources <span class="arrow">→</span></a>
@@ -138,6 +124,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=22"></script>
+<script src="js/main.js?v=23"></script>
 </body>
 </html>

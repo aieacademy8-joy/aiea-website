@@ -696,6 +696,10 @@ section { position: relative; padding-block: clamp(70px, 9vw, 140px); }
 .legal-doc .legal-block h2 { font-family: var(--serif); font-size: 1.4rem; color: var(--ink); margin-bottom: 12px; }
 .legal-doc .legal-block p { color: var(--ink-soft); font-size: 1.02rem; line-height: 1.7; margin-bottom: 12px; }
 .legal-doc .legal-block ul { margin: 6px 0 14px; }
+
+/* Free-resource lead-magnet cards: make the CTA render as a full-width button */
+button.pcard-cta { width: 100%; border: none; border-top: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); cursor: pointer; font-family: inherit; }
+.lead-note { text-align: center; margin-top: 22px; min-height: 1.2em; color: var(--gold); font-size: .92rem; }
 .footer-motto .d{color:var(--blue);} .footer-motto .i{color:var(--purple);} .footer-motto .c{color:var(--gold);}
 
 /* ============================================================

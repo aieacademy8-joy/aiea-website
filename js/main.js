@@ -76,6 +76,28 @@
     });
   }
 
+  /* ---------- Free-resource lead magnets ----------
+     NOT connected yet: clicking does NOT download. Each button carries its target file in
+     data-pdf, plus data-audience and data-resource.
+     >>> MailerLite integration point <<<
+     To go live, replace the body of the handler below with your MailerLite signup flow
+     (e.g. open the MailerLite form/popup for btn.dataset.audience), and on successful
+     subscription deliver the file, e.g.:  window.location.href = btn.dataset.pdf;
+     Everything else (markup, styling, data attributes) can stay exactly as-is. */
+  var leadMagnets = document.querySelectorAll(".lead-magnet");
+  var leadNote = document.getElementById("leadMagnetNote");
+  if (leadMagnets.length) {
+    leadMagnets.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var name = btn.getAttribute("data-resource") || "resource";
+        // Placeholder action (no download yet). Replace this block to connect MailerLite.
+        if (leadNote) {
+          leadNote.textContent = "Free access to the " + name + " is opening soon — email sign-up is being connected.";
+        }
+      });
+    });
+  }
+
   /* ---------- Universal "← Back" link (sub-pages) ---------- */
   var backLink = document.getElementById("backLink");
   if (backLink) {
