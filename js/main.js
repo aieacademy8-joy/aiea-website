@@ -90,6 +90,8 @@
     var rmFirst = document.getElementById("mFirst");
     var rmEmail = document.getElementById("mEmail");
     var rmOptin = document.getElementById("mOptin");
+    var rmError = document.getElementById("modalError");
+    var rmSubmitHTML = rmSubmit ? rmSubmit.innerHTML : "";
 
     // Enable "Send Me the PDF" only when First Name + Email are filled and consent is checked.
     var validateResourceForm = function () {
@@ -108,6 +110,8 @@
       if (rmName) rmName.textContent = row.getAttribute("data-resource") || "your free resource";
       if (rmForm) { rmForm.reset(); rmForm.hidden = false; }
       if (rmThanks) rmThanks.hidden = true;
+      if (rmError) rmError.hidden = true;
+      if (rmSubmit) rmSubmit.innerHTML = rmSubmitHTML;
       validateResourceForm();
       resourceModal.classList.add("open");
       resourceModal.setAttribute("aria-hidden", "false");
@@ -136,14 +140,39 @@
     if (rmForm) {
       rmForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        /* === MailerLite integration point ===
-           Replace this block with your MailerLite subscribe call using:
-             first name → #mFirst, email → #mEmail, opt-in → #mOptin,
-             audience   → resourceModal.dataset.audience
-           On success, MailerLite emails the file at resourceModal.dataset.pdf.
-           Do NOT expose a direct download link on the page. */
-        rmForm.hidden = true;
-        if (rmThanks) rmThanks.hidden = false;
+        if (rmSubmit && rmSubmit.disabled) return;
+
+        var payload = {
+          first_name: rmFirst ? rmFirst.value.trim() : "",
+          email: rmEmail ? rmEmail.value.trim() : "",
+          audience: resourceModal.dataset.audience || "",  // parents | educators | schools
+          consent: rmOptin ? rmOptin.checked : false
+        };
+
+        if (rmError) rmError.hidden = true;
+        if (rmSubmit) { rmSubmit.disabled = true; rmSubmit.textContent = "Sending…"; }
+
+        // Submits to our Vercel function, which subscribes the visitor to the matching
+        // MailerLite group (Parents / Teachers / School Leaders). The group's automation
+        // emails the correct PDF — no direct download is exposed here.
+        fetch("/api/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        })
+          .then(function (r) {
+            if (!r.ok) throw new Error("subscribe_failed");
+            rmForm.hidden = true;
+            if (rmThanks) rmThanks.hidden = false;
+            setTimeout(closeResourceModal, 3000); // show success, then close
+          })
+          .catch(function () {
+            if (rmSubmit) { rmSubmit.innerHTML = rmSubmitHTML; rmSubmit.disabled = false; }
+            if (rmError) {
+              rmError.textContent = "Sorry — something went wrong. Please try again, or email missjoy@aiexplorersacademy.org.";
+              rmError.hidden = false;
+            }
+          });
       });
     }
   }
