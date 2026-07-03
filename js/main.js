@@ -277,6 +277,103 @@
     }
   }
 
+  /* ---------- Request a Printed Copy modal (book page) ----------
+     Expression of interest for limited U.S. print batches (NOT a paid pre-order).
+     Posts to /api/book-request, which adds the person to the MailerLite print-interest
+     group with their state / quantity / audience. Same look as the other modals. */
+  var brModal = document.getElementById("bookRequestModal");
+  if (brModal) {
+    var brForm = document.getElementById("bookRequestForm");
+    var brThanks = document.getElementById("brThanks");
+    var brNote = document.getElementById("brNote");
+    var brClose = document.getElementById("brClose");
+    var brSubmit = document.getElementById("bookRequestSubmit");
+    var brName = document.getElementById("brName");
+    var brEmail = document.getElementById("brEmail");
+    var brState = document.getElementById("brState");
+    var brQty = document.getElementById("brQty");
+    var brFor = document.getElementById("brFor");
+    var brError = document.getElementById("brError");
+    var brSubmitHTML = brSubmit ? brSubmit.innerHTML : "";
+
+    // Enable submit once Name + Email + State + Purchasing-for are provided (Quantity defaults to 1).
+    var validateBookRequest = function () {
+      if (!brSubmit) return;
+      var ready = !!(brName && brName.value.trim()) &&
+                  !!(brEmail && brEmail.value.trim()) &&
+                  !!(brState && brState.value.trim()) &&
+                  !!(brFor && brFor.value);
+      brSubmit.disabled = !ready;
+    };
+    [brName, brEmail, brState, brQty].forEach(function (el) { if (el) el.addEventListener("input", validateBookRequest); });
+    if (brFor) brFor.addEventListener("change", validateBookRequest);
+
+    var openBookRequest = function () {
+      if (brForm) { brForm.reset(); brForm.hidden = false; }
+      if (brNote) brNote.hidden = false;
+      if (brThanks) brThanks.hidden = true;
+      if (brError) brError.hidden = true;
+      if (brSubmit) brSubmit.innerHTML = brSubmitHTML;
+      validateBookRequest();
+      brModal.classList.add("open");
+      brModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      if (brName) brName.focus();
+    };
+    var closeBookRequest = function () {
+      brModal.classList.remove("open");
+      brModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    };
+
+    document.querySelectorAll(".book-request-trigger").forEach(function (t) {
+      t.addEventListener("click", function (e) { e.preventDefault(); openBookRequest(); });
+    });
+    if (brClose) brClose.addEventListener("click", closeBookRequest);
+    brModal.addEventListener("click", function (e) { if (e.target === brModal) closeBookRequest(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && brModal.classList.contains("open")) closeBookRequest();
+    });
+
+    if (brForm) {
+      brForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (brSubmit && brSubmit.disabled) return;
+
+        var payload = {
+          name: brName ? brName.value.trim() : "",
+          email: brEmail ? brEmail.value.trim() : "",
+          state: brState ? brState.value.trim() : "",
+          quantity: brQty ? brQty.value.trim() : "",
+          purchasing_for: brFor ? brFor.value : ""
+        };
+
+        if (brError) brError.hidden = true;
+        if (brSubmit) { brSubmit.disabled = true; brSubmit.textContent = "Submitting…"; }
+
+        fetch("/api/book-request", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        })
+          .then(function (r) {
+            if (!r.ok) throw new Error("request_failed");
+            if (brForm) brForm.hidden = true;
+            if (brNote) brNote.hidden = true;
+            if (brThanks) brThanks.hidden = false;
+            setTimeout(closeBookRequest, 4000);
+          })
+          .catch(function () {
+            if (brSubmit) { brSubmit.innerHTML = brSubmitHTML; brSubmit.disabled = false; }
+            if (brError) {
+              brError.textContent = "Sorry — something went wrong. Please try again, or email missjoy@aiexplorersacademy.org.";
+              brError.hidden = false;
+            }
+          });
+      });
+    }
+  }
+
   /* ---------- Universal "← Back" link (sub-pages) ---------- */
   var backLink = document.getElementById("backLink");
   if (backLink) {
