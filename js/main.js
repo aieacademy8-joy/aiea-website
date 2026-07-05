@@ -278,9 +278,9 @@
   }
 
   /* ---------- Request a Printed Copy modal (book page) ----------
-     Expression of interest for limited U.S. print batches (NOT a paid pre-order).
-     Posts to /api/book-request, which adds the person to the MailerLite print-interest
-     group with their state / quantity / audience. Same look as the other modals. */
+     Expression of interest for limited U.S. print batches (no payment, not a purchase).
+     Emails the request to missjoy@ via Formspree — the same architecture as the contact
+     form; no secrets in the client. Same look as the other modals. */
   var brModal = document.getElementById("bookRequestModal");
   if (brModal) {
     var brForm = document.getElementById("bookRequestForm");
@@ -340,28 +340,24 @@
         e.preventDefault();
         if (brSubmit && brSubmit.disabled) return;
 
-        var payload = {
-          name: brName ? brName.value.trim() : "",
-          email: brEmail ? brEmail.value.trim() : "",
-          state: brState ? brState.value.trim() : "",
-          quantity: brQty ? brQty.value.trim() : "",
-          purchasing_for: brFor ? brFor.value : ""
-        };
+        // Reuses the site's Formspree email architecture (same as the contact form) —
+        // emails the request to missjoy@aiexplorersacademy.org. No secrets in the client.
+        var action = brForm.getAttribute("action") || "";
 
         if (brError) brError.hidden = true;
         if (brSubmit) { brSubmit.disabled = true; brSubmit.textContent = "Submitting…"; }
 
-        fetch("/api/book-request", {
+        fetch(action, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: new FormData(brForm),
+          headers: { Accept: "application/json" }
         })
-          .then(function (r) {
-            if (!r.ok) throw new Error("request_failed");
+          .then(function (res) {
+            if (!res.ok) throw new Error("request_failed");
             if (brForm) brForm.hidden = true;
             if (brNote) brNote.hidden = true;
             if (brThanks) brThanks.hidden = false;
-            setTimeout(closeBookRequest, 4000);
+            setTimeout(closeBookRequest, 4500);
           })
           .catch(function () {
             if (brSubmit) { brSubmit.innerHTML = brSubmitHTML; brSubmit.disabled = false; }
@@ -372,6 +368,51 @@
           });
       });
     }
+  }
+
+  /* ---------- Book preview lightbox (image previews under the cover) ---------- */
+  var lightbox = document.getElementById("previewLightbox");
+  if (lightbox) {
+    var lbImg = document.getElementById("lightboxImg");
+    var lbCap = document.getElementById("lightboxCaption");
+    var lbClose = document.getElementById("lightboxClose");
+
+    var openLightbox = function (src, caption, altText) {
+      if (!src) return;
+      if (lbImg) { lbImg.src = src; lbImg.alt = altText || caption || "Book preview"; }
+      if (lbCap) lbCap.textContent = caption || "Preview";
+      lightbox.classList.add("open");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      if (lbClose) lbClose.focus();
+    };
+    var closeLightbox = function () {
+      lightbox.classList.remove("open");
+      lightbox.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      if (lbImg) lbImg.src = "";
+    };
+
+    document.querySelectorAll(".preview-card").forEach(function (card) {
+      card.addEventListener("click", function () {
+        var img = card.querySelector("img");
+        openLightbox(
+          card.getAttribute("data-preview-src"),
+          card.getAttribute("data-preview-caption"),
+          img ? img.getAttribute("alt") : ""
+        );
+      });
+    });
+    if (lbClose) lbClose.addEventListener("click", closeLightbox);
+    lightbox.addEventListener("click", function (e) { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && lightbox.classList.contains("open")) closeLightbox();
+    });
+
+    // Basic deterrence: block right-click / context menu on preview images (cards + lightbox).
+    document.addEventListener("contextmenu", function (e) {
+      if (e.target.closest(".preview-card, .lightbox-media")) e.preventDefault();
+    });
   }
 
   /* ---------- Universal "← Back" link (sub-pages) ---------- */
