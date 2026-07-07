@@ -981,6 +981,13 @@ a.free-card { color: inherit; text-decoration: none; }
 .exp-hl { display: inline-block; margin-top: 6px; padding: 11px 18px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--gold) 34%, transparent); background: rgba(212,175,79,.07); color: var(--ink); font-weight: 600; font-size: .92rem; letter-spacing: .02em; }
 .exp-microcopy { color: var(--ink-faint); font-size: .82rem; margin-top: 14px; line-height: 1.55; }
 .exp-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 22px; }
+/* Launch-week offer — quiet, editorial, gold accent (no loud sale banner) */
+.exp-offer { margin: 2px 0 20px; padding: 15px 18px; border: 1px solid var(--stroke-2); border-radius: 14px; background: linear-gradient(180deg, rgba(212,175,79,.06), rgba(212,175,79,.02)); display: grid; gap: 3px; }
+.exp-offer-value { font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); }
+.exp-offer-launch { font-family: var(--serif); font-size: clamp(1.3rem,2.6vw,1.7rem); line-height: 1.1; color: var(--gold); }
+.exp-offer-launch strong { font-weight: 700; }
+.exp-offer-note { font-size: .82rem; color: var(--ink-soft); margin-top: 2px; }
+.exp-offer-hint { font-size: .84rem; color: var(--ink-soft); margin-top: 12px; }
 .exp-statement { font-family: var(--serif); font-size: clamp(1.4rem,3vw,2.1rem); line-height: 1.32; color: var(--ink); max-width: 860px; }
 .exp-statement.center { margin-inline: auto; text-align: center; }
 
@@ -1059,29 +1066,27 @@ a.free-card { color: inherit; text-decoration: none; }
   position: relative; border-radius: var(--radius); border: 1px solid var(--stroke-2);
   background: radial-gradient(120% 100% at 50% 0%, rgba(212,175,79,.10), transparent 60%), var(--navy-2);
   box-shadow: 0 30px 70px rgba(0,0,0,.4);
-  min-height: 500px; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: zoom-in;
+  min-height: 500px; overflow: hidden; cursor: zoom-in;
 }
-/* Show ONE active preview only, perfectly centered. [hidden] truly hides — a class
-   `display:flex` would otherwise override the [hidden] attribute. */
-.exp-featured > .exp-book3d, .exp-featured > .exp-feat-frame { width: 100%; max-height: 100%; margin-inline: auto; }
+/* Each active mode fills the ENTIRE rounded frame and flex-centres its image, so the
+   image is centred against the full frame — never a content-width or track wrapper.
+   [hidden] truly hides (a class `display` would otherwise override the attribute). */
+.exp-featured > .exp-book3d, .exp-featured > .exp-feat-frame {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+}
 .exp-featured > [hidden] { display: none !important; }
 .exp-feat-cap { text-align: center; margin-top: 12px; color: var(--gold); font-family: var(--serif); font-style: italic; font-size: .98rem; letter-spacing: .02em; }
 
-/* 3D book mockup (default featured = cover) — larger, cleaner, soft depth */
-.exp-book3d { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: clamp(6px,1.2vw,14px) 8px; perspective: 1700px; }
+/* Cover (default active image) — subtle rotateX tilt only, centred in the full frame */
+.exp-book3d { padding: clamp(16px,3vw,30px); perspective: 1700px; }
 .exp-book3d::after { content: ""; position: absolute; width: 56%; height: 58%; left: 22%; top: 21%; background: radial-gradient(ellipse at 50% 50%, rgba(59,166,255,.20), rgba(196,107,255,.14) 48%, rgba(212,175,79,.10) 70%, transparent 78%); filter: blur(46px); z-index: 0; pointer-events: none; }
-/* Only rotateX (vertical tilt) — no rotateY, which under perspective shifts the
-   book's visual centre left. Keeps a subtle 3D feel while staying perfectly centred. */
-.exp-book3d-inner { position: relative; z-index: 1; margin: 0 auto; transform-style: preserve-3d; transform: rotateX(2deg); transition: transform .45s var(--ease); }
-.exp-book3d:hover .exp-book3d-inner { transform: rotateX(2deg) translateY(-5px); }
-.exp-book3d-inner img { display: block; width: clamp(250px, 74%, 350px); height: auto; border-radius: 3px 8px 8px 3px; box-shadow: 0 34px 62px rgba(0,0,0,.5); }
-.exp-book3d-inner::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 12px; z-index: 3; pointer-events: none; background: linear-gradient(90deg, rgba(0,0,0,.24), rgba(0,0,0,.05) 65%, transparent); border-radius: 3px 0 0 3px; }
-/* Right-side page-edge/thickness removed — it rendered as a cream vertical strip beside the cover. */
+.exp-book3d img { position: relative; z-index: 1; display: block; width: auto; height: auto; max-width: 100%; max-height: 460px; margin: 0; object-fit: contain; border-radius: 3px 8px 8px 3px; box-shadow: 0 32px 60px rgba(0,0,0,.5); transform: rotateX(2deg); transition: transform .45s var(--ease); }
+.exp-book3d:hover img { transform: rotateX(2deg) translateY(-5px); }
 
 /* Framed preview (thumbs 2–11) */
-.exp-feat-frame { margin: 0; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: clamp(16px,3vw,30px); }
-.exp-feat-media { position: relative; display: inline-block; max-width: 100%; max-height: 100%; margin: 0 auto; line-height: 0; }
-.exp-feat-media img { display: block; width: auto; height: auto; max-width: 100%; max-height: 460px; margin: 0 auto; object-fit: contain; border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+.exp-feat-frame { padding: clamp(16px,3vw,30px); }
+.exp-feat-media { position: relative; display: flex; max-width: 100%; max-height: 100%; line-height: 0; }
+.exp-feat-media img { display: block; width: auto; height: auto; max-width: 100%; max-height: 460px; margin: 0; object-fit: contain; border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
 .exp-wm { position: absolute; inset: 0; background-repeat: repeat; opacity: .5; pointer-events: none; border-radius: inherit; }
 
 /* Thumbnail strip */
@@ -1111,7 +1116,7 @@ a.free-card { color: inherit; text-decoration: none; }
 @media (max-width: 900px) {
   .exp-hero-grid { grid-template-columns: 1fr; }
   .exp-featured { min-height: 420px; }
-  .exp-feat-media img { max-height: 380px; }
+  .exp-book3d img, .exp-feat-media img { max-height: 350px; }
   .exp-lb-nav { width: 40px; height: 40px; font-size: 1.4rem; }
 }
 .product-info .eyebrow { color: var(--gold); }
