@@ -9,3 +9,14 @@ aiea-site-deploy.zip
 # Source artwork kept in the project root — the site only uses the copies in assets/
 /*.png
 /*.PNG
+
+# 30 Days of AI Adventures — keep IP-sensitive source artwork & print-scale originals
+# OUT of the public deploy. The page only serves the curated web previews:
+# web-previews/*.jpeg (small) + web-previews/*-web.jpg (optimized) + watermark.svg.
+assets/book/30-days-of-ai-adventures/books/
+assets/book/30-days-of-ai-adventures/cover/
+assets/book/30-days-of-ai-adventures/journey/
+assets/book/30-days-of-ai-adventures/missions/
+assets/book/30-days-of-ai-adventures/passport/
+assets/book/30-days-of-ai-adventures/stickers/
+assets/book/30-days-of-ai-adventures/web-previews/*.png
