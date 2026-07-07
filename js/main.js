@@ -411,7 +411,7 @@
 
     // Basic deterrence: block right-click / context menu on preview images (cards + lightbox).
     document.addEventListener("contextmenu", function (e) {
-      if (e.target.closest(".preview-card, .lightbox-media")) e.preventDefault();
+      if (e.target.closest(".preview-card, .lightbox-media, .guard-img")) e.preventDefault();
     });
   }
 
