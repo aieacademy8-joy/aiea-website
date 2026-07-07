@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=30">
+<link rel="stylesheet" href="css/styles.css?v=31">
 </head>
 <body>
 
@@ -48,15 +48,46 @@
 <!-- Universal back link -->
 <div class="back-bar"><a href="index.html" class="back-link" id="backLink"><span class="arrow-l">←</span> Back</a></div>
 
-<!-- ================= HERO ================= -->
+<!-- ================= HERO PRODUCT GALLERY ================= -->
 <header class="product-hero" id="top">
-  <div class="product-hero-grid">
-    <div class="reveal">
-      <figure class="exp-figure" style="max-width:360px;">
-        <div class="exp-media"><img class="guard-img" src="assets/book/30-days-of-ai-adventures/web-previews/01-main-cover.jpeg" alt="30 Days of AI Adventures — The Explorer Collection cover" draggable="false"></div>
-      </figure>
+  <div class="exp-hero-grid">
+
+    <!-- LEFT: featured preview + thumbnail strip -->
+    <div class="exp-hero-media reveal">
+      <div class="exp-featured" id="expFeatured" role="button" tabindex="0" aria-label="View larger preview">
+        <!-- Cover mode: CSS 3D book mockup -->
+        <div class="exp-book3d" id="expBook3d">
+          <div class="exp-book3d-inner">
+            <img class="guard-img" src="assets/book/30-days-of-ai-adventures/web-previews/01-main-cover-web.jpeg" alt="30 Days of AI Adventures — The Explorer Collection cover" draggable="false">
+          </div>
+        </div>
+        <!-- Preview mode: framed preview image with watermark -->
+        <figure class="exp-feat-frame" id="expFeatFrame" hidden>
+          <div class="exp-feat-media">
+            <img class="guard-img" id="expFeatImg" src="" alt="" draggable="false">
+            <span class="exp-wm" aria-hidden="true" style="background-image:url('assets/book/30-days-of-ai-adventures/watermark.svg');"></span>
+          </div>
+        </figure>
+      </div>
+      <p class="exp-feat-cap" id="expFeatCap">Main Cover</p>
+
+      <!-- Thumbnail strip (storytelling order) -->
+      <div class="exp-strip" id="expThumbs" role="listbox" aria-label="Preview thumbnails">
+        <button type="button" class="exp-gthumb" data-cover="1" data-src="assets/book/30-days-of-ai-adventures/web-previews/01-main-cover-web.jpeg" data-label="Main Cover" aria-label="Main Cover"><img src="assets/book/30-days-of-ai-adventures/web-previews/01-main-cover-web.jpeg" alt="Main Cover thumbnail" draggable="false"><span class="gn">1</span><span class="gl">Cover</span></button>
+        <button type="button" class="exp-gthumb" data-src="assets/book/30-days-of-ai-adventures/web-previews/11-meet-characters-web.jpeg" data-label="Meet the AI Explorers" aria-label="Meet the AI Explorers"><img src="assets/book/30-days-of-ai-adventures/web-previews/11-meet-characters-web.jpeg" alt="Meet the AI Explorers thumbnail" draggable="false"><span class="gn">2</span><span class="gl">Crew</span></button>
+        <button type="button" class="exp-gthumb" data-src="assets/book/30-days-of-ai-adventures/web-previews/02-welcome-future-explorer-web.jpeg" data-label="Welcome Page" aria-label="Welcome Page"><img src="assets/book/30-days-of-ai-adventures/web-previews/02-welcome-future-explorer-web.jpeg" alt="Welcome Page thumbnail" draggable="false"><span class="gn">3</span><span class="gl">Welcome</span></button>
+        <button type="button" class="exp-gthumb" data-src="assets/book/30-days-of-ai-adventures/web-previews/03-adventure-quest-map-web.jpeg" data-label="Adventure Quest Map" aria-label="Adventure Quest Map"><img src="assets/book/30-days-of-ai-adventures/web-previews/03-adventure-quest-map-web.jpeg" alt="Adventure Quest Map thumbnail" draggable="false"><span class="gn">4</span><span class="gl">Map</span></button>
+        <button type="button" class="exp-gthumb" data-src="assets/book/30-days-of-ai-adventures/web-previews/04-six-adventure-journey-web.jpg" data-label="Six Destinations" aria-label="Six Destinations"><img src="assets/book/30-days-of-ai-adventures/web-previews/04-six-adventure-journey-web.jpg" alt="Six Destinations thumbnail" draggable="false"><span class="gn">5</span><span class="gl">Journey</span></button>
+        <button type="button" class="exp-gthumb" data-src="assets/book/30-days-of-ai-adventures/web-previews/05-story-page-preview-web.jpg" data-label="AI Learning Preview" aria-label="AI Learning Preview"><img src="assets/book/30-days-of-ai-adventures/web-previews/05-story-page-preview-web.jpg" alt="AI Learning Preview thumbnail" draggable="false"><span class="gn">6</span><span class="gl">Learning</span></button>
+        <button type="button" class="exp-gthumb" data-src="assets/book/30-days-of-ai-adventures/web-previews/06-explorer-mission-preview-web.jpg" data-label="Explorer Mission" aria-label="Explorer Mission"><img src="assets/book/30-days-of-ai-adventures/web-previews/06-explorer-mission-preview-web.jpg" alt="Explorer Mission thumbnail" draggable="false"><span class="gn">7</span><span class="gl">Mission</span></button>
+        <button type="button" class="exp-gthumb" data-src="assets/book/30-days-of-ai-adventures/web-previews/07-passport-preview-web.jpg" data-label="Explorer Passport" aria-label="Explorer Passport"><img src="assets/book/30-days-of-ai-adventures/web-previews/07-passport-preview-web.jpg" alt="Explorer Passport thumbnail" draggable="false"><span class="gn">8</span><span class="gl">Passport</span></button>
+        <button type="button" class="exp-gthumb" data-src="assets/book/30-days-of-ai-adventures/web-previews/08-badge-collection-preview-web.jpg" data-label="Badge Collection" aria-label="Badge Collection"><img src="assets/book/30-days-of-ai-adventures/web-previews/08-badge-collection-preview-web.jpg" alt="Badge Collection thumbnail" draggable="false"><span class="gn">9</span><span class="gl">Badges</span></button>
+        <button type="button" class="exp-gthumb" data-src="assets/book/30-days-of-ai-adventures/web-previews/09-future-explorer-certificate-web.jpg" data-label="Future Explorer Certificate" aria-label="Future Explorer Certificate"><img src="assets/book/30-days-of-ai-adventures/web-previews/09-future-explorer-certificate-web.jpg" alt="Future Explorer Certificate thumbnail" draggable="false"><span class="gn">10</span><span class="gl">Certificate</span></button>
+        <button type="button" class="exp-gthumb" data-src="assets/book/30-days-of-ai-adventures/web-previews/10-adventure-continues-web.jpg" data-label="The Adventure Continues" aria-label="The Adventure Continues"><img src="assets/book/30-days-of-ai-adventures/web-previews/10-adventure-continues-web.jpg" alt="The Adventure Continues thumbnail" draggable="false"><span class="gn">11</span><span class="gl">Continues</span></button>
+      </div>
     </div>
 
+    <!-- RIGHT: product info -->
     <div class="product-info reveal">
       <span class="eyebrow">The Explorer Collection</span>
       <h1>30 Days of AI Adventures!</h1>
@@ -81,30 +112,24 @@
 
 <!-- ================= 1 · NOT JUST A BOOK ================= -->
 <section class="product-detail">
-  <div class="wrap">
-    <div class="exp-split">
-      <div class="reveal">
-        <span class="eyebrow">The Explorer Journey</span>
-        <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin:12px 0 18px;">Not just a book.<br>An adventure journey.</h2>
-        <div class="exp-body">
-          <p><strong style="color:var(--ink);">Thirty days. Six destinations. One connected journey.</strong></p>
-          <p>Young explorers travel with Miss JOY and the AI Explorers crew through a colorful world of discovery. Each five-day adventure introduces a new part of the AI-powered world through illustrated stories, questions, simple challenges, and creative missions.</p>
-          <p>At the end of each adventure, the Explorer completes a mission, earns a new badge, and records the achievement in the official Explorer Passport.</p>
-          <p>The journey continues until all six destinations are complete — and the child becomes a Future Explorer.</p>
-        </div>
-        <div class="exp-journey" aria-label="Journey progression">
-          <span class="exp-chip">Book 1</span><span class="exp-arrow">→</span>
-          <span class="exp-chip">Book 2</span><span class="exp-arrow">→</span>
-          <span class="exp-chip">Book 3</span><span class="exp-arrow">→</span>
-          <span class="exp-chip">Book 4</span><span class="exp-arrow">→</span>
-          <span class="exp-chip">Book 5</span><span class="exp-arrow">→</span>
-          <span class="exp-chip">Book 6</span><span class="exp-arrow">→</span>
-          <span class="exp-chip final">Future Explorer</span>
-        </div>
-      </div>
-      <figure class="exp-figure reveal">
-        <div class="exp-media"><img class="guard-img" src="assets/book/30-days-of-ai-adventures/web-previews/03-adventure-quest-map.jpeg" alt="Adventure Quest Map preview" draggable="false"></div>
-      </figure>
+  <div class="wrap" style="max-width:860px;">
+    <div class="section-head reveal" style="text-align:left;margin-bottom:18px;">
+      <span class="eyebrow">The Explorer Journey</span>
+      <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-top:12px;">Not just a book.<br>An adventure journey.</h2>
+    </div>
+    <div class="exp-body reveal">
+      <p><strong style="color:var(--ink);">Thirty days. Six destinations. One connected journey.</strong></p>
+      <p>Young explorers travel with Miss JOY and the AI Explorers crew through a colorful world of discovery. Each five-day adventure introduces a new part of the AI-powered world through illustrated stories, questions, simple challenges, and creative missions.</p>
+      <p>At the end of each adventure, the Explorer completes a mission, earns a new badge, and records the achievement in the official Explorer Passport — until all six destinations are complete and the child becomes a Future Explorer.</p>
+    </div>
+    <div class="exp-journey reveal">
+      <span class="exp-chip">Book 1</span><span class="exp-arrow">→</span>
+      <span class="exp-chip">Book 2</span><span class="exp-arrow">→</span>
+      <span class="exp-chip">Book 3</span><span class="exp-arrow">→</span>
+      <span class="exp-chip">Book 4</span><span class="exp-arrow">→</span>
+      <span class="exp-chip">Book 5</span><span class="exp-arrow">→</span>
+      <span class="exp-chip">Book 6</span><span class="exp-arrow">→</span>
+      <span class="exp-chip final">Future Explorer</span>
     </div>
   </div>
 </section>
@@ -117,9 +142,6 @@
       <h2>Six books.<br>Six adventure destinations.</h2>
       <p>Every five days, young explorers enter a new destination, discover how AI appears in the world around them, and work toward a new Explorer Badge.</p>
     </div>
-    <figure class="exp-figure reveal" style="max-width:520px;margin:0 auto 42px;">
-      <div class="exp-media"><img class="guard-img" src="assets/book/30-days-of-ai-adventures/web-previews/04-six-adventure-journey-web.jpg" alt="Six adventure destinations preview" draggable="false"></div>
-    </figure>
     <div class="exp-dest-grid reveal">
       <div class="exp-dest-card">
         <div class="exp-dest-top"><span class="exp-dest-num">Book 1</span><span class="exp-dest-days">Days 1–5</span></div>
@@ -148,7 +170,7 @@
       <div class="exp-dest-card">
         <div class="exp-dest-top"><span class="exp-dest-num">Book 5</span><span class="exp-dest-days">Days 21–25</span></div>
         <h3>Smart City Central</h3>
-        <span class="exp-dest-badge">Badge: Innovation Explorer</span>
+        <span class="exp-dest-badge">Badge: Smart City Explorer</span>
         <p>Discover AI in public services, robotics, transportation, movies, banking, and connected communities.</p>
       </div>
       <div class="exp-dest-card">
@@ -163,51 +185,36 @@
 
 <!-- ================= 3 · REAL AI LITERACY ================= -->
 <section>
-  <div class="wrap">
-    <div class="exp-split flip">
-      <div class="reveal">
-        <span class="eyebrow">Inside the Learning</span>
-        <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin:12px 0 18px;">Big AI ideas, explained through stories children can understand.</h2>
-        <div class="exp-body">
-          <p>The collection introduces early AI literacy through visual stories, examples, humor, questions, and child-friendly explanations.</p>
-          <p>Children begin noticing how AI can learn from examples, recognize patterns, make mistakes, and still need people to think, check, guide, and make wise decisions.</p>
-          <p>This is not about giving children more technology.</p>
-          <p>It is about helping them understand the technology already growing up around them.</p>
-        </div>
-      </div>
-      <figure class="exp-figure reveal">
-        <div class="exp-media"><img class="guard-img" src="assets/book/30-days-of-ai-adventures/web-previews/05-story-page-preview-web.jpg" alt="AI learning story page preview" draggable="false"></div>
-        <figcaption class="exp-cap">Preview: Day 6 introduces how AI learns from examples and why people still help check the answers.</figcaption>
-      </figure>
+  <div class="wrap" style="max-width:820px;">
+    <div class="section-head reveal" style="text-align:left;margin-bottom:18px;">
+      <span class="eyebrow">Inside the Learning</span>
+      <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-top:12px;">Big AI ideas, explained through stories children can understand.</h2>
+    </div>
+    <div class="exp-body reveal">
+      <p>The collection introduces early AI literacy through visual stories, examples, humor, questions, and child-friendly explanations.</p>
+      <p>Children begin noticing how AI can learn from examples, recognize patterns, make mistakes, and still need people to think, check, guide, and make wise decisions.</p>
+      <p>This is not about giving children more technology. It is about helping them understand the technology already growing up around them.</p>
     </div>
   </div>
 </section>
 
 <!-- ================= 4 · EXPLORER PASSPORT ================= -->
 <section>
-  <div class="wrap">
-    <div class="exp-split">
-      <div class="reveal">
-        <span class="eyebrow">Your Adventure Passport</span>
-        <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin:12px 0 18px;">Every Explorer needs a passport.</h2>
-        <div class="exp-body">
-          <p>The Explorer Passport turns the six-book collection into one connected journey.</p>
-          <p>Young explorers add their name, meet the AI Explorers crew, follow the Adventure Quest Map, and record their progress as they travel through all six destinations.</p>
-        </div>
-        <div class="exp-journey" style="margin-top:18px;">
-          <span class="exp-chip">Complete an adventure</span><span class="exp-arrow">→</span>
-          <span class="exp-chip">Earn the badge</span><span class="exp-arrow">→</span>
-          <span class="exp-chip">Add it to the Passport</span><span class="exp-arrow">→</span>
-          <span class="exp-chip final">Unlock the next destination</span>
-        </div>
-        <blockquote class="feature-quote" style="margin-top:24px;">The passport becomes a record of every discovery, mission, and milestone along the way.</blockquote>
-      </div>
-      <figure class="exp-figure reveal">
-        <div class="exp-media"><img class="guard-img" src="assets/book/30-days-of-ai-adventures/web-previews/07-passport-preview-web.jpg" alt="Explorer Passport preview" draggable="false"></div>
-        <div class="exp-media" style="max-width:190px;margin:14px auto 0;"><img class="guard-img" src="assets/book/30-days-of-ai-adventures/web-previews/03-adventure-quest-map.jpeg" alt="Adventure Quest Map thumbnail" draggable="false"></div>
-        <figcaption class="exp-cap">The Explorer Passport &amp; Adventure Quest Map guide the journey.</figcaption>
-      </figure>
+  <div class="wrap" style="max-width:820px;">
+    <div class="section-head reveal" style="text-align:left;margin-bottom:18px;">
+      <span class="eyebrow">Your Adventure Passport</span>
+      <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-top:12px;">Every Explorer needs a passport.</h2>
     </div>
+    <div class="exp-body reveal">
+      <p>The Explorer Passport turns the six-book collection into one connected journey. Young explorers add their name, meet the AI Explorers crew, follow the Adventure Quest Map, and record their progress as they travel through all six destinations.</p>
+    </div>
+    <div class="exp-journey reveal" style="margin-top:18px;">
+      <span class="exp-chip">Complete an adventure</span><span class="exp-arrow">→</span>
+      <span class="exp-chip">Earn the badge</span><span class="exp-arrow">→</span>
+      <span class="exp-chip">Add it to the Passport</span><span class="exp-arrow">→</span>
+      <span class="exp-chip final">Unlock the next destination</span>
+    </div>
+    <blockquote class="feature-quote reveal" style="margin-top:24px;">The passport becomes a record of every discovery, mission, and milestone along the way.</blockquote>
   </div>
 </section>
 
@@ -219,15 +226,12 @@
       <h2>Six adventures.<br>Six badges to earn.</h2>
       <p>Every completed adventure unlocks an official Explorer Badge.</p>
     </div>
-    <figure class="exp-figure reveal" style="max-width:520px;margin:0 auto 36px;">
-      <div class="exp-media"><img class="guard-img" src="assets/book/30-days-of-ai-adventures/web-previews/08-badge-collection-preview-web.jpg" alt="Explorer badge collection preview" draggable="false"></div>
-    </figure>
     <div class="exp-badges reveal">
       <div class="exp-badge"><span class="n">1</span><span class="t">Curious Explorer</span></div>
       <div class="exp-badge"><span class="n">2</span><span class="t">Smart Helper</span></div>
       <div class="exp-badge"><span class="n">3</span><span class="t">Earth Explorer</span></div>
       <div class="exp-badge"><span class="n">4</span><span class="t">Future Explorer</span></div>
-      <div class="exp-badge"><span class="n">5</span><span class="t">Innovation Explorer</span></div>
+      <div class="exp-badge"><span class="n">5</span><span class="t">Smart City Explorer</span></div>
       <div class="exp-badge"><span class="n">6</span><span class="t">Young Inventor</span></div>
     </div>
     <p class="exp-microcopy" style="text-align:center;margin-top:22px;letter-spacing:.06em;">Ask. Help. Explore. Imagine. Innovate. Invent.</p>
@@ -236,68 +240,26 @@
 
 <!-- ================= 6 · EXPLORER MISSIONS ================= -->
 <section>
-  <div class="wrap">
-    <div class="exp-split flip">
-      <div class="reveal">
-        <span class="eyebrow">Hands-On Missions</span>
-        <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin:12px 0 18px;">The adventure doesn't end on the page.</h2>
-        <div class="exp-body">
-          <p>Explorer Missions transform discovery into action.</p>
-          <p>Young explorers are invited to think, draw, imagine, solve, and create — using their own ideas instead of simply watching technology work.</p>
-        </div>
-        <p style="color:var(--ink);font-weight:600;margin:20px 0 10px;">Mission examples may include:</p>
-        <ul class="exp-missions">
-          <li>imagine a helpful invention</li>
-          <li>design a future building</li>
-          <li>solve a real-world problem</li>
-          <li>create an idea for a school, library, or community</li>
-          <li>explain how technology might help people</li>
-        </ul>
-      </div>
-      <figure class="exp-figure reveal">
-        <div class="exp-media"><img class="guard-img" src="assets/book/30-days-of-ai-adventures/web-previews/06-explorer-mission-preview-web.jpg" alt="Explorer Mission preview" draggable="false"></div>
-      </figure>
+  <div class="wrap" style="max-width:820px;">
+    <div class="section-head reveal" style="text-align:left;margin-bottom:18px;">
+      <span class="eyebrow">Hands-On Missions</span>
+      <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-top:12px;">The adventure doesn't end on the page.</h2>
     </div>
+    <div class="exp-body reveal">
+      <p>Explorer Missions transform discovery into action. Young explorers are invited to think, draw, imagine, solve, and create — using their own ideas instead of simply watching technology work.</p>
+    </div>
+    <p class="reveal" style="color:var(--ink);font-weight:600;margin:20px 0 10px;">Mission examples may include:</p>
+    <ul class="exp-missions reveal">
+      <li>imagine a helpful invention</li>
+      <li>design a future building</li>
+      <li>solve a real-world problem</li>
+      <li>create an idea for a school, library, or community</li>
+      <li>explain how technology might help people</li>
+    </ul>
   </div>
 </section>
 
-<!-- ================= 7 · MEET YOUR CREW ================= -->
-<section>
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="eyebrow">Your Adventure Guides</span>
-      <h2>Meet the crew traveling with you.</h2>
-    </div>
-    <div class="exp-crew-grid reveal">
-      <div class="exp-crew-card">
-        <span class="ini" style="color:var(--gold)">J</span>
-        <h3>Miss JOY</h3>
-        <p class="role">Explorer Guide &amp; AI Literacy Educator</p>
-        <p>Miss JOY guides young explorers through questions, discoveries, and creative challenges.</p>
-      </div>
-      <div class="exp-crew-card">
-        <span class="ini" style="color:var(--blue)">B</span>
-        <h3>Botly</h3>
-        <p class="role">The Curious Tech Explorer</p>
-        <p>Botly loves asking how things work and discovering how technology can help.</p>
-      </div>
-      <div class="exp-crew-card">
-        <span class="ini" style="color:var(--purple)">P</span>
-        <h3>Pixie Pixel</h3>
-        <p class="role">The Creative Imagineer</p>
-        <p>Pixie Pixel brings imagination, ideas, and creativity to every adventure.</p>
-      </div>
-      <div class="exp-crew-card">
-        <span class="ini" style="color:var(--emerald)">E</span>
-        <h3>Echo</h3>
-        <p class="role">The Discovery Scout</p>
-        <p>Echo listens, observes, asks questions, and loves finding new discoveries.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 8 · WHAT YOUNG EXPLORERS DISCOVER ================= -->
+<!-- ================= 7 · WHAT YOUNG EXPLORERS DISCOVER ================= -->
 <section>
   <div class="wrap" style="max-width:860px;">
     <div class="section-head reveal" style="text-align:left;margin-bottom:22px;">
@@ -321,7 +283,7 @@
   </div>
 </section>
 
-<!-- ================= 9 · WHAT'S INSIDE ================= -->
+<!-- ================= 8 · WHAT'S INSIDE ================= -->
 <section>
   <div class="wrap">
     <div class="section-head reveal">
@@ -337,14 +299,10 @@
       <div class="exp-include-card"><h3>Sticker Rewards</h3><p>Celebrate discoveries, missions, and Explorer progress.</p></div>
       <div class="exp-include-card"><h3>Future Explorer Certificate</h3><p>Awarded after completing the full 30-day journey.</p></div>
     </div>
-    <figure class="exp-figure reveal" style="max-width:440px;margin:42px auto 0;">
-      <div class="exp-media"><img class="guard-img" src="assets/book/30-days-of-ai-adventures/web-previews/09-future-explorer-certificate-web.jpg" alt="Future Explorer Certificate preview" draggable="false"></div>
-      <figcaption class="exp-cap">Future Explorer Certificate — awarded after completing the full 30-day journey.</figcaption>
-    </figure>
   </div>
 </section>
 
-<!-- ================= 10 · FOR PARENTS ================= -->
+<!-- ================= 9 · FOR PARENTS ================= -->
 <section>
   <div class="wrap" style="max-width:820px;">
     <div class="section-head reveal" style="text-align:left;margin-bottom:22px;">
@@ -352,8 +310,7 @@
       <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-top:12px;">You don't need to be an AI expert.</h2>
     </div>
     <div class="exp-body reveal">
-      <p>This journey was created so families can begin meaningful conversations about AI without turning childhood into a technology lesson.</p>
-      <p>The stories and prompts help parents explore alongside their child.</p>
+      <p>This journey was created so families can begin meaningful conversations about AI without turning childhood into a technology lesson. The stories and prompts help parents explore alongside their child.</p>
     </div>
     <div class="exp-journey reveal" style="margin-top:18px;">
       <span class="exp-chip">Ask questions</span><span class="exp-arrow">→</span>
@@ -365,59 +322,27 @@
   </div>
 </section>
 
-<!-- ================= 11 · PREVIEW GALLERY ================= -->
+<!-- ================= 10 · MEET THE CREW ================= -->
 <section>
   <div class="wrap">
-    <div class="section-head reveal">
-      <span class="eyebrow">Inside the Adventure</span>
-      <h2>Take a peek inside the Explorer journey.</h2>
-    </div>
-    <div class="exp-gallery reveal">
-      <button type="button" class="exp-thumb preview-card" data-preview-src="assets/book/30-days-of-ai-adventures/web-previews/01-main-cover.jpeg" data-preview-caption="Main Cover" aria-label="Open preview: Main Cover">
-        <img src="assets/book/30-days-of-ai-adventures/web-previews/01-main-cover.jpeg" alt="Main Cover preview" draggable="false">
-        <span class="exp-thumb-ov" aria-hidden="true"></span><span class="exp-thumb-label">Main Cover</span>
-      </button>
-      <button type="button" class="exp-thumb preview-card" data-preview-src="assets/book/30-days-of-ai-adventures/web-previews/02-welcome-future-explorer.jpeg" data-preview-caption="Welcome Page" aria-label="Open preview: Welcome Page">
-        <img src="assets/book/30-days-of-ai-adventures/web-previews/02-welcome-future-explorer.jpeg" alt="Welcome Page preview" draggable="false">
-        <span class="exp-thumb-ov" aria-hidden="true"></span><span class="exp-thumb-label">Welcome Page</span>
-      </button>
-      <button type="button" class="exp-thumb preview-card" data-preview-src="assets/book/30-days-of-ai-adventures/web-previews/03-adventure-quest-map.jpeg" data-preview-caption="Adventure Quest Map" aria-label="Open preview: Adventure Quest Map">
-        <img src="assets/book/30-days-of-ai-adventures/web-previews/03-adventure-quest-map.jpeg" alt="Adventure Quest Map preview" draggable="false">
-        <span class="exp-thumb-ov" aria-hidden="true"></span><span class="exp-thumb-label">Adventure Quest Map</span>
-      </button>
-      <button type="button" class="exp-thumb preview-card" data-preview-src="assets/book/30-days-of-ai-adventures/web-previews/04-six-adventure-journey-web.jpg" data-preview-caption="Six Adventure Destinations" aria-label="Open preview: Six Adventure Destinations">
-        <img src="assets/book/30-days-of-ai-adventures/web-previews/04-six-adventure-journey-web.jpg" alt="Six Adventure Destinations preview" draggable="false">
-        <span class="exp-thumb-ov" aria-hidden="true"></span><span class="exp-thumb-label">Six Adventure Destinations</span>
-      </button>
-      <button type="button" class="exp-thumb preview-card" data-preview-src="assets/book/30-days-of-ai-adventures/web-previews/05-story-page-preview-web.jpg" data-preview-caption="AI Learning Preview" aria-label="Open preview: AI Learning Preview">
-        <img src="assets/book/30-days-of-ai-adventures/web-previews/05-story-page-preview-web.jpg" alt="AI Learning Preview" draggable="false">
-        <span class="exp-thumb-ov" aria-hidden="true"></span><span class="exp-thumb-label">AI Learning Preview</span>
-      </button>
-      <button type="button" class="exp-thumb preview-card" data-preview-src="assets/book/30-days-of-ai-adventures/web-previews/06-explorer-mission-preview-web.jpg" data-preview-caption="Explorer Mission Preview" aria-label="Open preview: Explorer Mission Preview">
-        <img src="assets/book/30-days-of-ai-adventures/web-previews/06-explorer-mission-preview-web.jpg" alt="Explorer Mission Preview" draggable="false">
-        <span class="exp-thumb-ov" aria-hidden="true"></span><span class="exp-thumb-label">Explorer Mission Preview</span>
-      </button>
-      <button type="button" class="exp-thumb preview-card" data-preview-src="assets/book/30-days-of-ai-adventures/web-previews/07-passport-preview-web.jpg" data-preview-caption="Explorer Passport" aria-label="Open preview: Explorer Passport">
-        <img src="assets/book/30-days-of-ai-adventures/web-previews/07-passport-preview-web.jpg" alt="Explorer Passport preview" draggable="false">
-        <span class="exp-thumb-ov" aria-hidden="true"></span><span class="exp-thumb-label">Explorer Passport</span>
-      </button>
-      <button type="button" class="exp-thumb preview-card" data-preview-src="assets/book/30-days-of-ai-adventures/web-previews/08-badge-collection-preview-web.jpg" data-preview-caption="Badge Collection Preview" aria-label="Open preview: Badge Collection Preview">
-        <img src="assets/book/30-days-of-ai-adventures/web-previews/08-badge-collection-preview-web.jpg" alt="Badge Collection Preview" draggable="false">
-        <span class="exp-thumb-ov" aria-hidden="true"></span><span class="exp-thumb-label">Badge Collection Preview</span>
-      </button>
-      <button type="button" class="exp-thumb preview-card" data-preview-src="assets/book/30-days-of-ai-adventures/web-previews/09-future-explorer-certificate-web.jpg" data-preview-caption="Future Explorer Certificate" aria-label="Open preview: Future Explorer Certificate">
-        <img src="assets/book/30-days-of-ai-adventures/web-previews/09-future-explorer-certificate-web.jpg" alt="Future Explorer Certificate preview" draggable="false">
-        <span class="exp-thumb-ov" aria-hidden="true"></span><span class="exp-thumb-label">Future Explorer Certificate</span>
-      </button>
-      <button type="button" class="exp-thumb preview-card" data-preview-src="assets/book/30-days-of-ai-adventures/web-previews/10-adventure-continues-web.jpg" data-preview-caption="The Adventure Continues" aria-label="Open preview: The Adventure Continues">
-        <img src="assets/book/30-days-of-ai-adventures/web-previews/10-adventure-continues-web.jpg" alt="The Adventure Continues preview" draggable="false">
-        <span class="exp-thumb-ov" aria-hidden="true"></span><span class="exp-thumb-label">The Adventure Continues</span>
-      </button>
+    <div class="exp-split">
+      <figure class="exp-figure reveal" style="max-width:360px;">
+        <div class="exp-media"><img class="guard-img" src="assets/book/30-days-of-ai-adventures/web-previews/11-meet-characters-web.jpeg" alt="Meet the AI Explorers crew preview" draggable="false"></div>
+      </figure>
+      <div class="reveal">
+        <span class="eyebrow">Your Adventure Guides</span>
+        <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin:12px 0 18px;">Meet the crew traveling with you.</h2>
+        <div class="exp-body">
+          <p>Every AI adventure is guided by a different kind of curiosity.</p>
+          <p><strong style="color:var(--ink);">Miss JOY</strong> helps young Explorers ask questions and think deeply. <strong style="color:var(--ink);">Botly</strong> loves solving problems. <strong style="color:var(--ink);">Pixie Pixel</strong> brings imagination and creativity. <strong style="color:var(--ink);">Echo</strong> is always ready to discover something new.</p>
+          <p>Together, they turn big AI ideas into stories children can explore, question, and understand.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ================= 12 · FAQ ================= -->
+<!-- ================= 11 · FAQ ================= -->
 <section>
   <div class="wrap">
     <div class="section-head reveal">
@@ -473,7 +398,7 @@
   </div>
 </section>
 
-<!-- ================= FINAL CTA ================= -->
+<!-- ================= 12 · FINAL CTA ================= -->
 <section class="final-cta">
   <div class="wrap reveal">
     <span class="eyebrow" style="color:var(--gold);">Your Adventure Starts Here</span>
@@ -481,13 +406,10 @@
       <span class="c-white">Ready to become</span>
       <span class="c-acad">an AI Explorer?</span>
     </div>
-    <div class="exp-body" style="max-width:620px;margin:22px auto 0;text-align:center;">
+    <div class="exp-body" style="max-width:620px;margin:22px auto 4px;text-align:center;">
       <p>Thirty days of discovery.<br>Six destinations to explore.<br>Six badges to earn.<br>One future filled with ideas.</p>
     </div>
-    <figure class="exp-figure reveal" style="max-width:420px;margin:32px auto 0;">
-      <div class="exp-media"><img class="guard-img" src="assets/book/30-days-of-ai-adventures/web-previews/10-adventure-continues-web.jpg" alt="The Adventure Continues preview" draggable="false"></div>
-    </figure>
-    <div class="exp-actions" style="justify-content:center;margin-top:30px;">
+    <div class="exp-actions" style="justify-content:center;margin-top:26px;">
       <a href="mailto:missjoy@aiexplorersacademy.org?subject=30%20Days%20of%20AI%20Adventures%20%E2%80%94%20Launch%20Notification" class="btn btn-gold" style="font-size:1.05rem;padding:18px 36px;">Notify Me When It Launches <span class="arrow">→</span></a>
       <a href="mailto:missjoy@aiexplorersacademy.org?subject=30%20Days%20of%20AI%20Adventures%20%E2%80%94%20Bulk%20or%20School%20Inquiry" class="btn btn-ghost" style="font-size:1.05rem;padding:18px 36px;">Request Bulk / School Info</a>
     </div>
@@ -496,19 +418,20 @@
   </div>
 </section>
 
-<!-- ================= PREVIEW LIGHTBOX ================= -->
-<!-- Optimized web previews only (heavy print-scale PNG originals preserved, never served).
-     Right-click disabled on preview images, no download control — deterrence only. -->
-<div class="modal lightbox" id="previewLightbox" role="dialog" aria-modal="true" aria-labelledby="lightboxCaption" aria-hidden="true">
-  <div class="lightbox-inner">
-    <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close preview">✕</button>
-    <figure class="lightbox-figure">
-      <div class="lightbox-media">
-        <img id="lightboxImg" src="" alt="Explorer preview" draggable="false">
-        <span class="lightbox-wm" aria-hidden="true" style="background-image:url('assets/book/30-days-of-ai-adventures/watermark.svg');"></span>
+<!-- ================= PREVIEW LIGHTBOX (prev/next + counter) ================= -->
+<!-- Optimized web previews only; right-click disabled, no download / no direct file link — deterrence only. -->
+<div class="modal exp-lightbox" id="expLightbox" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Preview gallery">
+  <button type="button" class="exp-lb-close" id="expLbClose" aria-label="Close preview">✕</button>
+  <div class="exp-lb-stage">
+    <button type="button" class="exp-lb-nav" id="expLbPrev" aria-label="Previous image">‹</button>
+    <div class="exp-lb-mediawrap">
+      <div class="exp-lb-media">
+        <img id="expLbImg" src="" alt="Preview" draggable="false">
+        <span class="exp-wm" aria-hidden="true" style="background-image:url('assets/book/30-days-of-ai-adventures/watermark.svg');"></span>
       </div>
-      <figcaption class="lightbox-caption" id="lightboxCaption">Preview</figcaption>
-    </figure>
+      <div class="exp-lb-bar"><span class="cap" id="expLbCap">Main Cover</span><span id="expLbCount">1 / 11</span></div>
+    </div>
+    <button type="button" class="exp-lb-nav" id="expLbNext" aria-label="Next image">›</button>
   </div>
 </div>
 
@@ -541,6 +464,97 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=30"></script>
+<script src="js/main.js?v=31"></script>
+<script>
+/* 30 Days of AI Adventures — hero product gallery + lightbox (page-scoped) */
+(function () {
+  var thumbs = Array.prototype.slice.call(document.querySelectorAll("#expThumbs .exp-gthumb"));
+  if (!thumbs.length) return;
+  var items = thumbs.map(function (t) {
+    return { src: t.getAttribute("data-src"), label: t.getAttribute("data-label"), cover: t.getAttribute("data-cover") === "1" };
+  });
+
+  var book3d   = document.getElementById("expBook3d");
+  var frame    = document.getElementById("expFeatFrame");
+  var featImg  = document.getElementById("expFeatImg");
+  var featCap  = document.getElementById("expFeatCap");
+  var featured = document.getElementById("expFeatured");
+  var current  = 0;
+
+  function setActive(i) {
+    thumbs.forEach(function (t, idx) {
+      t.classList.toggle("active", idx === i);
+      t.setAttribute("aria-selected", idx === i ? "true" : "false");
+    });
+  }
+  function showFeatured(i) {
+    current = i;
+    var it = items[i];
+    if (it.cover) {
+      if (book3d) book3d.hidden = false;
+      if (frame) frame.hidden = true;
+    } else {
+      if (book3d) book3d.hidden = true;
+      if (frame) { frame.hidden = false; featImg.src = it.src; featImg.alt = it.label + " preview"; }
+    }
+    if (featCap) featCap.textContent = it.label;
+    setActive(i);
+  }
+  thumbs.forEach(function (t, i) {
+    t.addEventListener("click", function () { showFeatured(i); });
+  });
+
+  /* Lightbox */
+  var lb      = document.getElementById("expLightbox");
+  var lbImg   = document.getElementById("expLbImg");
+  var lbCap   = document.getElementById("expLbCap");
+  var lbCount = document.getElementById("expLbCount");
+  var lbClose = document.getElementById("expLbClose");
+  var lbPrev  = document.getElementById("expLbPrev");
+  var lbNext  = document.getElementById("expLbNext");
+
+  function renderModal(i) {
+    var it = items[i];
+    lbImg.src = it.src; lbImg.alt = it.label + " preview";
+    lbCap.textContent = it.label;
+    lbCount.textContent = (i + 1) + " / " + items.length;
+    setActive(i);
+  }
+  function openModal(i) {
+    current = i; renderModal(i);
+    lb.classList.add("open"); lb.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    if (lbClose) lbClose.focus();
+  }
+  function closeModal() {
+    lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    showFeatured(current); /* keep the hero in sync with where the visitor stopped */
+  }
+  function step(d) { current = (current + d + items.length) % items.length; renderModal(current); }
+
+  if (featured) {
+    featured.addEventListener("click", function () { openModal(current); });
+    featured.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModal(current); } });
+  }
+  if (lbClose) lbClose.addEventListener("click", closeModal);
+  if (lbPrev)  lbPrev.addEventListener("click", function (e) { e.stopPropagation(); step(-1); });
+  if (lbNext)  lbNext.addEventListener("click", function (e) { e.stopPropagation(); step(1); });
+  if (lb) lb.addEventListener("click", function (e) { if (e.target === lb || e.target.classList.contains("exp-lb-stage")) closeModal(); });
+  document.addEventListener("keydown", function (e) {
+    if (!lb || !lb.classList.contains("open")) return;
+    if (e.key === "Escape") closeModal();
+    else if (e.key === "ArrowLeft") step(-1);
+    else if (e.key === "ArrowRight") step(1);
+  });
+
+  /* Basic deterrence: block right-click on preview images */
+  document.addEventListener("contextmenu", function (e) {
+    if (e.target.closest(".exp-gthumb, .exp-feat-media, .exp-book3d, .exp-lb-media, .guard-img")) e.preventDefault();
+  });
+
+  showFeatured(0);
+})();
+</script>
 </body>
 </html>
