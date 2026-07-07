@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=35">
+<link rel="stylesheet" href="css/styles.css?v=36">
 </head>
 <body>
 
@@ -102,8 +102,8 @@
       <span class="exp-hl">6 Books • 30 Adventures • 6 Explorer Badges • 1 Future Explorer Journey</span>
 
       <div class="exp-actions">
-        <a href="mailto:missjoy@aiexplorersacademy.org?subject=30%20Days%20of%20AI%20Adventures%20%E2%80%94%20Launch%20Notification" class="btn btn-gold">Notify Me When It Launches <span class="arrow">→</span></a>
-        <a href="mailto:missjoy@aiexplorersacademy.org?subject=30%20Days%20of%20AI%20Adventures%20%E2%80%94%20Bulk%20or%20School%20Inquiry" class="btn btn-ghost">Request Bulk / School Info</a>
+        <a href="index.html#contact" class="btn btn-gold launch-trigger">Notify Me When It Launches <span class="arrow">→</span></a>
+        <a href="index.html?inquiry=bulk-school-book#contact" class="btn btn-ghost">Request Bulk / School Info</a>
       </div>
       <p class="exp-microcopy">Physical Explorer Collection in development.<br>US launch first. International and school options being explored.</p>
     </div>
@@ -410,8 +410,8 @@
       <p>Thirty days of discovery.<br>Six destinations to explore.<br>Six badges to earn.<br>One future filled with ideas.</p>
     </div>
     <div class="exp-actions" style="justify-content:center;margin-top:26px;">
-      <a href="mailto:missjoy@aiexplorersacademy.org?subject=30%20Days%20of%20AI%20Adventures%20%E2%80%94%20Launch%20Notification" class="btn btn-gold" style="font-size:1.05rem;padding:18px 36px;">Notify Me When It Launches <span class="arrow">→</span></a>
-      <a href="mailto:missjoy@aiexplorersacademy.org?subject=30%20Days%20of%20AI%20Adventures%20%E2%80%94%20Bulk%20or%20School%20Inquiry" class="btn btn-ghost" style="font-size:1.05rem;padding:18px 36px;">Request Bulk / School Info</a>
+      <a href="index.html#contact" class="btn btn-gold launch-trigger" style="font-size:1.05rem;padding:18px 36px;">Notify Me When It Launches <span class="arrow">→</span></a>
+      <a href="index.html?inquiry=bulk-school-book#contact" class="btn btn-ghost" style="font-size:1.05rem;padding:18px 36px;">Request Bulk / School Info</a>
     </div>
     <p class="exp-microcopy" style="text-align:center;">Physical Explorer Collection in development.<br>US launch first. International and school options being explored.</p>
     <p class="exp-closing"><span style="color:var(--blue)">DISCOVER</span> • <span style="color:var(--purple)">IMAGINE</span> • <span style="color:var(--orange)">CREATE</span> <span class="c-white">WITH AI!</span></p>
@@ -432,6 +432,30 @@
       <div class="exp-lb-bar"><span class="cap" id="expLbCap">Main Cover</span><span id="expLbCount">1 / 11</span></div>
     </div>
     <button type="button" class="exp-lb-nav" id="expLbNext" aria-label="Next image">›</button>
+  </div>
+</div>
+
+<!-- ================= LAUNCH NOTIFY MODAL ================= -->
+<!-- Subscribes to the MailerLite launch group ML_GROUP_30_DAYS_ADVENTURES_LAUNCH via /api/notify-launch.
+     Newsletter group joined only if the optional box is ticked. -->
+<div class="modal" id="launchModal" data-audience="30-days-adventures" role="dialog" aria-modal="true" aria-labelledby="launchHeading" aria-hidden="true">
+  <div class="modal-card">
+    <button type="button" class="modal-close" id="launchClose" aria-label="Close">✕</button>
+    <span class="eyebrow">Launch List</span>
+    <h3 id="launchHeading">Get notified at launch</h3>
+    <p class="modal-resource">Be the first to know when the <em>30 Days of AI Adventures!</em> Explorer Collection is available. We'll email you the moment it launches.</p>
+    <form class="modal-form" id="launchForm">
+      <div class="field"><label for="lnFirst">First Name</label><input id="lnFirst" name="first_name" type="text" placeholder="Your first name" required></div>
+      <div class="field"><label for="lnEmail">Email Address</label><input id="lnEmail" name="email" type="email" placeholder="you@example.com" required></div>
+      <label class="checkbox-row"><input type="checkbox" id="lnOptin" name="consent" required><span>Yes, email me when the Explorer Collection launches.</span></label>
+      <label class="checkbox-row"><input type="checkbox" id="lnNews" name="newsletter"><span>Optional: also send me occasional AI Literacy updates from AI Explorers Academy.</span></label>
+      <button type="submit" id="launchSubmit" class="btn btn-gold" style="width:100%;justify-content:center;" disabled>Notify Me at Launch <span class="arrow">→</span></button>
+    </form>
+    <p class="modal-error" id="launchError" hidden></p>
+    <div class="modal-thanks" id="launchThanks" hidden>
+      <div class="thanks-ic">✅</div>
+      <p><strong>You're on the launch list!</strong><br>We'll email you the moment the Explorer Collection is available.</p>
+    </div>
   </div>
 </div>
 
@@ -464,7 +488,7 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=35"></script>
+<script src="js/main.js?v=36"></script>
 <script>
 /* 30 Days of AI Adventures — hero product gallery + lightbox (page-scoped) */
 (function () {

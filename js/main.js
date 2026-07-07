@@ -76,6 +76,20 @@
     });
   }
 
+  /* ---------- Contact form: preselect Inquiry Type from ?inquiry= ---------- */
+  var inqSelect = document.getElementById("inq");
+  if (inqSelect) {
+    var inqWant = new URLSearchParams(window.location.search).get("inquiry");
+    if (inqWant) {
+      var INQ_SLUGS = { "bulk-school-book": "Bulk / School Book Inquiry" };
+      var inqTarget = INQ_SLUGS[inqWant] || inqWant;
+      for (var oi = 0; oi < inqSelect.options.length; oi++) {
+        var opt = inqSelect.options[oi];
+        if (opt.value === inqTarget || opt.text === inqTarget) { inqSelect.selectedIndex = oi; break; }
+      }
+    }
+  }
+
   /* ---------- Free AI Literacy Library: resource request modal ----------
      No direct download is exposed. Each resource row carries data-resource / data-pdf /
      data-audience; clicking the title or "Get PDF" opens a modal that (later) collects the
@@ -271,6 +285,98 @@
             if (nlError) {
               nlError.textContent = "Sorry — something went wrong. Please try again, or email missjoy@aiexplorersacademy.org.";
               nlError.hidden = false;
+            }
+          });
+      });
+    }
+  }
+
+  /* ---------- Launch-notify modal (book / collection launch lists) ----------
+     Subscribes to a product-specific MailerLite launch group (audience read from the
+     modal's data-audience); the general Newsletter group is added only if the optional
+     newsletter box is ticked. Posts to /api/notify-launch. */
+  var launchModal = document.getElementById("launchModal");
+  if (launchModal) {
+    var lnForm = document.getElementById("launchForm");
+    var lnThanks = document.getElementById("launchThanks");
+    var lnClose = document.getElementById("launchClose");
+    var lnSubmit = document.getElementById("launchSubmit");
+    var lnFirst = document.getElementById("lnFirst");
+    var lnEmail = document.getElementById("lnEmail");
+    var lnOptin = document.getElementById("lnOptin");
+    var lnNews = document.getElementById("lnNews");
+    var lnError = document.getElementById("launchError");
+    var lnSubmitHTML = lnSubmit ? lnSubmit.innerHTML : "";
+
+    // Enable submit only when First Name + Email are filled and launch consent is checked.
+    var validateLaunch = function () {
+      if (!lnSubmit) return;
+      var ready = !!(lnFirst && lnFirst.value.trim()) &&
+                  !!(lnEmail && lnEmail.value.trim()) &&
+                  !!(lnOptin && lnOptin.checked);
+      lnSubmit.disabled = !ready;
+    };
+    [lnFirst, lnEmail].forEach(function (el) { if (el) el.addEventListener("input", validateLaunch); });
+    if (lnOptin) lnOptin.addEventListener("change", validateLaunch);
+
+    var openLaunch = function () {
+      if (lnForm) { lnForm.reset(); lnForm.hidden = false; }
+      if (lnThanks) lnThanks.hidden = true;
+      if (lnError) lnError.hidden = true;
+      if (lnSubmit) lnSubmit.innerHTML = lnSubmitHTML;
+      validateLaunch();
+      launchModal.classList.add("open");
+      launchModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      if (lnFirst) lnFirst.focus();
+    };
+    var closeLaunch = function () {
+      launchModal.classList.remove("open");
+      launchModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    };
+
+    document.querySelectorAll(".launch-trigger").forEach(function (t) {
+      t.addEventListener("click", function (e) { e.preventDefault(); openLaunch(); });
+    });
+    if (lnClose) lnClose.addEventListener("click", closeLaunch);
+    launchModal.addEventListener("click", function (e) { if (e.target === launchModal) closeLaunch(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && launchModal.classList.contains("open")) closeLaunch();
+    });
+
+    if (lnForm) {
+      lnForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (lnSubmit && lnSubmit.disabled) return;
+
+        var payload = {
+          first_name: lnFirst ? lnFirst.value.trim() : "",
+          email: lnEmail ? lnEmail.value.trim() : "",
+          consent: lnOptin ? lnOptin.checked : false,
+          newsletter: lnNews ? lnNews.checked : false,   // only joins Newsletter if ticked
+          audience: launchModal.dataset.audience || ""    // ai-literacy-book | 30-days-adventures
+        };
+
+        if (lnError) lnError.hidden = true;
+        if (lnSubmit) { lnSubmit.disabled = true; lnSubmit.textContent = "Adding you…"; }
+
+        fetch("/api/notify-launch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        })
+          .then(function (r) {
+            if (!r.ok) throw new Error("notify_failed");
+            if (lnForm) lnForm.hidden = true;
+            if (lnThanks) lnThanks.hidden = false;
+            setTimeout(closeLaunch, 3500);
+          })
+          .catch(function () {
+            if (lnSubmit) { lnSubmit.innerHTML = lnSubmitHTML; lnSubmit.disabled = false; }
+            if (lnError) {
+              lnError.textContent = "Sorry — something went wrong. Please try again, or email missjoy@aiexplorersacademy.org.";
+              lnError.hidden = false;
             }
           });
       });

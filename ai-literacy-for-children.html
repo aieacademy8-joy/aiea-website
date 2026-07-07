@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=29">
+<link rel="stylesheet" href="css/styles.css?v=36">
 </head>
 <body>
 
@@ -83,7 +83,7 @@
 
       <!-- Book is pre-launch. Primary = notify list; secondary = print interest (expression of interest only, no payment). -->
       <div class="hero-actions" style="margin-bottom:14px;">
-        <a href="index.html#contact" class="btn btn-gold product-buy">Get Notified at Launch <span class="arrow">→</span></a>
+        <a href="index.html#contact" class="btn btn-gold product-buy launch-trigger">Get Notified at Launch <span class="arrow">→</span></a>
         <button type="button" class="btn btn-ghost product-buy book-request-trigger">Request a Printed Copy <span class="arrow">→</span></button>
       </div>
       <p class="buy-note">Digital PDF edition + limited U.S. print batches</p>
@@ -223,7 +223,7 @@
       <span class="c-white">Be first to read</span>
       <span class="c-acad">AI Literacy for Children.</span>
     </div>
-    <a href="index.html#contact" class="btn btn-gold" style="font-size:1.05rem;padding:18px 36px;margin-top:24px;">Get Notified at Launch <span class="arrow">→</span></a>
+    <a href="index.html#contact" class="btn btn-gold launch-trigger" style="font-size:1.05rem;padding:18px 36px;margin-top:24px;">Get Notified at Launch <span class="arrow">→</span></a>
   </div>
 </section>
 
@@ -284,6 +284,30 @@
   </div>
 </div>
 
+<!-- ================= LAUNCH NOTIFY MODAL ================= -->
+<!-- Subscribes to the MailerLite launch group ML_GROUP_AI_LITERACY_BOOK_LAUNCH via /api/notify-launch.
+     Newsletter group joined only if the optional box is ticked. -->
+<div class="modal" id="launchModal" data-audience="ai-literacy-book" role="dialog" aria-modal="true" aria-labelledby="launchHeading" aria-hidden="true">
+  <div class="modal-card">
+    <button type="button" class="modal-close" id="launchClose" aria-label="Close">✕</button>
+    <span class="eyebrow">Launch List</span>
+    <h3 id="launchHeading">Get notified at launch</h3>
+    <p class="modal-resource">Be the first to know when <em>AI Literacy for Children</em> is available. We'll email you the moment it launches.</p>
+    <form class="modal-form" id="launchForm">
+      <div class="field"><label for="lnFirst">First Name</label><input id="lnFirst" name="first_name" type="text" placeholder="Your first name" required></div>
+      <div class="field"><label for="lnEmail">Email Address</label><input id="lnEmail" name="email" type="email" placeholder="you@example.com" required></div>
+      <label class="checkbox-row"><input type="checkbox" id="lnOptin" name="consent" required><span>Yes, email me when this book launches.</span></label>
+      <label class="checkbox-row"><input type="checkbox" id="lnNews" name="newsletter"><span>Optional: also send me occasional AI Literacy updates from AI Explorers Academy.</span></label>
+      <button type="submit" id="launchSubmit" class="btn btn-gold" style="width:100%;justify-content:center;" disabled>Notify Me at Launch <span class="arrow">→</span></button>
+    </form>
+    <p class="modal-error" id="launchError" hidden></p>
+    <div class="modal-thanks" id="launchThanks" hidden>
+      <div class="thanks-ic">✅</div>
+      <p><strong>You're on the launch list!</strong><br>We'll email you the moment <em>AI Literacy for Children</em> is available.</p>
+    </div>
+  </div>
+</div>
+
 <!-- ================= FOOTER ================= -->
 <footer class="footer">
   <div class="footer-grid">
@@ -313,6 +337,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=29"></script>
+<script src="js/main.js?v=36"></script>
 </body>
 </html>
