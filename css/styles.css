@@ -1059,23 +1059,27 @@ a.free-card { color: inherit; text-decoration: none; }
   position: relative; border-radius: var(--radius); border: 1px solid var(--stroke-2);
   background: radial-gradient(120% 100% at 50% 0%, rgba(212,175,79,.10), transparent 60%), var(--navy-2);
   box-shadow: 0 30px 70px rgba(0,0,0,.4);
-  min-height: 430px; display: grid; place-items: center; overflow: hidden; cursor: zoom-in;
+  min-height: 500px; display: grid; place-items: center; overflow: hidden; cursor: zoom-in;
 }
+/* Show ONE active preview only: both modes share a single grid cell (never stack),
+   and [hidden] truly hides — a class `display:grid` would otherwise override it. */
+.exp-featured > .exp-book3d, .exp-featured > .exp-feat-frame { grid-area: 1 / 1; width: 100%; max-height: 100%; }
+.exp-featured > [hidden] { display: none !important; }
 .exp-feat-cap { text-align: center; margin-top: 12px; color: var(--gold); font-family: var(--serif); font-style: italic; font-size: .98rem; letter-spacing: .02em; }
 
 /* 3D book mockup (default featured = cover) — larger, cleaner, soft depth */
-.exp-book3d { position: relative; display: grid; place-items: center; width: 100%; padding: clamp(12px,2vw,24px) 8px; perspective: 1700px; }
+.exp-book3d { position: relative; display: grid; place-items: center; width: 100%; height: 100%; padding: clamp(6px,1.2vw,14px) 8px; perspective: 1700px; }
 .exp-book3d::after { content: ""; position: absolute; width: 56%; height: 58%; left: 22%; top: 21%; background: radial-gradient(ellipse at 50% 50%, rgba(59,166,255,.20), rgba(196,107,255,.14) 48%, rgba(212,175,79,.10) 70%, transparent 78%); filter: blur(46px); z-index: 0; pointer-events: none; }
 .exp-book3d-inner { position: relative; z-index: 1; transform-style: preserve-3d; transform: rotateY(-15deg) rotateX(1.5deg); transition: transform .6s var(--ease); }
 .exp-book3d:hover .exp-book3d-inner { transform: rotateY(-8deg); }
-.exp-book3d-inner img { display: block; width: clamp(238px, 62%, 300px); height: auto; border-radius: 3px 8px 8px 3px; box-shadow: 0 34px 62px rgba(0,0,0,.5); }
+.exp-book3d-inner img { display: block; width: clamp(250px, 74%, 350px); height: auto; border-radius: 3px 8px 8px 3px; box-shadow: 0 34px 62px rgba(0,0,0,.5); }
 .exp-book3d-inner::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 12px; z-index: 3; pointer-events: none; background: linear-gradient(90deg, rgba(0,0,0,.24), rgba(0,0,0,.05) 65%, transparent); border-radius: 3px 0 0 3px; }
 .exp-book3d-inner::after { content: ""; position: absolute; top: 6px; bottom: 6px; right: 3px; width: 8px; transform: translateZ(-8px) translateX(8px); background: linear-gradient(90deg, #e9e2d3, #cec5b0); border-radius: 0 2px 2px 0; box-shadow: 0 0 5px rgba(0,0,0,.2); }
 
 /* Framed preview (thumbs 2–11) */
-.exp-feat-frame { margin: 0; display: grid; place-items: center; width: 100%; padding: clamp(18px,3vw,32px); }
-.exp-feat-media { position: relative; display: inline-block; max-width: 100%; line-height: 0; }
-.exp-feat-media img { display: block; width: auto; height: auto; max-width: 100%; max-height: 430px; object-fit: contain; border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+.exp-feat-frame { margin: 0; display: grid; place-items: center; width: 100%; height: 100%; padding: clamp(16px,3vw,30px); }
+.exp-feat-media { position: relative; display: inline-block; max-width: 100%; max-height: 100%; line-height: 0; }
+.exp-feat-media img { display: block; width: auto; height: auto; max-width: 100%; max-height: 460px; object-fit: contain; border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
 .exp-wm { position: absolute; inset: 0; background-repeat: repeat; opacity: .5; pointer-events: none; border-radius: inherit; }
 
 /* Thumbnail strip */
@@ -1104,7 +1108,8 @@ a.free-card { color: inherit; text-decoration: none; }
 
 @media (max-width: 900px) {
   .exp-hero-grid { grid-template-columns: 1fr; }
-  .exp-featured { min-height: 360px; }
+  .exp-featured { min-height: 420px; }
+  .exp-feat-media img { max-height: 380px; }
   .exp-lb-nav { width: 40px; height: 40px; font-size: 1.4rem; }
 }
 .product-info .eyebrow { color: var(--gold); }
