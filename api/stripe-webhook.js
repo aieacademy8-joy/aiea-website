@@ -23,22 +23,8 @@
 const crypto = require("crypto");
 
 module.exports = async (req, res) => {
-  // --- Temporary health check (safe to remove) ---
-  // GET returns whether the route is deployed and whether the signing secret is
-  // configured. It exposes only a boolean — never the secret value itself.
-  if (req.method === "GET") {
-    return res.status(200).json({
-      status: "ok",
-      route: "/api/stripe-webhook",
-      deployed: true,
-      stripe_webhook_secret_configured: Boolean(process.env.STRIPE_WEBHOOK_SECRET),
-      handles: ["checkout.session.completed"],
-      note: "Health check only — Stripe events must be POSTed with a valid signature.",
-    });
-  }
-
   if (req.method !== "POST") {
-    res.setHeader("Allow", "GET, POST");
+    res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed" });
   }
 
