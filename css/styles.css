@@ -1080,8 +1080,11 @@ a.free-card { color: inherit; text-decoration: none; }
 /* Cover (default active image) — subtle rotateX tilt only, centred in the full frame */
 .exp-book3d { padding: clamp(16px,3vw,30px); perspective: 1700px; }
 .exp-book3d::after { content: ""; position: absolute; width: 56%; height: 58%; left: 22%; top: 21%; background: radial-gradient(ellipse at 50% 50%, rgba(59,166,255,.20), rgba(196,107,255,.14) 48%, rgba(212,175,79,.10) 70%, transparent 78%); filter: blur(46px); z-index: 0; pointer-events: none; }
-.exp-book3d img { position: relative; z-index: 1; display: block; width: auto; height: auto; max-width: 100%; max-height: 460px; margin: 0; object-fit: contain; border-radius: 3px 8px 8px 3px; box-shadow: 0 32px 60px rgba(0,0,0,.5); transform: rotateX(2deg); transition: transform .45s var(--ease); }
-.exp-book3d:hover img { transform: rotateX(2deg) translateY(-5px); }
+/* Subtle 3D book — cover only (previews use .exp-feat-media img). Transform stays on the
+   image, so the flex wrapper keeps it centred; no side-edge element, no white strip.
+   Parent .exp-book3d supplies perspective; a soft dark inset gives a spine hint (not white). */
+.exp-book3d img { position: relative; z-index: 1; display: block; width: auto; height: auto; max-width: 100%; max-height: 460px; margin: 0; object-fit: contain; border-radius: 3px 9px 9px 3px; box-shadow: 0 30px 70px rgba(0,0,0,.5), 0 0 46px rgba(59,166,255,.16), 0 0 58px rgba(196,107,255,.11), inset 7px 0 14px -8px rgba(0,0,0,.45); transform: rotateY(-4deg) rotateX(1deg); transform-origin: center center; transition: transform .35s var(--ease), box-shadow .35s var(--ease); }
+.exp-book3d:hover img { transform: rotateY(-2deg) rotateX(0deg) translateY(-4px); }
 
 /* Framed preview (thumbs 2–11) */
 .exp-feat-frame { padding: clamp(16px,3vw,30px); }
