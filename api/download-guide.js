@@ -44,13 +44,48 @@ module.exports = async (req, res) => {
     return res.status(403).json({ error: "Invalid download link." });
   }
 
+  // Fetch the private PDF server-side and stream it back. Public Vercel Blob URLs need no
+  // auth; we attach BLOB_READ_WRITE_TOKEN ONLY when the URL is a Vercel Blob host (so the
+  // token can never leak to another host), which also covers authenticated-read objects.
+  var host = "";
+  try { host = new URL(blobUrl).hostname; } catch (e) {}
+  var isVercelBlob = /(^|\.)blob\.vercel-storage\.com$/i.test(host);
+  var reqHeaders = {};
+  var blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+  if (isVercelBlob && blobToken) reqHeaders.Authorization = "Bearer " + blobToken;
+
+  var r;
+  try {
+    r = await fetch(blobUrl, { headers: reqHeaders, redirect: "follow" });
+  } catch (e) {
+    console.error("[download-guide] blob fetch threw:", e && e.message);
+    return res.status(502).json({ error: "The guide is temporarily unavailable.", detail: "blob_fetch_failed" });
+  }
+  if (!r.ok) {
+    console.error("[download-guide] blob non-ok status:", r.status);
+    return res.status(502).json({ error: "The guide is temporarily unavailable.", detail: "blob_http_" + r.status });
+  }
+  var ctype = (r.headers.get("content-type") || "").toLowerCase();
+  if (ctype.indexOf("text/html") !== -1 || ctype.indexOf("application/json") !== -1) {
+    // A non-PDF body means GUIDE_PDF_BLOB_URL is not the raw object (e.g. a dashboard URL).
+    console.error("[download-guide] unexpected blob content-type:", ctype);
+    return res.status(502).json({ error: "The guide is temporarily unavailable.", detail: "blob_content_type_" + (ctype.split(";")[0] || "unknown") });
+  }
+
   var pdf;
   try {
-    var r = await fetch(blobUrl);
-    if (!r.ok) throw new Error("blob fetch " + r.status);
     pdf = Buffer.from(await r.arrayBuffer());
   } catch (e) {
-    return res.status(502).json({ error: "The guide is temporarily unavailable. Please try again shortly." });
+    return res.status(502).json({ error: "The guide is temporarily unavailable.", detail: "blob_read_failed" });
+  }
+  if (!pdf.length) {
+    return res.status(502).json({ error: "The guide is temporarily unavailable.", detail: "blob_empty" });
+  }
+  console.error("[download-guide] serving pdf bytes:", pdf.length);
+  // Vercel Node functions cap the response body (~4.5MB). Flag oversized PDFs clearly so we
+  // switch to streaming/edge delivery instead of failing opaquely.
+  if (pdf.length > 4400000) {
+    return res.status(502).json({ error: "The guide is temporarily unavailable.", detail: "pdf_too_large_" + pdf.length });
   }
 
   res.setHeader("Content-Type", "application/pdf");
