@@ -106,7 +106,7 @@
       </div>
 
       <!-- Replace this link with the Stripe Payment Link or Payhip checkout link. -->
-      <a href="#" class="btn btn-gold product-buy">Get Instant Access — $19 <span class="arrow">→</span></a>
+      <a href="#" class="btn btn-gold product-buy js-parenting-checkout">Get Instant Access — $19 <span class="arrow">→</span></a>
       <p class="buy-note">🔒 Secure checkout via Stripe. We never see or store your card details.</p>
     </div>
   </div>
@@ -189,7 +189,7 @@
       <span class="c-acad">Protect human connection.</span>
     </div>
     <!-- Replace this link with the Stripe Payment Link or Payhip checkout link. -->
-    <a href="#" class="btn btn-gold" style="font-size:1.05rem;padding:18px 36px;margin-top:28px;">Get Instant Access — $19 <span class="arrow">→</span></a>
+    <a href="#" class="btn btn-gold js-parenting-checkout" style="font-size:1.05rem;padding:18px 36px;margin-top:28px;">Get Instant Access — $19 <span class="arrow">→</span></a>
   </div>
 </section>
 
@@ -241,6 +241,38 @@
 </footer>
 
 <script src="js/main.js?v=41"></script>
+<script>
+/* AI Parenting Survival Guide — LIVE Stripe checkout (this product only) */
+(function () {
+  var buttons = document.querySelectorAll(".js-parenting-checkout");
+  if (!buttons.length) return;
+  Array.prototype.forEach.call(buttons, function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (btn.getAttribute("data-loading") === "1") return;
+      btn.setAttribute("data-loading", "1");
+      btn.style.pointerEvents = "none";
+      btn.style.opacity = "0.7";
+      fetch("/api/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{}"
+      })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, data: d }; }); })
+        .then(function (res) {
+          if (res.ok && res.data && res.data.url) { window.location.href = res.data.url; return; }
+          throw new Error((res.data && res.data.error) || "checkout_failed");
+        })
+        .catch(function () {
+          btn.removeAttribute("data-loading");
+          btn.style.pointerEvents = "";
+          btn.style.opacity = "";
+          alert("Sorry — checkout is temporarily unavailable. Please try again in a moment, or email missjoy@aiexplorersacademy.org.");
+        });
+    });
+  });
+})();
+</script>
 <script>
 /* AI Parenting Survival Guide — preview lightbox (page-scoped, prev/next + counter) */
 (function () {
