@@ -15,6 +15,10 @@
 //   • BLOB_READ_WRITE_TOKEN is attached ONLY for *.blob.vercel-storage.com hosts.
 //
 // Env: DOWNLOAD_TOKEN_SECRET, GUIDE_PDF_BLOB_URL, (optional) BLOB_READ_WRITE_TOKEN
+//
+// NOTE: TEMPORARY diagnostic logging is enabled below (marked `[dl]`). It logs only
+// safe CATEGORIES — never the token, the secret, or the Blob URL. Remove once the
+// download is confirmed working.
 // ============================================================
 
 export const config = { runtime: "edge" };
@@ -22,6 +26,8 @@ export const config = { runtime: "edge" };
 const EXPECTED_PRODUCT = "ai-parenting-survival-guide";
 
 export default async function handler(req) {
+  console.log("[dl] invoked method=" + req.method);
+
   if (req.method !== "GET") {
     return jsonResponse({ error: "Method not allowed" }, 405, { Allow: "GET" });
   }
@@ -31,19 +37,24 @@ export default async function handler(req) {
   const tokenSecret = process.env.DOWNLOAD_TOKEN_SECRET;
   const blobUrl = process.env.GUIDE_PDF_BLOB_URL;
   if (!tokenSecret || !blobUrl) {
+    console.log("[dl] not_configured secret=" + (!!tokenSecret) + " blobUrl=" + (!!blobUrl));
     return jsonResponse({ error: "Fulfillment is not configured yet." }, 500);
   }
 
   let claims;
   try {
     claims = await verifyToken(token, tokenSecret);
+    console.log("[dl] token_ok");
   } catch (e) {
+    // e.message is a safe category: "bad token" | "bad signature" | "expired"
+    console.log("[dl] token_rejected reason=" + (e && e.message));
     return jsonResponse(
       { error: "This download link is invalid or has expired. Reopen your confirmation page to get a fresh link." },
       403
     );
   }
   if (claims.p !== EXPECTED_PRODUCT) {
+    console.log("[dl] product_mismatch");
     return jsonResponse({ error: "Invalid download link." }, 403);
   }
 
@@ -52,20 +63,27 @@ export default async function handler(req) {
   try { host = new URL(blobUrl).hostname; } catch (e) {}
   const reqHeaders = {};
   const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
-  if (/(^|\.)blob\.vercel-storage\.com$/i.test(host) && blobToken) {
+  const blobAuthAttached = /(^|\.)blob\.vercel-storage\.com$/i.test(host) && !!blobToken;
+  if (blobAuthAttached) {
     reqHeaders.Authorization = "Bearer " + blobToken;
   }
+  console.log("[dl] blob_fetch host=" + host + " auth=" + blobAuthAttached);
 
   let upstream;
   try {
     upstream = await fetch(blobUrl, { headers: reqHeaders, redirect: "follow" });
   } catch (e) {
+    console.log("[dl] blob_fetch_failed");
     return jsonResponse({ error: "The guide is temporarily unavailable.", detail: "blob_fetch_failed" }, 502);
   }
+
+  const ctype = (upstream.headers.get("content-type") || "").toLowerCase();
+  const upstreamLen = upstream.headers.get("content-length");
+  console.log("[dl] blob_status=" + upstream.status + " ctype=" + (ctype || "none") + " content_length=" + (upstreamLen || "none"));
+
   if (!upstream.ok || !upstream.body) {
     return jsonResponse({ error: "The guide is temporarily unavailable.", detail: "blob_http_" + upstream.status }, 502);
   }
-  const ctype = (upstream.headers.get("content-type") || "").toLowerCase();
   if (ctype.indexOf("text/html") !== -1 || ctype.indexOf("application/json") !== -1) {
     // A non-PDF body means GUIDE_PDF_BLOB_URL isn't the raw object (e.g. a dashboard URL).
     return jsonResponse(
@@ -74,17 +92,35 @@ export default async function handler(req) {
     );
   }
 
-  // Stream the Blob body straight to the client — no buffering, no size cap.
+  // ---- Stream the Blob body straight to the client ----------------------------
+  // IMPORTANT: do NOT forward the upstream Content-Length. Re-streaming through the
+  // edge network can change the byte framing (chunked transfer), and a Content-Length
+  // that no longer matches the delivered bytes makes Chrome ABORT the download
+  // ("Site wasn't available" / ERR_CONTENT_LENGTH_MISMATCH) after the Save dialog.
+  // Streaming without Content-Length uses chunked encoding, which downloads cleanly.
   const headers = new Headers({
     "Content-Type": "application/pdf",
     "Content-Disposition": 'attachment; filename="AI-Parenting-Survival-Guide.pdf"',
     "Cache-Control": "private, no-store",
     "X-Robots-Tag": "noindex",
   });
-  const len = upstream.headers.get("content-length");
-  if (len) headers.set("Content-Length", len);
 
-  return new Response(upstream.body, { status: 200, headers: headers });
+  // Pass the body through a TransformStream purely to log that streaming actually
+  // begins and completes (or throws) — visible in Vercel Runtime Logs. No buffering.
+  let started = false;
+  let total = 0;
+  const monitor = new TransformStream({
+    transform(chunk, controller) {
+      if (!started) { started = true; console.log("[dl] stream_start"); }
+      total += (chunk && chunk.byteLength) ? chunk.byteLength : 0;
+      controller.enqueue(chunk);
+    },
+    flush() {
+      console.log("[dl] stream_done bytes=" + total);
+    },
+  });
+
+  return new Response(upstream.body.pipeThrough(monitor), { status: 200, headers: headers });
 }
 
 function jsonResponse(obj, status, extra) {
