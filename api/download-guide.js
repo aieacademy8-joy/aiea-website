@@ -1,111 +1,139 @@
 // ============================================================
-// AI Explorers Academy — Gated PDF download
-// Vercel Serverless Function.  GET /api/download-guide?token=…
+// AI Explorers Academy — Gated PDF download (Edge streaming)
+// Vercel EDGE Function.  GET /api/download-guide?token=…
 //
-// Validates the short-lived, HMAC-signed token issued by /api/check-access, then
-// streams the AI Parenting Survival Guide PDF from private Vercel Blob storage.
+// Runs on the Edge runtime so it can STREAM large files (the guide is ~8.6 MB)
+// straight from private Blob to the client — no buffering, no Node serverless
+// ~4.5 MB response cap.
 //
-// The Blob URL (unguessable) lives ONLY in GUIDE_PDF_BLOB_URL and is fetched
-// server-side — it is never sent to the browser, so the PDF has no public URL.
+// Protections are UNCHANGED in behavior:
+//   • validates the short-lived HMAC token issued by /api/check-access (which itself
+//     verifies a PAID Stripe session) — DOWNLOAD_TOKEN_SECRET. Same base64url
+//     HMAC-SHA256 scheme, now via Web Crypto so signatures stay byte-identical.
+//   • the private Blob URL lives ONLY in GUIDE_PDF_BLOB_URL, is fetched server-side
+//     and streamed through — never sent to the browser; the Blob stays private.
+//   • BLOB_READ_WRITE_TOKEN is attached ONLY for *.blob.vercel-storage.com hosts.
 //
-// Required Vercel env vars:
-//   DOWNLOAD_TOKEN_SECRET   – HMAC secret (must match /api/check-access)
-//   GUIDE_PDF_BLOB_URL      – the Vercel Blob URL of the uploaded PDF (server-side only)
-//
-// No npm dependencies — Node's built-in `crypto` + fetch.
+// Env: DOWNLOAD_TOKEN_SECRET, GUIDE_PDF_BLOB_URL, (optional) BLOB_READ_WRITE_TOKEN
 // ============================================================
 
-const crypto = require("crypto");
+export const config = { runtime: "edge" };
 
-var EXPECTED_PRODUCT = "ai-parenting-survival-guide";
+const EXPECTED_PRODUCT = "ai-parenting-survival-guide";
 
-module.exports = async (req, res) => {
+export default async function handler(req) {
   if (req.method !== "GET") {
-    res.setHeader("Allow", "GET");
-    return res.status(405).json({ error: "Method not allowed" });
+    return jsonResponse({ error: "Method not allowed" }, 405, { Allow: "GET" });
   }
 
-  var token = String((req.query && req.query.token) || "");
-  var tokenSecret = process.env.DOWNLOAD_TOKEN_SECRET;
-  var blobUrl = process.env.GUIDE_PDF_BLOB_URL;
+  const url = new URL(req.url);
+  const token = url.searchParams.get("token") || "";
+  const tokenSecret = process.env.DOWNLOAD_TOKEN_SECRET;
+  const blobUrl = process.env.GUIDE_PDF_BLOB_URL;
   if (!tokenSecret || !blobUrl) {
-    return res.status(500).json({ error: "Fulfillment is not configured yet." });
+    return jsonResponse({ error: "Fulfillment is not configured yet." }, 500);
   }
 
-  var claims;
+  let claims;
   try {
-    claims = verifyToken(token, tokenSecret);
+    claims = await verifyToken(token, tokenSecret);
   } catch (e) {
-    return res.status(403).json({
-      error: "This download link is invalid or has expired. Reopen your confirmation page to get a fresh link.",
-    });
+    return jsonResponse(
+      { error: "This download link is invalid or has expired. Reopen your confirmation page to get a fresh link." },
+      403
+    );
   }
   if (claims.p !== EXPECTED_PRODUCT) {
-    return res.status(403).json({ error: "Invalid download link." });
+    return jsonResponse({ error: "Invalid download link." }, 403);
   }
 
-  // Fetch the private PDF server-side and stream it back. Public Vercel Blob URLs need no
-  // auth; we attach BLOB_READ_WRITE_TOKEN ONLY when the URL is a Vercel Blob host (so the
-  // token can never leak to another host), which also covers authenticated-read objects.
-  var host = "";
+  // Attach the Blob token ONLY for Vercel Blob hosts (never leak it elsewhere).
+  let host = "";
   try { host = new URL(blobUrl).hostname; } catch (e) {}
-  var isVercelBlob = /(^|\.)blob\.vercel-storage\.com$/i.test(host);
-  var reqHeaders = {};
-  var blobToken = process.env.BLOB_READ_WRITE_TOKEN;
-  if (isVercelBlob && blobToken) reqHeaders.Authorization = "Bearer " + blobToken;
+  const reqHeaders = {};
+  const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+  if (/(^|\.)blob\.vercel-storage\.com$/i.test(host) && blobToken) {
+    reqHeaders.Authorization = "Bearer " + blobToken;
+  }
 
-  var r;
+  let upstream;
   try {
-    r = await fetch(blobUrl, { headers: reqHeaders, redirect: "follow" });
+    upstream = await fetch(blobUrl, { headers: reqHeaders, redirect: "follow" });
   } catch (e) {
-    console.error("[download-guide] blob fetch threw:", e && e.message);
-    return res.status(502).json({ error: "The guide is temporarily unavailable.", detail: "blob_fetch_failed" });
+    return jsonResponse({ error: "The guide is temporarily unavailable.", detail: "blob_fetch_failed" }, 502);
   }
-  if (!r.ok) {
-    console.error("[download-guide] blob non-ok status:", r.status);
-    return res.status(502).json({ error: "The guide is temporarily unavailable.", detail: "blob_http_" + r.status });
+  if (!upstream.ok || !upstream.body) {
+    return jsonResponse({ error: "The guide is temporarily unavailable.", detail: "blob_http_" + upstream.status }, 502);
   }
-  var ctype = (r.headers.get("content-type") || "").toLowerCase();
+  const ctype = (upstream.headers.get("content-type") || "").toLowerCase();
   if (ctype.indexOf("text/html") !== -1 || ctype.indexOf("application/json") !== -1) {
-    // A non-PDF body means GUIDE_PDF_BLOB_URL is not the raw object (e.g. a dashboard URL).
-    console.error("[download-guide] unexpected blob content-type:", ctype);
-    return res.status(502).json({ error: "The guide is temporarily unavailable.", detail: "blob_content_type_" + (ctype.split(";")[0] || "unknown") });
+    // A non-PDF body means GUIDE_PDF_BLOB_URL isn't the raw object (e.g. a dashboard URL).
+    return jsonResponse(
+      { error: "The guide is temporarily unavailable.", detail: "blob_content_type_" + (ctype.split(";")[0] || "unknown") },
+      502
+    );
   }
 
-  var pdf;
-  try {
-    pdf = Buffer.from(await r.arrayBuffer());
-  } catch (e) {
-    return res.status(502).json({ error: "The guide is temporarily unavailable.", detail: "blob_read_failed" });
-  }
-  if (!pdf.length) {
-    return res.status(502).json({ error: "The guide is temporarily unavailable.", detail: "blob_empty" });
-  }
-  console.error("[download-guide] serving pdf bytes:", pdf.length);
-  // Vercel Node functions cap the response body (~4.5MB). Flag oversized PDFs clearly so we
-  // switch to streaming/edge delivery instead of failing opaquely.
-  if (pdf.length > 4400000) {
-    return res.status(502).json({ error: "The guide is temporarily unavailable.", detail: "pdf_too_large_" + pdf.length });
-  }
+  // Stream the Blob body straight to the client — no buffering, no size cap.
+  const headers = new Headers({
+    "Content-Type": "application/pdf",
+    "Content-Disposition": 'attachment; filename="AI-Parenting-Survival-Guide.pdf"',
+    "Cache-Control": "private, no-store",
+    "X-Robots-Tag": "noindex",
+  });
+  const len = upstream.headers.get("content-length");
+  if (len) headers.set("Content-Length", len);
 
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader("Content-Disposition", 'attachment; filename="AI-Parenting-Survival-Guide.pdf"');
-  res.setHeader("Content-Length", String(pdf.length));
-  res.setHeader("Cache-Control", "private, no-store");
-  res.setHeader("X-Robots-Tag", "noindex");
-  return res.status(200).send(pdf);
-};
+  return new Response(upstream.body, { status: 200, headers: headers });
+}
 
-function verifyToken(token, secret) {
+function jsonResponse(obj, status, extra) {
+  const headers = new Headers({ "Content-Type": "application/json" });
+  if (extra) for (const k in extra) headers.set(k, extra[k]);
+  return new Response(JSON.stringify(obj), { status: status, headers: headers });
+}
+
+// --- HMAC token verification via Web Crypto (Edge has no Node 'crypto') ---
+// Byte-compatible with the base64url HMAC-SHA256 tokens that /api/check-access signs.
+async function verifyToken(token, secret) {
   if (!token || token.indexOf(".") === -1) throw new Error("bad token");
-  var dot = token.indexOf(".");
-  var payload = token.slice(0, dot);
-  var sig = token.slice(dot + 1);
-  var expected = crypto.createHmac("sha256", secret).update(payload).digest("base64url");
-  var a = Buffer.from(sig);
-  var b = Buffer.from(expected);
-  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) throw new Error("bad signature");
-  var obj = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
+  const dot = token.indexOf(".");
+  const payload = token.slice(0, dot);
+  const sig = token.slice(dot + 1);
+
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+  );
+  const macBuf = await crypto.subtle.sign("HMAC", key, enc.encode(payload));
+  const expected = base64urlFromBytes(new Uint8Array(macBuf));
+
+  if (!timingSafeEqual(sig, expected)) throw new Error("bad signature");
+
+  const obj = JSON.parse(base64urlToString(payload));
   if (!obj.exp || Math.floor(Date.now() / 1000) > obj.exp) throw new Error("expired");
   return obj;
+}
+
+function base64urlFromBytes(bytes) {
+  let bin = "";
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function base64urlToString(s) {
+  let b64 = s.replace(/-/g, "+").replace(/_/g, "/");
+  while (b64.length % 4) b64 += "=";
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+
+// Constant-time compare of two equal-length signature strings.
+function timingSafeEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return mismatch === 0;
 }
