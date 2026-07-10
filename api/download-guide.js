@@ -69,12 +69,18 @@ export default async function handler(req) {
   let host = "";
   try { host = new URL(blobUrl).hostname; } catch (e) {}
   const isVercelBlob = /(^|\.)blob\.vercel-storage\.com$/i.test(host);
-  const oidcToken = process.env.VERCEL_OIDC_TOKEN;
+  // On Vercel, the OIDC token is delivered to a running FUNCTION on the request
+  // header `x-vercel-oidc-token`. process.env.VERCEL_OIDC_TOKEN only holds it during
+  // BUILDS / local `vercel env pull` — it is empty at function runtime, which is why
+  // the previous run logged oidc=false and fell back to the RW token (403 on a
+  // private store). Read the header first; keep env as a secondary source.
+  const oidcHeader = req.headers.get("x-vercel-oidc-token") || "";
+  const oidcToken = oidcHeader || process.env.VERCEL_OIDC_TOKEN || "";
   const rwToken = process.env.BLOB_READ_WRITE_TOKEN;
   console.log(
     "[dl] blob_auth host=" + host +
-    " oidc=" + (!!oidcToken) + " rw=" + (!!rwToken) +
-    " store_id=" + (!!process.env.BLOB_STORE_ID)
+    " oidc_hdr=" + (!!oidcHeader) + " oidc_env=" + (!!process.env.VERCEL_OIDC_TOKEN) +
+    " rw=" + (!!rwToken) + " store_id=" + (!!process.env.BLOB_STORE_ID)
   );
 
   // Ordered credential attempts, best first. A non-Blob host gets an unauthenticated read.
