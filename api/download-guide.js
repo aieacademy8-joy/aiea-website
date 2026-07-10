@@ -59,27 +59,51 @@ export default async function handler(req) {
   }
 
   // Attach the Blob token ONLY for Vercel Blob hosts (never leak it elsewhere).
+  // Reading a PRIVATE Vercel Blob (*.private.blob.vercel-storage.com) requires an
+  // authenticated request to the Blob host. Per Vercel's "Accessing private blobs
+  // without the SDK": on Vercel the short-lived VERCEL_OIDC_TOKEN is PREFERRED (it is
+  // scoped to the store connected to this project and rotates automatically); the
+  // static BLOB_READ_WRITE_TOKEN is the documented fallback. A bare Bearer of the RW
+  // token returned 403, so we try OIDC first, then RW. Tokens are ONLY ever sent to
+  // the *.blob.vercel-storage.com host — never leaked elsewhere.
   let host = "";
   try { host = new URL(blobUrl).hostname; } catch (e) {}
-  const reqHeaders = {};
-  const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
-  const blobAuthAttached = /(^|\.)blob\.vercel-storage\.com$/i.test(host) && !!blobToken;
-  if (blobAuthAttached) {
-    reqHeaders.Authorization = "Bearer " + blobToken;
-  }
-  console.log("[dl] blob_fetch host=" + host + " auth=" + blobAuthAttached);
+  const isVercelBlob = /(^|\.)blob\.vercel-storage\.com$/i.test(host);
+  const oidcToken = process.env.VERCEL_OIDC_TOKEN;
+  const rwToken = process.env.BLOB_READ_WRITE_TOKEN;
+  console.log(
+    "[dl] blob_auth host=" + host +
+    " oidc=" + (!!oidcToken) + " rw=" + (!!rwToken) +
+    " store_id=" + (!!process.env.BLOB_STORE_ID)
+  );
 
-  let upstream;
-  try {
-    upstream = await fetch(blobUrl, { headers: reqHeaders, redirect: "follow" });
-  } catch (e) {
-    console.log("[dl] blob_fetch_failed");
-    return jsonResponse({ error: "The guide is temporarily unavailable.", detail: "blob_fetch_failed" }, 502);
+  // Ordered credential attempts, best first. A non-Blob host gets an unauthenticated read.
+  const attempts = [];
+  if (isVercelBlob && oidcToken) attempts.push({ name: "oidc", token: oidcToken });
+  if (isVercelBlob && rwToken) attempts.push({ name: "rw", token: rwToken });
+  if (attempts.length === 0) attempts.push({ name: "none", token: null });
+
+  let upstream = null;
+  let usedAuth = "none";
+  for (let i = 0; i < attempts.length; i++) {
+    const a = attempts[i];
+    const h = {};
+    if (a.token) h.Authorization = "Bearer " + a.token;
+    try {
+      upstream = await fetch(blobUrl, { headers: h, redirect: "follow" });
+    } catch (e) {
+      console.log("[dl] blob_fetch_failed auth=" + a.name);
+      return jsonResponse({ error: "The guide is temporarily unavailable.", detail: "blob_fetch_failed" }, 502);
+    }
+    usedAuth = a.name;
+    console.log("[dl] blob_try auth=" + a.name + " status=" + upstream.status);
+    // Success or a non-auth error → stop. Only retry when auth was rejected (401/403).
+    if (upstream.status !== 401 && upstream.status !== 403) break;
   }
 
   const ctype = (upstream.headers.get("content-type") || "").toLowerCase();
   const upstreamLen = upstream.headers.get("content-length");
-  console.log("[dl] blob_status=" + upstream.status + " ctype=" + (ctype || "none") + " content_length=" + (upstreamLen || "none"));
+  console.log("[dl] blob_status=" + upstream.status + " auth_used=" + usedAuth + " ctype=" + (ctype || "none") + " content_length=" + (upstreamLen || "none"));
 
   if (!upstream.ok || !upstream.body) {
     return jsonResponse({ error: "The guide is temporarily unavailable.", detail: "blob_http_" + upstream.status }, 502);
