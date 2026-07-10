@@ -10,8 +10,48 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css?v=41">
+<style>
+  /* AI Parenting Survival Guide — page-scoped premium refinements (visual only;
+     scoped to .guide-page so the other product pages sharing these classes are untouched) */
+
+  /* More breathing room: hero/gallery → About → FAQ */
+  .guide-page .product-hero { padding-bottom: clamp(48px, 7vw, 84px); }
+  .guide-page .product-detail { padding-top: clamp(64px, 8vw, 110px); }
+
+  /* Hero cover — premium framed card (à la 30-Days .exp-media): more presence, glow, depth,
+     minimal empty space. Stays a flat real cover (no 3D/hardcover), still clickable → lightbox. */
+  .guide-page .product-gallery { gap: 22px; width: 100%; max-width: 460px; justify-self: center; }
+  .guide-page .pg-main.pg-cover {
+    aspect-ratio: auto; min-height: 0;
+    padding: clamp(12px, 1.6vw, 18px); overflow: hidden;
+    border: 1px solid var(--stroke); border-radius: var(--radius);
+    background: radial-gradient(120% 120% at 50% 0%, rgba(212,175,79,.16), transparent 62%), var(--navy-2);
+    box-shadow: 0 30px 70px rgba(0,0,0,.45), 0 0 60px -14px rgba(59,166,255,.20);
+    cursor: zoom-in; transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+  }
+  .guide-page .pg-main.pg-cover img {
+    display: block; width: 100%; height: auto; max-width: none; max-height: none;
+    object-fit: contain; border-radius: 8px; box-shadow: 0 16px 34px rgba(0,0,0,.45);
+  }
+  .guide-page .pg-main.pg-cover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 42px 88px rgba(0,0,0,.55), 0 0 78px -10px rgba(59,166,255,.26);
+  }
+  .guide-page .pg-main.pg-cover:hover img { transform: none; box-shadow: 0 20px 40px rgba(0,0,0,.5); }
+
+  /* Gallery thumbs — consistent 3-up, calmer default; reveal "View Preview" on hover/focus */
+  .guide-page .product-gallery .pg-thumbs { gap: 16px; }
+  .guide-page .pg-thumb .pg-view { opacity: 0; }
+  .guide-page .pg-thumb:hover .pg-view,
+  .guide-page .pg-thumb:focus-visible .pg-view { opacity: 1; }
+
+  @media (max-width: 560px) {
+    .guide-page .product-gallery { max-width: 100%; }
+    .guide-page .product-gallery .pg-thumbs { gap: 10px; }
+  }
+</style>
 </head>
-<body>
+<body class="guide-page">
 
 <!-- ================= NAV ================= -->
 <nav class="nav scrolled" id="nav">
