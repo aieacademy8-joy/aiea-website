@@ -134,7 +134,7 @@
         throw new Error((res.data && res.data.error) || "not_verified");
       }
       status.innerHTML =
-        '<a class="btn btn-gold" href="' + res.data.download + '" download>Download your guide <span class="arrow">→</span></a>' +
+        '<a class="btn btn-gold" href="' + res.data.download + '" download="AI-Parenting-Survival-Guide.pdf">Download your guide <span class="arrow">→</span></a>' +
         '<p class="thanks-note">This is a private, time-limited link — please save the PDF to your device. You can reopen this page from your Stripe receipt to get a fresh link.</p>';
     })
     .catch(function () {
