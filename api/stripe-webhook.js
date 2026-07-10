@@ -14,16 +14,14 @@
 //   • checkout.session.async_payment_failed    → log only
 //
 // Idempotency (guards against duplicate emails — not an absolute guarantee):
-//   • Resend "Idempotency-Key" per session collapses concurrent/retried deliveries
-//     (Resend de-duplicates within a ~24h window).
-//   • A marker (guide_email_sent) is written to the PaymentIntent metadata AFTER Resend
-//     accepts the email, and checked before sending — so ordinary retries, even days
-//     later, don't re-send. Residual edge case: if Resend accepts the email but the
-//     metadata write then fails, a retry after the ~24h window could re-send. That
-//     metadata-write failure is logged explicitly.
+//   • Postmark has no idempotency-key header, so de-duplication relies on a marker
+//     (guide_email_sent) written to the PaymentIntent metadata AFTER Postmark accepts
+//     the email, and checked before sending — so ordinary retries, even days later,
+//     don't re-send. Residual edge case: if Postmark accepts the email but the metadata
+//     write then fails, a later retry could re-send. That write failure is logged.
 //
 // Security:
-//   • Signing secret / Stripe key / Resend key stay in server-side env vars only.
+//   • Signing secret / Stripe key / Postmark token stay in server-side env vars only.
 //   • Raw body is HMAC-verified (constant-time, 5-min tolerance) before use.
 //   • Failure logging never includes tokens, secrets, PDF/Blob URLs, customer PII,
 //     or the full session id (the id is itself a download credential → masked).
@@ -31,10 +29,10 @@
 // Required Vercel env vars:
 //   STRIPE_WEBHOOK_SECRET    – endpoint signing secret ("whsec_…")
 //   STRIPE_SECRET_KEY        – to read/set the PaymentIntent idempotency marker
-//   RESEND_API_KEY           – Resend API key (transactional email)
-//   FULFILLMENT_FROM_EMAIL   – verified sender, e.g. AI Explorers Academy <missjoy@aiexplorersacademy.org>
+//   POSTMARK_SERVER_TOKEN    – Postmark Server API Token (transactional email)
+//   FULFILLMENT_FROM_EMAIL   – verified sender, e.g. AI Explorers Academy <notifications@send.aiexplorersacademy.org>
 //
-// No npm dependencies — Node's built-in `crypto` + the Stripe/Resend REST APIs via fetch.
+// No npm dependencies — Node's built-in `crypto` + the Stripe/Postmark REST APIs via fetch.
 // ============================================================
 
 const crypto = require("crypto");
@@ -117,20 +115,19 @@ async function maybeFulfill(session, eventType) {
   }
 
   var stripeKey = process.env.STRIPE_SECRET_KEY;
-  var apiKey = process.env.RESEND_API_KEY;
+  var apiKey = process.env.POSTMARK_SERVER_TOKEN;
   var from = process.env.FULFILLMENT_FROM_EMAIL;
   if (!apiKey || !from) {
-    console.error("[fulfillment] email provider not configured (RESEND_API_KEY / FULFILLMENT_FROM_EMAIL); skipped session=" + safeId(session.id));
+    console.error("[fulfillment] email provider not configured (POSTMARK_SERVER_TOKEN / FULFILLMENT_FROM_EMAIL); skipped session=" + safeId(session.id));
     return;
   }
 
   // ---- Idempotency marker ---------------------------------------------------
   // Record "email sent" on the PaymentIntent metadata (stable, documented Stripe
-  // field), set ONLY after Resend accepts the email, and checked before sending — so
-  // ordinary retries (even days later) don't re-send. The per-session Resend
-  // Idempotency-Key additionally collapses concurrent deliveries within ~24h. Caveat:
-  // if the email is accepted but this metadata write fails, a retry after the ~24h
-  // window could re-send (that write failure is logged).
+  // field), set ONLY after Postmark accepts the email, and checked before sending — so
+  // ordinary retries (even days later) don't re-send. Postmark has no idempotency-key
+  // header, so this marker is the sole dedup guard. Caveat: if the email is accepted
+  // but this metadata write fails, a later retry could re-send (that failure is logged).
   var piId = typeof session.payment_intent === "string" ? session.payment_intent : null;
   if (piId && stripeKey) {
     var already = await piAlreadyFulfilled(stripeKey, piId);
@@ -138,11 +135,11 @@ async function maybeFulfill(session, eventType) {
       console.log("[fulfillment] already sent (marker present) session=" + safeId(session.id));
       return;
     }
-    // already === null → marker read failed; fall through (Resend key still dedups).
+    // already === null → marker read failed; fall through and attempt the send.
   }
 
   var accessUrl = ORIGIN + "/thank-you.html?session_id=" + encodeURIComponent(session.id);
-  var sent = await sendGuideEmail(apiKey, from, email, accessUrl, "guide-fulfillment-" + session.id);
+  var sent = await sendGuideEmail(apiKey, from, email, accessUrl);
 
   if (!sent) {
     console.error("[fulfillment] guide email FAILED session=" + safeId(session.id) + " via=" + eventType);
@@ -153,7 +150,7 @@ async function maybeFulfill(session, eventType) {
   if (piId && stripeKey) {
     var marked = await markPiFulfilled(stripeKey, piId);
     if (!marked) {
-      console.error("[fulfillment] could not set idempotency marker session=" + safeId(session.id) + " (Resend key still guards duplicates)");
+      console.error("[fulfillment] could not set idempotency marker session=" + safeId(session.id) + " (a later retry could re-send)");
     }
   }
 }
@@ -189,33 +186,34 @@ async function markPiFulfilled(stripeKey, piId) {
   }
 }
 
-async function sendGuideEmail(apiKey, from, to, accessUrl, idempotencyKey) {
+async function sendGuideEmail(apiKey, from, to, accessUrl) {
   try {
-    var r = await fetch("https://api.resend.com/emails", {
+    var r = await fetch("https://api.postmarkapp.com/email", {
       method: "POST",
       headers: {
-        Authorization: "Bearer " + apiKey,
+        "X-Postmark-Server-Token": apiKey,
         "Content-Type": "application/json",
-        "Idempotency-Key": idempotencyKey,
+        Accept: "application/json",
       },
       body: JSON.stringify({
-        from: from,
-        to: [to],
-        reply_to: SUPPORT_EMAIL,
-        subject: "Your AI Parenting Survival Guide is ready",
-        html: emailHtml(accessUrl),
-        text: emailText(accessUrl),
+        From: from,
+        To: to,
+        ReplyTo: SUPPORT_EMAIL,
+        Subject: "Your AI Parenting Survival Guide is ready",
+        HtmlBody: emailHtml(accessUrl),
+        TextBody: emailText(accessUrl),
+        MessageStream: "outbound",
       }),
     });
     if (!r.ok) {
       var detail = "";
-      try { var j = await r.json(); detail = (j && (j.message || j.name)) || ""; } catch (e) {}
-      console.error("[fulfillment] resend http " + r.status + " " + detail);
+      try { var j = await r.json(); detail = (j && (j.Message || j.ErrorCode)) || ""; } catch (e) {}
+      console.error("[fulfillment] postmark http " + r.status + " " + detail);
       return false;
     }
     return true;
   } catch (e) {
-    console.error("[fulfillment] resend request failed:", e && e.message);
+    console.error("[fulfillment] postmark request failed:", e && e.message);
     return false;
   }
 }
