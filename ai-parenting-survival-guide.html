@@ -14,9 +14,14 @@
   /* AI Parenting Survival Guide — page-scoped premium refinements (visual only;
      scoped to .guide-page so the other product pages sharing these classes are untouched) */
 
-  /* More breathing room: hero/gallery → About → FAQ */
-  .guide-page .product-hero { padding-bottom: clamp(48px, 7vw, 84px); }
-  .guide-page .product-detail { padding-top: clamp(64px, 8vw, 110px); }
+  /* The gallery column (tall portrait cover + 6 thumbs ≈ 960px) is much taller than the
+     info column (≈ 470px). The base .product-hero-grid uses align-items:center, which
+     floated the short info in the vertical middle and opened a large void before ABOUT.
+     Top-align the info so the title lines up with the cover top, and use intentional
+     ~80–120px section spacing (was ~194px). No negative margins, no size changes. */
+  .guide-page .product-hero-grid { align-items: start; }
+  .guide-page .product-hero { padding-bottom: clamp(28px, 4vw, 48px); }
+  .guide-page .product-detail { padding-top: clamp(52px, 6vw, 72px); }
 
   /* Hero cover — premium framed card (à la 30-Days .exp-media): more presence, glow, depth,
      minimal empty space. Stays a flat real cover (no 3D/hardcover), still clickable → lightbox. */

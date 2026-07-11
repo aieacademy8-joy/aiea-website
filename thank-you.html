@@ -9,22 +9,22 @@
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css?v=41">
 <style>
   .thanks-section { min-height: 66vh; display: grid; place-items: center; text-align: center; padding-block: clamp(60px,10vh,120px); }
-  .thanks-access { margin: 30px auto 6px; display: grid; gap: 16px; justify-items: center; }
+  .thanks-access { margin: 52px auto 6px; display: grid; gap: 28px; justify-items: center; }
   .thanks-access .btn { font-size: 1.05rem; padding: 18px 36px; }
   .thanks-status { color: var(--ink-soft); font-size: 1rem; }
-  .thanks-note { color: var(--ink-faint); font-size: .85rem; max-width: 480px; line-height: 1.55; margin-inline: auto; }
+  .thanks-note { color: var(--ink-faint); font-size: .85rem; max-width: 480px; line-height: 1.7; margin-inline: auto; }
   .thanks-err { color: var(--ink-soft); font-size: .96rem; max-width: 540px; line-height: 1.6; margin-inline: auto; }
   .thanks-err a, .thanks-note a { color: var(--gold); }
-  /* Premium two-line confirmation heading — Fraunces, tightened, locked line break */
+  /* Premium two-line confirmation heading — DM Serif Display, tightened, locked line break */
   .thanks-heading {
-    font-family: var(--serif); font-weight: 600;
+    font-family: 'DM Serif Display', var(--serif); font-weight: 400;
     font-size: clamp(2rem, 4.6vw, 3rem);
-    line-height: 1.05; letter-spacing: -0.015em;
-    margin-top: 16px; text-align: center; text-wrap: balance;
+    line-height: 1.06; letter-spacing: -0.01em;
+    margin-top: 30px; text-align: center; text-wrap: balance;
   }
   .thanks-heading .th-line { display: block; }
   .thanks-heading .th-line + .th-line { margin-top: 2px; }
@@ -135,7 +135,7 @@
       }
       status.innerHTML =
         '<a class="btn btn-gold" href="' + res.data.download + '" download="AI-Parenting-Survival-Guide.pdf">Download your guide <span class="arrow">→</span></a>' +
-        '<p class="thanks-note">This is a private, time-limited link — please save the PDF to your device. You can reopen this page from your Stripe receipt to get a fresh link.</p>';
+        '<p class="thanks-note">This is a private, time-limited link — please save the PDF to your device. We’ve also emailed your private access link to the address used at checkout.</p>';
     })
     .catch(function () {
       showError("We couldn't verify this purchase just yet. If you completed payment moments ago, wait a few seconds and refresh this page. If it keeps happening, email <a href=\"mailto:missjoy@aiexplorersacademy.org\">missjoy@aiexplorersacademy.org</a> with your receipt and we'll sort it out.");
