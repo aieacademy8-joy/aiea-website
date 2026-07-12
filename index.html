@@ -345,7 +345,7 @@
 
       <div class="res-grid cols-2" style="margin-top:24px">
         <article class="pcard a-gold">
-          <a class="pcard-link" href="ai-for-little-explorers.html">
+          <a class="pcard-link" href="?inquiry=resource-request&amp;resource=little-explorers#contact">
             <div class="pcard-img" style="background-image:url('assets/res-little-explorers.jpg')"></div>
             <span class="pcard-cta">Get Access <span class="arrow">→</span></span>
           </a>
@@ -383,7 +383,7 @@
       <h3 class="res-heading"><span>Educator &amp; School Resources</span></h3>
       <div class="res-grid cols-3">
         <article class="gcard a-purple">
-          <a class="pcard-link" href="teacher-resource-packs.html">
+          <a class="pcard-link" href="?inquiry=resource-request&amp;resource=teacher-packs#contact">
             <div class="gcard-media">
               <svg class="gcard-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M6 16 20 10l14 6-14 6-14-6Z"/><path d="M12 19v7c0 2 4 4 8 4s8-2 8-4v-7"/><path d="M34 16v9"/>
@@ -394,7 +394,7 @@
           </a>
         </article>
         <article class="gcard a-blue">
-          <a class="pcard-link" href="school-implementation-guide.html">
+          <a class="pcard-link" href="?inquiry=resource-request&amp;resource=school-implementation#contact">
             <div class="gcard-media">
               <svg class="gcard-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M6 34h28"/><path d="M9 34V18l11-7 11 7v16"/><path d="M16 34v-8h8v8"/><path d="M20 11V6"/>
@@ -405,7 +405,7 @@
           </a>
         </article>
         <article class="gcard a-gold">
-          <a class="pcard-link" href="#contact">
+          <a class="pcard-link" href="?inquiry=resource-request&amp;resource=school-leader#contact">
             <div class="gcard-media">
               <svg class="gcard-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M20 5 32 9v9c0 8-5 13-12 16-7-3-12-8-12-16V9l12-4Z"/><path d="M15 19l4 4 7-8"/>
@@ -567,6 +567,7 @@
           <option>Consulting</option>
           <option>Media / Press</option>
           <option>Book &amp; Resources</option>
+          <option>Resource Request</option>
           <option>Bulk / School Book Inquiry</option>
           <option>Other</option>
         </select>
@@ -644,5 +645,28 @@
 </footer>
 
 <script src="js/main.js?v=41"></script>
+<script>
+/* Unreleased resources → contact form: when arriving via
+   ?inquiry=resource-request&resource=<slug>#contact, preselect "Resource Request"
+   and prefill a "notify me" message. Runs after main.js; index.html only. */
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  if (params.get("inquiry") === "resource-request") {
+    var sel = document.getElementById("inq");
+    if (sel) for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].text === "Resource Request") { sel.selectedIndex = i; break; }
+    }
+  }
+  var RES_MSGS = {
+    "little-explorers": "Hello!\n\nI'm interested in AI for Little Explorers.\nPlease notify me when it becomes available.",
+    "teacher-packs": "Hello!\n\nI'm interested in the Teacher Resource Packs.\nPlease notify me when they become available.",
+    "school-implementation": "Hello!\n\nI'm interested in the School Implementation Guide.\nPlease notify me when it becomes available.",
+    "school-leader": "Hello!\n\nI'm interested in the School Leader Edition.\nPlease notify me when it becomes available."
+  };
+  var res = params.get("resource");
+  var msg = document.getElementById("msg");
+  if (res && msg && RES_MSGS[res] && !msg.value) msg.value = RES_MSGS[res];
+})();
+</script>
 </body>
 </html>
