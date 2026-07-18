@@ -1,73 +1,72 @@
 // ============================================================
-// AI Explorers Academy — Gated PDF download (Edge streaming via @vercel/blob)
-// Vercel EDGE Function.  GET /api/download-guide?token=…
+// AI Explorers Academy — Gated PDF download (Node.js runtime, @vercel/blob)
+// Vercel Serverless Function (Node.js).  GET /api/download-guide?token=…
 //
-// Retrieves the PRIVATE guide by STABLE PATHNAME from the connected Blob store using
-// the official @vercel/blob get(). Config holds only a pathname (GUIDE_PDF_BLOB_PATH) —
-// never a store-specific hostname or full object URL — so re-uploading the PDF to the
-// same pathname can never break the live download again.
+// Runs on the Node.js runtime: @vercel/blob depends on undici / node:stream and is NOT
+// Edge-compatible. We still avoid the ~4.5 MB buffered-response cap by STREAMING the
+// object (Readable.fromWeb(...).pipe(res)) instead of buffering it.
 //
-// Auth: OIDC is delivered to a running function on the `x-vercel-oidc-token` REQUEST
-// HEADER (process.env.VERCEL_OIDC_TOKEN is empty at runtime). The SDK's auto-OIDC reads
-// process.env, so we pass the header token EXPLICITLY via get()'s oidcToken + storeId
-// options; BLOB_READ_WRITE_TOKEN is the fallback (a private store rejects RW-only, so
-// OIDC is tried first). No secret/token/URL is ever logged.
+// Retrieves the PRIVATE guide by STABLE PATHNAME from the connected Blob store via
+// get(). Config holds only a pathname (GUIDE_PDF_BLOB_PATH) — never a store-specific
+// hostname or full object URL — so re-uploading the PDF to the same pathname can never
+// break the live download again.
+//
+// Auth: OIDC arrives on the `x-vercel-oidc-token` request header (process.env is empty
+// at runtime), so we pass get()'s oidcToken + storeId explicitly; BLOB_READ_WRITE_TOKEN
+// is the fallback (a private store rejects RW-only, so OIDC is tried first).
 //
 // Preserved: paid-session HMAC token (DOWNLOAD_TOKEN_SECRET) verification, product
 // bind, private storage, Content-Disposition filename, chunked streaming (no
-// Content-Length). On ANY failure the customer gets a BRANDED HTML page — never a
-// JSON body that a browser would save as ".pdf".
+// Content-Length), branded HTML failure page (never a JSON body saved as ".pdf"), and
+// safe category-only logging (never secrets, emails, tokens, or private URLs).
 //
 // Env: DOWNLOAD_TOKEN_SECRET, GUIDE_PDF_BLOB_PATH, BLOB_STORE_ID,
 //      (OIDC via request header), (optional) BLOB_READ_WRITE_TOKEN
 // ============================================================
 
-import { get } from "@vercel/blob";
+const { get } = require("@vercel/blob");
+const crypto = require("crypto");
+const { Readable } = require("node:stream");
 
-export const config = { runtime: "edge" };
+var EXPECTED_PRODUCT = "ai-parenting-survival-guide";
+var FILENAME = "AI-Parenting-Survival-Guide.pdf";
 
-const EXPECTED_PRODUCT = "ai-parenting-survival-guide";
-const FILENAME = "AI-Parenting-Survival-Guide.pdf";
+module.exports = async (req, res) => {
+  if (req.method !== "GET") return sendErrorPage(res, 405, "generic");
 
-export default async function handler(req) {
-  if (req.method !== "GET") return errorPage(405, "generic");
-
-  const url = new URL(req.url);
-  const token = url.searchParams.get("token") || "";
-  const tokenSecret = process.env.DOWNLOAD_TOKEN_SECRET;
-  const pathname = process.env.GUIDE_PDF_BLOB_PATH;
+  var token = (req.query && req.query.token) || "";
+  var tokenSecret = process.env.DOWNLOAD_TOKEN_SECRET;
+  var pathname = process.env.GUIDE_PDF_BLOB_PATH;
   if (!tokenSecret || !pathname) {
     console.log("[dl] fail cat=not_configured secret=" + (!!tokenSecret) + " path=" + (!!pathname));
-    return errorPage(500, "generic");
+    return sendErrorPage(res, 500, "generic");
   }
 
-  let claims;
+  var claims;
   try {
-    claims = await verifyToken(token, tokenSecret);
+    claims = verifyToken(token, tokenSecret);
   } catch (e) {
     console.log("[dl] fail cat=token_rejected reason=" + (e && e.message));
-    return errorPage(403, "token");
+    return sendErrorPage(res, 403, "token");
   }
   if (claims.p !== EXPECTED_PRODUCT) {
     console.log("[dl] fail cat=product_mismatch");
-    return errorPage(403, "token");
+    return sendErrorPage(res, 403, "token");
   }
 
   // Retrieve the private guide by pathname. get()'s explicit `token` option always wins
   // over OIDC, so we set ONE credential per attempt: OIDC (from the request header)
-  // first, RW token as fallback, retrying only when the store rejects auth (401/403).
-  const oidcToken = req.headers.get("x-vercel-oidc-token") || process.env.VERCEL_OIDC_TOKEN || "";
-  const storeId = process.env.BLOB_STORE_ID || "";
-  const rwToken = process.env.BLOB_READ_WRITE_TOKEN || "";
-  const attempts = [];
+  // first, RW token fallback, retrying only when the store rejects auth (401/403).
+  var oidcToken = (req.headers && req.headers["x-vercel-oidc-token"]) || process.env.VERCEL_OIDC_TOKEN || "";
+  var storeId = process.env.BLOB_STORE_ID || "";
+  var rwToken = process.env.BLOB_READ_WRITE_TOKEN || "";
+  var attempts = [];
   if (oidcToken && storeId) attempts.push({ name: "oidc", opts: { access: "private", oidcToken: oidcToken, storeId: storeId } });
   if (rwToken) attempts.push({ name: "rw", opts: { access: "private", token: rwToken } });
   if (attempts.length === 0) attempts.push({ name: "env", opts: { access: "private" } });
 
-  let result = null;
-  let usedAuth = "none";
-  let lastStatus = 0;
-  for (let i = 0; i < attempts.length; i++) {
+  var result = null, usedAuth = "none", lastStatus = 0;
+  for (var i = 0; i < attempts.length; i++) {
     usedAuth = attempts[i].name;
     try {
       result = await get(pathname, attempts[i].opts);
@@ -83,29 +82,30 @@ export default async function handler(req) {
 
   if (!result || result.statusCode !== 200 || !result.stream) {
     console.log("[dl] fail cat=blob_unavailable status=" + lastStatus + " auth=" + usedAuth);
-    return errorPage(502, "generic");
+    return sendErrorPage(res, 502, "generic");
   }
 
-  // Stream the private object straight through. Do NOT set Content-Length — chunked
-  // transfer avoids the Chrome ERR_CONTENT_LENGTH_MISMATCH abort seen when a forwarded
-  // length no longer matched the delivered bytes.
-  const headers = new Headers({
-    "Content-Type": "application/pdf",
-    "Content-Disposition": 'attachment; filename="' + FILENAME + '"',
-    "Cache-Control": "private, no-store",
-    "X-Robots-Tag": "noindex",
-  });
+  // Stream straight through. No Content-Length → chunked transfer, which both avoids
+  // the buffered-response cap and the Chrome ERR_CONTENT_LENGTH_MISMATCH abort.
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader("Content-Disposition", 'attachment; filename="' + FILENAME + '"');
+  res.setHeader("Cache-Control", "private, no-store");
+  res.setHeader("X-Robots-Tag", "noindex");
   console.log("[dl] ok auth=" + usedAuth);
-  return new Response(result.stream, { status: 200, headers: headers });
-}
+  var nodeStream = Readable.fromWeb(result.stream);
+  nodeStream.on("error", function () { try { res.destroy(); } catch (e) {} });
+  nodeStream.pipe(res);
+};
 
-// Branded HTML failure page (Content-Type text/html, no attachment) so the browser
-// SHOWS it instead of saving a JSON body as "AI-Parenting-Survival-Guide.pdf".
-function errorPage(status, kind) {
-  const msg = kind === "token"
+// Branded HTML failure page (text/html, no attachment) so the browser SHOWS it instead
+// of saving a JSON body as "AI-Parenting-Survival-Guide.pdf". The thank-you link has no
+// download attribute, so failures navigate here while success still downloads.
+function sendErrorPage(res, status, kind) {
+  var msg = kind === "token"
     ? "Your download link may have expired. Please reopen your confirmation page (from your purchase email) to get a fresh link."
     : "Your purchase is safe — we just hit a temporary issue preparing your file.";
-  const html =
+  var html =
     '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width,initial-scale=1">' +
     '<meta name="robots" content="noindex"><title>Download unavailable — AI Explorers Academy</title></head>' +
@@ -116,53 +116,25 @@ function errorPage(status, kind) {
     '<p style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.65;color:#C9D2E4;margin:0 0 14px;">' + msg + '</p>' +
     '<p style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.65;color:#C9D2E4;margin:0;">Need help? Email <a href="mailto:missjoy@aiexplorersacademy.org" style="color:#D4AF4F;">missjoy@aiexplorersacademy.org</a> and we’ll send your guide right away.</p>' +
     '</div></body></html>';
-  return new Response(html, {
-    status: status,
-    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex" },
-  });
+  res.statusCode = status;
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("X-Robots-Tag", "noindex");
+  res.end(html);
 }
 
-// --- HMAC token verification via Web Crypto (Edge has no Node 'crypto') ---
-// Byte-compatible with the base64url HMAC-SHA256 tokens that /api/check-access signs.
-async function verifyToken(token, secret) {
+// HMAC token verification via Node crypto — byte-compatible with the base64url
+// HMAC-SHA256 tokens that /api/check-access signs.
+function verifyToken(token, secret) {
   if (!token || token.indexOf(".") === -1) throw new Error("bad token");
-  const dot = token.indexOf(".");
-  const payload = token.slice(0, dot);
-  const sig = token.slice(dot + 1);
-
-  const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
-  );
-  const macBuf = await crypto.subtle.sign("HMAC", key, enc.encode(payload));
-  const expected = base64urlFromBytes(new Uint8Array(macBuf));
-
-  if (!timingSafeEqual(sig, expected)) throw new Error("bad signature");
-
-  const obj = JSON.parse(base64urlToString(payload));
+  var dot = token.indexOf(".");
+  var payload = token.slice(0, dot);
+  var sig = token.slice(dot + 1);
+  var expected = crypto.createHmac("sha256", secret).update(payload).digest("base64url");
+  var a = Buffer.from(sig);
+  var b = Buffer.from(expected);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) throw new Error("bad signature");
+  var obj = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
   if (!obj.exp || Math.floor(Date.now() / 1000) > obj.exp) throw new Error("expired");
   return obj;
-}
-
-function base64urlFromBytes(bytes) {
-  let bin = "";
-  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-
-function base64urlToString(s) {
-  let b64 = s.replace(/-/g, "+").replace(/_/g, "/");
-  while (b64.length % 4) b64 += "=";
-  const bin = atob(b64);
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return new TextDecoder().decode(bytes);
-}
-
-// Constant-time compare of two equal-length signature strings.
-function timingSafeEqual(a, b) {
-  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
-  let mismatch = 0;
-  for (let i = 0; i < a.length; i++) mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return mismatch === 0;
 }
