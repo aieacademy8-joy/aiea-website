@@ -134,7 +134,7 @@
         throw new Error((res.data && res.data.error) || "not_verified");
       }
       status.innerHTML =
-        '<a class="btn btn-gold" href="' + res.data.download + '" download="AI-Parenting-Survival-Guide.pdf">Download your guide <span class="arrow">→</span></a>' +
+        '<a class="btn btn-gold" href="' + res.data.download + '">Download your guide <span class="arrow">→</span></a>' +
         '<p class="thanks-note">This is a private, time-limited link — please save the PDF to your device. We’ve also emailed your private access link to the address used at checkout.</p>';
     })
     .catch(function () {

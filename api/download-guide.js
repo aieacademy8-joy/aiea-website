@@ -1,117 +1,125 @@
 // ============================================================
-// AI Explorers Academy — Gated PDF download (Edge streaming)
+// AI Explorers Academy — Gated PDF download (Edge streaming via @vercel/blob)
 // Vercel EDGE Function.  GET /api/download-guide?token=…
 //
-// Runs on the Edge runtime so it can STREAM large files (the guide is ~8.6 MB)
-// straight from private Blob to the client — no buffering, no Node serverless
-// ~4.5 MB response cap.
+// Retrieves the PRIVATE guide by STABLE PATHNAME from the connected Blob store using
+// the official @vercel/blob get(). Config holds only a pathname (GUIDE_PDF_BLOB_PATH) —
+// never a store-specific hostname or full object URL — so re-uploading the PDF to the
+// same pathname can never break the live download again.
 //
-// Protections are UNCHANGED in behavior:
-//   • validates the short-lived HMAC token issued by /api/check-access (which itself
-//     verifies a PAID Stripe session) — DOWNLOAD_TOKEN_SECRET. Same base64url
-//     HMAC-SHA256 scheme, now via Web Crypto so signatures stay byte-identical.
-//   • the private Blob URL lives ONLY in GUIDE_PDF_BLOB_URL, is fetched server-side
-//     and streamed through — never sent to the browser; the Blob stays private.
-//   • the Blob read is authenticated ONLY for *.blob.vercel-storage.com hosts.
+// Auth: OIDC is delivered to a running function on the `x-vercel-oidc-token` REQUEST
+// HEADER (process.env.VERCEL_OIDC_TOKEN is empty at runtime). The SDK's auto-OIDC reads
+// process.env, so we pass the header token EXPLICITLY via get()'s oidcToken + storeId
+// options; BLOB_READ_WRITE_TOKEN is the fallback (a private store rejects RW-only, so
+// OIDC is tried first). No secret/token/URL is ever logged.
 //
-// Env: DOWNLOAD_TOKEN_SECRET, GUIDE_PDF_BLOB_URL, (optional) BLOB_READ_WRITE_TOKEN
+// Preserved: paid-session HMAC token (DOWNLOAD_TOKEN_SECRET) verification, product
+// bind, private storage, Content-Disposition filename, chunked streaming (no
+// Content-Length). On ANY failure the customer gets a BRANDED HTML page — never a
+// JSON body that a browser would save as ".pdf".
+//
+// Env: DOWNLOAD_TOKEN_SECRET, GUIDE_PDF_BLOB_PATH, BLOB_STORE_ID,
+//      (OIDC via request header), (optional) BLOB_READ_WRITE_TOKEN
 // ============================================================
+
+import { get } from "@vercel/blob";
 
 export const config = { runtime: "edge" };
 
 const EXPECTED_PRODUCT = "ai-parenting-survival-guide";
+const FILENAME = "AI-Parenting-Survival-Guide.pdf";
 
 export default async function handler(req) {
-  if (req.method !== "GET") {
-    return jsonResponse({ error: "Method not allowed" }, 405, { Allow: "GET" });
-  }
+  if (req.method !== "GET") return errorPage(405, "generic");
 
   const url = new URL(req.url);
   const token = url.searchParams.get("token") || "";
   const tokenSecret = process.env.DOWNLOAD_TOKEN_SECRET;
-  const blobUrl = process.env.GUIDE_PDF_BLOB_URL;
-  if (!tokenSecret || !blobUrl) {
-    return jsonResponse({ error: "Fulfillment is not configured yet." }, 500);
+  const pathname = process.env.GUIDE_PDF_BLOB_PATH;
+  if (!tokenSecret || !pathname) {
+    console.log("[dl] fail cat=not_configured secret=" + (!!tokenSecret) + " path=" + (!!pathname));
+    return errorPage(500, "generic");
   }
 
   let claims;
   try {
     claims = await verifyToken(token, tokenSecret);
   } catch (e) {
-    return jsonResponse(
-      { error: "This download link is invalid or has expired. Reopen your confirmation page to get a fresh link." },
-      403
-    );
+    console.log("[dl] fail cat=token_rejected reason=" + (e && e.message));
+    return errorPage(403, "token");
   }
   if (claims.p !== EXPECTED_PRODUCT) {
-    return jsonResponse({ error: "Invalid download link." }, 403);
+    console.log("[dl] fail cat=product_mismatch");
+    return errorPage(403, "token");
   }
 
-  // Reading a PRIVATE Vercel Blob (*.private.blob.vercel-storage.com) requires an
-  // authenticated request to the Blob host. On Vercel the short-lived OIDC token is
-  // PREFERRED (scoped to the project-connected store, auto-rotating); the static
-  // BLOB_READ_WRITE_TOKEN is the documented fallback. The OIDC token is delivered to
-  // a running function on the `x-vercel-oidc-token` request header (process.env only
-  // holds it during builds / local `vercel env pull`). Tokens are ONLY ever sent to
-  // the *.blob.vercel-storage.com host — never leaked elsewhere.
-  let host = "";
-  try { host = new URL(blobUrl).hostname; } catch (e) {}
-  const isVercelBlob = /(^|\.)blob\.vercel-storage\.com$/i.test(host);
+  // Retrieve the private guide by pathname. get()'s explicit `token` option always wins
+  // over OIDC, so we set ONE credential per attempt: OIDC (from the request header)
+  // first, RW token as fallback, retrying only when the store rejects auth (401/403).
   const oidcToken = req.headers.get("x-vercel-oidc-token") || process.env.VERCEL_OIDC_TOKEN || "";
-  const rwToken = process.env.BLOB_READ_WRITE_TOKEN;
-
-  // Ordered credential attempts, best first. A non-Blob host gets an unauthenticated read.
+  const storeId = process.env.BLOB_STORE_ID || "";
+  const rwToken = process.env.BLOB_READ_WRITE_TOKEN || "";
   const attempts = [];
-  if (isVercelBlob && oidcToken) attempts.push({ name: "oidc", token: oidcToken });
-  if (isVercelBlob && rwToken) attempts.push({ name: "rw", token: rwToken });
-  if (attempts.length === 0) attempts.push({ name: "none", token: null });
+  if (oidcToken && storeId) attempts.push({ name: "oidc", opts: { access: "private", oidcToken: oidcToken, storeId: storeId } });
+  if (rwToken) attempts.push({ name: "rw", opts: { access: "private", token: rwToken } });
+  if (attempts.length === 0) attempts.push({ name: "env", opts: { access: "private" } });
 
-  let upstream = null;
+  let result = null;
+  let usedAuth = "none";
+  let lastStatus = 0;
   for (let i = 0; i < attempts.length; i++) {
-    const a = attempts[i];
-    const h = {};
-    if (a.token) h.Authorization = "Bearer " + a.token;
+    usedAuth = attempts[i].name;
     try {
-      upstream = await fetch(blobUrl, { headers: h, redirect: "follow" });
+      result = await get(pathname, attempts[i].opts);
     } catch (e) {
-      return jsonResponse({ error: "The guide is temporarily unavailable.", detail: "blob_fetch_failed" }, 502);
+      console.log("[dl] blob_get_error auth=" + usedAuth);
+      result = null;
+      continue;
     }
-    // Success or a non-auth error → stop. Only retry when auth was rejected (401/403).
-    if (upstream.status !== 401 && upstream.status !== 403) break;
+    lastStatus = result ? result.statusCode : 0;
+    console.log("[dl] blob_get auth=" + usedAuth + " status=" + lastStatus);
+    if (result && result.statusCode !== 401 && result.statusCode !== 403) break;
   }
 
-  const ctype = (upstream.headers.get("content-type") || "").toLowerCase();
-  if (!upstream.ok || !upstream.body) {
-    return jsonResponse({ error: "The guide is temporarily unavailable.", detail: "blob_http_" + upstream.status }, 502);
-  }
-  if (ctype.indexOf("text/html") !== -1 || ctype.indexOf("application/json") !== -1) {
-    // A non-PDF body means GUIDE_PDF_BLOB_URL isn't the raw object (e.g. a dashboard URL).
-    return jsonResponse(
-      { error: "The guide is temporarily unavailable.", detail: "blob_content_type_" + (ctype.split(";")[0] || "unknown") },
-      502
-    );
+  if (!result || result.statusCode !== 200 || !result.stream) {
+    console.log("[dl] fail cat=blob_unavailable status=" + lastStatus + " auth=" + usedAuth);
+    return errorPage(502, "generic");
   }
 
-  // ---- Stream the Blob body straight to the client ----------------------------
-  // IMPORTANT: do NOT forward the upstream Content-Length. Re-streaming through the
-  // edge network can change the byte framing (chunked transfer), and a Content-Length
-  // that no longer matches the delivered bytes makes Chrome ABORT the download
-  // ("Site wasn't available" / ERR_CONTENT_LENGTH_MISMATCH) after the Save dialog.
-  // Streaming without Content-Length uses chunked encoding, which downloads cleanly.
+  // Stream the private object straight through. Do NOT set Content-Length — chunked
+  // transfer avoids the Chrome ERR_CONTENT_LENGTH_MISMATCH abort seen when a forwarded
+  // length no longer matched the delivered bytes.
   const headers = new Headers({
     "Content-Type": "application/pdf",
-    "Content-Disposition": 'attachment; filename="AI-Parenting-Survival-Guide.pdf"',
+    "Content-Disposition": 'attachment; filename="' + FILENAME + '"',
     "Cache-Control": "private, no-store",
     "X-Robots-Tag": "noindex",
   });
-
-  return new Response(upstream.body, { status: 200, headers: headers });
+  console.log("[dl] ok auth=" + usedAuth);
+  return new Response(result.stream, { status: 200, headers: headers });
 }
 
-function jsonResponse(obj, status, extra) {
-  const headers = new Headers({ "Content-Type": "application/json" });
-  if (extra) for (const k in extra) headers.set(k, extra[k]);
-  return new Response(JSON.stringify(obj), { status: status, headers: headers });
+// Branded HTML failure page (Content-Type text/html, no attachment) so the browser
+// SHOWS it instead of saving a JSON body as "AI-Parenting-Survival-Guide.pdf".
+function errorPage(status, kind) {
+  const msg = kind === "token"
+    ? "Your download link may have expired. Please reopen your confirmation page (from your purchase email) to get a fresh link."
+    : "Your purchase is safe — we just hit a temporary issue preparing your file.";
+  const html =
+    '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<meta name="robots" content="noindex"><title>Download unavailable — AI Explorers Academy</title></head>' +
+    '<body style="margin:0;min-height:100vh;background:#07122D;color:#F5F4EF;display:grid;place-items:center;text-align:center;padding:28px;">' +
+    '<div style="max-width:540px;">' +
+    '<div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#D4AF4F;">AI Explorers Academy</div>' +
+    '<h1 style="font-family:Georgia,\'Times New Roman\',serif;font-weight:normal;font-size:30px;line-height:1.2;margin:14px 0 10px;">We couldn’t prepare your download</h1>' +
+    '<p style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.65;color:#C9D2E4;margin:0 0 14px;">' + msg + '</p>' +
+    '<p style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.65;color:#C9D2E4;margin:0;">Need help? Email <a href="mailto:missjoy@aiexplorersacademy.org" style="color:#D4AF4F;">missjoy@aiexplorersacademy.org</a> and we’ll send your guide right away.</p>' +
+    '</div></body></html>';
+  return new Response(html, {
+    status: status,
+    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex" },
+  });
 }
 
 // --- HMAC token verification via Web Crypto (Edge has no Node 'crypto') ---
