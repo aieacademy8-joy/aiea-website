@@ -10,6 +10,39 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css?v=41">
+<style>
+  /* Meet the Academy — homepage video intro (page-scoped; reuses site tokens/typography) */
+  .video-section { padding-block: clamp(60px, 8vw, 110px); text-align: center; }
+  .video-frame {
+    position: relative; max-width: 1080px; margin: clamp(30px, 4.5vw, 48px) auto 0;
+    aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--gold) 34%, var(--stroke));
+    background: var(--navy-2);
+    box-shadow: 0 30px 70px rgba(0,0,0,.5), 0 0 64px -14px rgba(212,175,79,.30);
+  }
+  .video-facade {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    margin: 0; padding: 0; border: 0; cursor: pointer; display: block; background: var(--navy-2);
+  }
+  .video-facade img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .video-facade::after {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(120% 120% at 50% 50%, rgba(7,18,45,.10), rgba(7,18,45,.48));
+    transition: background .3s;
+  }
+  .video-facade:hover::after { background: radial-gradient(120% 120% at 50% 50%, rgba(7,18,45,0), rgba(7,18,45,.34)); }
+  .video-play {
+    position: absolute; z-index: 1; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 82px; height: 82px; border-radius: 999px; display: grid; place-items: center;
+    color: #2A1E00; background: linear-gradient(135deg, #F2CD6B, var(--gold));
+    box-shadow: 0 12px 34px rgba(212,175,79,.42); transition: transform .3s;
+  }
+  .video-facade:hover .video-play { transform: translate(-50%, -50%) scale(1.06); }
+  .video-facade:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  .video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+  .video-link { margin-top: clamp(18px, 2.6vw, 26px); }
+  .video-link .btn-text { justify-content: center; }
+</style>
 </head>
 <body>
 
@@ -61,6 +94,41 @@
     </div>
   </div>
 </header>
+
+<!-- ================= MEET THE ACADEMY (video intro) ================= -->
+<section id="intro-video" class="video-section">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Meet the Academy</span>
+      <h2>A New Adventure in AI Literacy Begins</h2>
+      <p>Meet Miss JOY, Botly, Pixie Pixel, and Echo—and discover a place where children learn to think critically, create responsibly, and solve problems with AI.</p>
+    </div>
+    <div class="video-frame">
+      <button type="button" class="video-facade" id="introVideoFacade" aria-label="Play video: Official AI Explorers Academy introduction trailer">
+        <img src="https://i.ytimg.com/vi/FwUe2sdsQAI/maxresdefault.jpg" alt="" width="1280" height="720" loading="lazy"
+             onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/FwUe2sdsQAI/hqdefault.jpg';">
+        <span class="video-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+      </button>
+    </div>
+    <p class="video-link reveal"><a href="#programs" class="btn-text">Explore Our Programs <span class="arrow">→</span></a></p>
+  </div>
+</section>
+<script>
+/* Meet the Academy: dependency-free click-to-load YouTube (privacy-enhanced domain).
+   No iframe is created until the visitor clicks play, so nothing autoplays on page load. */
+(function () {
+  var facade = document.getElementById("introVideoFacade");
+  if (!facade) return;
+  facade.addEventListener("click", function () {
+    var iframe = document.createElement("iframe");
+    iframe.src = "https://www.youtube-nocookie.com/embed/FwUe2sdsQAI?autoplay=1&rel=0";
+    iframe.title = "Official AI Explorers Academy introduction trailer";
+    iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen");
+    iframe.setAttribute("allowfullscreen", "");
+    facade.replaceWith(iframe);
+  });
+})();
+</script>
 
 <!-- ================= 2. OUR MISSION ================= -->
 <section id="mission">
