@@ -65,13 +65,35 @@
   .journey-page .step-card p { color: var(--ink-soft); font-size: .95rem; line-height: 1.6; }
   .journey-page .step-note { margin-top: 22px; color: var(--ink-soft); font-style: italic; text-align: center; max-width: 62ch; margin-inline: auto; }
 
-  /* Subtle PREVIEW watermark in the enlarged view (text-based — no extra asset). */
-  .journey-page .exp-lb-media .exp-wm {
-    background: none; display: grid; place-items: center;
-    font-family: var(--sans); font-weight: 700; letter-spacing: .5em;
-    font-size: clamp(1.3rem, 5vw, 2.8rem); color: #fff; opacity: .16;
-    transform: rotate(-24deg); user-select: none;
+  /* Preview watermark — tiled diagonal overlay applied via CSS only (the source JPEGs
+     are never modified). Covers the 7 interior previews and their enlarged lightbox
+     view; the main product mockup is never watermarked (it carries no .pg-wm, and the
+     lightbox overlay is hidden on index 0). */
+  .journey-page .pg-thumb.preview-card .pg-wm {
+    inset: 0; top: 0; padding: 0; font-size: 0; color: transparent;
+    background-image: url('assets/products/first-ai-literacy-journey/watermark.svg');
+    background-repeat: repeat; background-size: 190px 110px;
+    opacity: 1; pointer-events: none;
   }
+  .journey-page .exp-lb-media .exp-wm {
+    background-image: url('assets/products/first-ai-literacy-journey/watermark.svg');
+    background-repeat: repeat; background-size: 300px 174px;
+    opacity: 1; pointer-events: none;
+  }
+
+  /* Mission 7 spans the full row so the grid ends intentionally (1 col on mobile). */
+  .journey-page .mission-grid .mission-card:last-child { grid-column: 1 / -1; }
+
+  /* Price positioning */
+  .journey-page .product-price { flex-wrap: wrap; align-items: baseline; gap: 12px; }
+  .journey-page .price-value { color: var(--ink-faint); font-size: .92rem; }
+  .journey-page .price-note { display: block; color: var(--ink-faint); font-size: .88rem; margin-top: 8px; line-height: 1.55; max-width: 46ch; }
+  .journey-page .final-cta .price-note { margin-inline: auto; }
+
+  /* FAQ heading matches the page's other section headings; tighten FAQ → final CTA. */
+  .journey-page .faq-section .section-head h2 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); }
+  .journey-page .faq-section { padding-bottom: clamp(40px, 5vw, 64px); }
+  .journey-page .final-cta { padding-top: clamp(44px, 5vw, 70px); }
 
   @media (max-width: 900px) {
     .journey-page .product-gallery .pg-thumbs { grid-template-columns: repeat(3, 1fr); }
@@ -131,43 +153,43 @@
         <button type="button" class="pg-thumb preview-card pg-open" data-index="1" aria-label="Open preview: Cover of The First AI Literacy Journey">
           <img src="assets/products/first-ai-literacy-journey/cover.jpeg" alt="Cover of The First AI Literacy Journey" loading="lazy" draggable="false">
           <span class="pg-overlay" aria-hidden="true"></span>
-          <span class="pg-wm" aria-hidden="true">AI Explorers Academy™ Preview</span>
+          <span class="pg-wm" aria-hidden="true"></span>
           <span class="pg-meta"><span class="pg-label">Cover</span><span class="pg-view">View Preview</span></span>
         </button>
         <button type="button" class="pg-thumb preview-card pg-open" data-index="2" aria-label="Open preview: Welcome page from The First AI Literacy Journey">
           <img src="assets/products/first-ai-literacy-journey/preview-01-welcome.jpeg" alt="Welcome page from The First AI Literacy Journey" loading="lazy" draggable="false">
           <span class="pg-overlay" aria-hidden="true"></span>
-          <span class="pg-wm" aria-hidden="true">AI Explorers Academy™ Preview</span>
+          <span class="pg-wm" aria-hidden="true"></span>
           <span class="pg-meta"><span class="pg-label">Welcome</span><span class="pg-view">View Preview</span></span>
         </button>
         <button type="button" class="pg-thumb preview-card pg-open" data-index="3" aria-label="Open preview: Become AI Detectives family mission">
           <img src="assets/products/first-ai-literacy-journey/preview-02-ai-detectives.jpeg" alt="Become AI Detectives family mission" loading="lazy" draggable="false">
           <span class="pg-overlay" aria-hidden="true"></span>
-          <span class="pg-wm" aria-hidden="true">AI Explorers Academy™ Preview</span>
+          <span class="pg-wm" aria-hidden="true"></span>
           <span class="pg-meta"><span class="pg-label">AI Detectives</span><span class="pg-view">View Preview</span></span>
         </button>
         <button type="button" class="pg-thumb preview-card pg-open" data-index="4" aria-label="Open preview: Create First family mission">
           <img src="assets/products/first-ai-literacy-journey/preview-03-create-first.jpeg" alt="Create First family mission" loading="lazy" draggable="false">
           <span class="pg-overlay" aria-hidden="true"></span>
-          <span class="pg-wm" aria-hidden="true">AI Explorers Academy™ Preview</span>
+          <span class="pg-wm" aria-hidden="true"></span>
           <span class="pg-meta"><span class="pg-label">Create First</span><span class="pg-view">View Preview</span></span>
         </button>
         <button type="button" class="pg-thumb preview-card pg-open" data-index="5" aria-label="Open preview: Check Before You Trust family mission">
           <img src="assets/products/first-ai-literacy-journey/preview-04-check-before-trust.jpeg" alt="Check Before You Trust family mission" loading="lazy" draggable="false">
           <span class="pg-overlay" aria-hidden="true"></span>
-          <span class="pg-wm" aria-hidden="true">AI Explorers Academy™ Preview</span>
+          <span class="pg-wm" aria-hidden="true"></span>
           <span class="pg-meta"><span class="pg-label">Check First</span><span class="pg-view">View Preview</span></span>
         </button>
         <button type="button" class="pg-thumb preview-card pg-open" data-index="6" aria-label="Open preview: Choose Kindness family mission">
           <img src="assets/products/first-ai-literacy-journey/preview-05-kindness.jpeg" alt="Choose Kindness family mission" loading="lazy" draggable="false">
           <span class="pg-overlay" aria-hidden="true"></span>
-          <span class="pg-wm" aria-hidden="true">AI Explorers Academy™ Preview</span>
+          <span class="pg-wm" aria-hidden="true"></span>
           <span class="pg-meta"><span class="pg-label">Kindness</span><span class="pg-view">View Preview</span></span>
         </button>
         <button type="button" class="pg-thumb preview-card pg-open" data-index="7" aria-label="Open preview: AI-Ready Family Promise and final badges">
           <img src="assets/products/first-ai-literacy-journey/preview-06-family-promise.jpeg" alt="AI-Ready Family Promise and final badges" loading="lazy" draggable="false">
           <span class="pg-overlay" aria-hidden="true"></span>
-          <span class="pg-wm" aria-hidden="true">AI Explorers Academy™ Preview</span>
+          <span class="pg-wm" aria-hidden="true"></span>
           <span class="pg-meta"><span class="pg-label">Family Promise</span><span class="pg-view">View Preview</span></span>
         </button>
       </div>
@@ -188,11 +210,12 @@
 
       <div class="product-price">
         <span class="amount">$9</span>
-        <span class="price-note">Launch price · One-time purchase · Instant digital download</span>
+        <span class="price-value">Introductory Price · Educational Value: <s>$15</s></span>
       </div>
+      <p class="price-note">Introductory access · One-time purchase · Instant digital download · Family-use license</p>
 
       <a href="#" class="btn btn-gold product-buy">Begin Our Family Journey — $9 <span class="arrow">→</span></a>
-      <p class="buy-note">🔒 Secure checkout via Stripe · Download immediately after purchase</p>
+      <p class="buy-note">Instant download · Secure Stripe checkout · Print for one household</p>
     </div>
   </div>
 </header>
@@ -268,7 +291,7 @@
 </section>
 
 <!-- ================= FAQ ================= -->
-<section>
+<section class="faq-section">
   <div class="wrap">
     <div class="section-head reveal">
       <span class="eyebrow">Questions</span>
@@ -305,7 +328,7 @@
       </details>
       <details>
         <summary>Can teachers, churches, groups, or schools use it?</summary>
-        <p>The family license is intended for one household. Teachers, churches, groups, and schools should contact AI Explorers Academy for educational or institutional licensing.</p>
+        <p>The family license is intended for one household. Teachers, churches, groups, and schools should <a href="index.html#contact">contact AI Explorers Academy</a> for educational or institutional licensing.</p>
       </details>
       <details>
         <summary>What materials will we need?</summary>
@@ -327,8 +350,13 @@
       <span class="c-acad">First AI Literacy Journey</span>
     </div>
     <p style="max-width:64ch;margin:22px auto 0;color:var(--ink-soft);line-height:1.7;">Seven joyful missions can help your family move from uncertainty about AI to curiosity, creativity, discernment, kindness, and confident learning together.</p>
-    <div class="product-price" style="justify-content:center;margin:24px 0 0;"><span class="amount">$9</span></div>
+    <div class="product-price" style="justify-content:center;margin:24px 0 0;">
+      <span class="amount">$9</span>
+      <span class="price-value">Introductory Price · Educational Value: <s>$15</s></span>
+    </div>
+    <p class="price-note" style="text-align:center;">Introductory access · One-time purchase · Instant digital download · Family-use license</p>
     <a href="#" class="btn btn-gold" style="font-size:1.05rem;padding:18px 36px;margin-top:22px;">Begin Our Family Journey — $9 <span class="arrow">→</span></a>
+    <p class="buy-note" style="justify-content:center;">Instant download · Secure Stripe checkout · Print for one household</p>
   </div>
 </section>
 
@@ -342,7 +370,7 @@
     <div class="exp-lb-mediawrap">
       <div class="exp-lb-media">
         <img id="pgLbImg" src="" alt="Journey preview" draggable="false">
-        <span class="exp-wm" aria-hidden="true">PREVIEW</span>
+        <span class="exp-wm" id="pgLbWm" aria-hidden="true"></span>
       </div>
       <div class="exp-lb-bar"><span class="cap" id="pgLbCap">Preview</span><span id="pgLbCount">1 / 8</span></div>
     </div>
@@ -400,12 +428,15 @@
   var cap = document.getElementById("pgLbCap");
   var count = document.getElementById("pgLbCount");
   var closeBtn = document.getElementById("pgLbClose");
+  var wm = document.getElementById("pgLbWm");
   var current = 0;
 
   function render(i) {
     var it = items[i];
     img.src = it.src; img.alt = it.label + " preview";
     cap.textContent = it.label; count.textContent = (i + 1) + " / " + items.length;
+    /* interior previews are watermarked; the main product mockup (index 0) is not */
+    if (wm) wm.style.display = (i === 0) ? "none" : "";
   }
   function open(i) {
     current = i; render(i);

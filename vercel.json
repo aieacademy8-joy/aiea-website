@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/ai-family-starter-kit.html",
+      "destination": "/first-ai-literacy-journey.html",
+      "permanent": true
+    }
+  ]
+}
