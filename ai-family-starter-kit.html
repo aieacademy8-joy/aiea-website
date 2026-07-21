@@ -3,15 +3,87 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Family Starter Kit — AI Explorers Academy™</title>
-<meta name="description" content="The AI Family Starter Kit — everything your family needs to begin the AI Literacy journey together. A digital download from AI Explorers Academy™.">
+<title>The First AI Literacy Journey — AI Explorers Academy™</title>
+<meta name="description" content="The First AI Literacy Journey — 7 family missions to raise an AI-ready child. A beautifully illustrated, guided family experience from AI Explorers Academy™.">
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css?v=29">
+<style>
+  /* The First AI Literacy Journey — page-scoped refinements (scoped to .journey-page
+     so the other product pages sharing .product-*/.pg-* classes stay untouched). */
+
+  /* Hero: top-align so the info column doesn't float against the taller gallery. */
+  .journey-page .product-hero-grid { align-items: start; }
+  .journey-page .product-hero { padding-bottom: clamp(28px, 4vw, 48px); }
+  .journey-page .product-detail { padding-top: clamp(52px, 6vw, 72px); }
+
+  /* Main product mockup — framed, premium, clickable into the lightbox. */
+  .journey-page .pg-main.pg-cover {
+    aspect-ratio: auto; min-height: 0;
+    padding: clamp(12px, 1.6vw, 18px); overflow: hidden;
+    border: 1px solid var(--stroke); border-radius: var(--radius);
+    background: radial-gradient(120% 120% at 50% 0%, rgba(212,175,79,.16), transparent 62%), var(--navy-2);
+    box-shadow: 0 30px 70px rgba(0,0,0,.45), 0 0 60px -14px rgba(59,166,255,.20);
+    cursor: zoom-in; transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+  }
+  .journey-page .pg-main.pg-cover img {
+    display: block; width: 100%; height: auto; max-width: none; max-height: none;
+    object-fit: contain; border-radius: 8px; box-shadow: 0 16px 34px rgba(0,0,0,.45);
+  }
+  .journey-page .pg-main.pg-cover:hover { transform: translateY(-4px); box-shadow: 0 42px 88px rgba(0,0,0,.55), 0 0 78px -10px rgba(59,166,255,.26); }
+  .journey-page .pg-main.pg-cover:hover img { transform: none; box-shadow: 0 20px 40px rgba(0,0,0,.5); }
+
+  /* Preview grid — 4 across on desktop, then 3 / 2 as space narrows. */
+  .journey-page .product-gallery { gap: 20px; }
+  .journey-page .product-gallery .pg-thumbs { grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .journey-page .pg-thumb .pg-view { opacity: 0; }
+  .journey-page .pg-thumb:hover .pg-view,
+  .journey-page .pg-thumb:focus-visible .pg-view { opacity: 1; }
+
+  /* Hero copy — readable measure, comfortable rhythm. */
+  .journey-page .product-desc { color: var(--ink-soft); display: grid; gap: 14px; margin: 0 0 26px; max-width: 60ch; font-size: 1.02rem; line-height: 1.7; }
+
+  /* Seven missions */
+  .journey-page .mission-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .journey-page .mission-card {
+    border: 1px solid var(--stroke); border-radius: 16px; padding: 22px 24px;
+    background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+    transition: border-color .3s, transform .3s;
+  }
+  .journey-page .mission-card:hover { border-color: color-mix(in srgb, var(--gold) 46%, transparent); transform: translateY(-3px); }
+  .journey-page .mission-card h3 { font-family: var(--serif); font-size: 1.12rem; margin-bottom: 8px; }
+  .journey-page .mission-card .m-num { display: block; font-family: var(--sans); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+  .journey-page .mission-card p { color: var(--ink-soft); font-size: .95rem; line-height: 1.6; }
+
+  /* How it works */
+  .journey-page .step-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .journey-page .step-card { border: 1px solid var(--stroke); border-radius: 16px; padding: 24px; background: var(--card, rgba(255,255,255,.02)); }
+  .journey-page .step-card .s-num { font-family: var(--serif); font-size: 2rem; color: var(--gold); line-height: 1; display: block; margin-bottom: 10px; }
+  .journey-page .step-card h3 { font-size: 1.05rem; margin-bottom: 8px; }
+  .journey-page .step-card p { color: var(--ink-soft); font-size: .95rem; line-height: 1.6; }
+  .journey-page .step-note { margin-top: 22px; color: var(--ink-soft); font-style: italic; text-align: center; max-width: 62ch; margin-inline: auto; }
+
+  /* Subtle PREVIEW watermark in the enlarged view (text-based — no extra asset). */
+  .journey-page .exp-lb-media .exp-wm {
+    background: none; display: grid; place-items: center;
+    font-family: var(--sans); font-weight: 700; letter-spacing: .5em;
+    font-size: clamp(1.3rem, 5vw, 2.8rem); color: #fff; opacity: .16;
+    transform: rotate(-24deg); user-select: none;
+  }
+
+  @media (max-width: 900px) {
+    .journey-page .product-gallery .pg-thumbs { grid-template-columns: repeat(3, 1fr); }
+    .journey-page .mission-grid, .journey-page .step-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .journey-page .product-gallery .pg-thumbs { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .journey-page .product-info h1 { font-size: clamp(1.7rem, 7vw, 2.2rem); }
+  }
+</style>
 </head>
-<body>
+<body class="journey-page">
 
 <!-- ================= NAV ================= -->
 <nav class="nav scrolled" id="nav">
@@ -50,70 +122,148 @@
 
 <header class="product-hero" id="top">
   <div class="product-hero-grid">
-    <!-- Product preview / gallery (image placeholders) -->
+    <!-- Product mockup + clickable preview gallery -->
     <div class="product-gallery reveal">
-      <div class="pg-main">
-        <div class="img-ph">
-          <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="9" width="28" height="22" rx="3"/><circle cx="15" cy="17" r="3"/><path d="M9 29l8-8 6 5 4-3 4 4"/></svg>
-          <span>Product image</span>
-        </div>
+      <div class="pg-main pg-cover pg-open" data-index="0" role="button" tabindex="0" aria-label="View larger: The First AI Literacy Journey printable family journey">
+        <img src="assets/products/first-ai-literacy-journey/product-mockup.jpeg" alt="The First AI Literacy Journey — printed family mission pages laid out together" draggable="false">
       </div>
       <div class="pg-thumbs">
-        <div class="pg-thumb"><div class="img-ph"><span>Preview 1</span></div></div>
-        <div class="pg-thumb"><div class="img-ph"><span>Preview 2</span></div></div>
-        <div class="pg-thumb"><div class="img-ph"><span>Preview 3</span></div></div>
+        <button type="button" class="pg-thumb preview-card pg-open" data-index="1" aria-label="Open preview: Cover of The First AI Literacy Journey">
+          <img src="assets/products/first-ai-literacy-journey/cover.jpeg" alt="Cover of The First AI Literacy Journey" loading="lazy" draggable="false">
+          <span class="pg-overlay" aria-hidden="true"></span>
+          <span class="pg-wm" aria-hidden="true">AI Explorers Academy™ Preview</span>
+          <span class="pg-meta"><span class="pg-label">Cover</span><span class="pg-view">View Preview</span></span>
+        </button>
+        <button type="button" class="pg-thumb preview-card pg-open" data-index="2" aria-label="Open preview: Welcome page from The First AI Literacy Journey">
+          <img src="assets/products/first-ai-literacy-journey/preview-01-welcome.jpeg" alt="Welcome page from The First AI Literacy Journey" loading="lazy" draggable="false">
+          <span class="pg-overlay" aria-hidden="true"></span>
+          <span class="pg-wm" aria-hidden="true">AI Explorers Academy™ Preview</span>
+          <span class="pg-meta"><span class="pg-label">Welcome</span><span class="pg-view">View Preview</span></span>
+        </button>
+        <button type="button" class="pg-thumb preview-card pg-open" data-index="3" aria-label="Open preview: Become AI Detectives family mission">
+          <img src="assets/products/first-ai-literacy-journey/preview-02-ai-detectives.jpeg" alt="Become AI Detectives family mission" loading="lazy" draggable="false">
+          <span class="pg-overlay" aria-hidden="true"></span>
+          <span class="pg-wm" aria-hidden="true">AI Explorers Academy™ Preview</span>
+          <span class="pg-meta"><span class="pg-label">AI Detectives</span><span class="pg-view">View Preview</span></span>
+        </button>
+        <button type="button" class="pg-thumb preview-card pg-open" data-index="4" aria-label="Open preview: Create First family mission">
+          <img src="assets/products/first-ai-literacy-journey/preview-03-create-first.jpeg" alt="Create First family mission" loading="lazy" draggable="false">
+          <span class="pg-overlay" aria-hidden="true"></span>
+          <span class="pg-wm" aria-hidden="true">AI Explorers Academy™ Preview</span>
+          <span class="pg-meta"><span class="pg-label">Create First</span><span class="pg-view">View Preview</span></span>
+        </button>
+        <button type="button" class="pg-thumb preview-card pg-open" data-index="5" aria-label="Open preview: Check Before You Trust family mission">
+          <img src="assets/products/first-ai-literacy-journey/preview-04-check-before-trust.jpeg" alt="Check Before You Trust family mission" loading="lazy" draggable="false">
+          <span class="pg-overlay" aria-hidden="true"></span>
+          <span class="pg-wm" aria-hidden="true">AI Explorers Academy™ Preview</span>
+          <span class="pg-meta"><span class="pg-label">Check First</span><span class="pg-view">View Preview</span></span>
+        </button>
+        <button type="button" class="pg-thumb preview-card pg-open" data-index="6" aria-label="Open preview: Choose Kindness family mission">
+          <img src="assets/products/first-ai-literacy-journey/preview-05-kindness.jpeg" alt="Choose Kindness family mission" loading="lazy" draggable="false">
+          <span class="pg-overlay" aria-hidden="true"></span>
+          <span class="pg-wm" aria-hidden="true">AI Explorers Academy™ Preview</span>
+          <span class="pg-meta"><span class="pg-label">Kindness</span><span class="pg-view">View Preview</span></span>
+        </button>
+        <button type="button" class="pg-thumb preview-card pg-open" data-index="7" aria-label="Open preview: AI-Ready Family Promise and final badges">
+          <img src="assets/products/first-ai-literacy-journey/preview-06-family-promise.jpeg" alt="AI-Ready Family Promise and final badges" loading="lazy" draggable="false">
+          <span class="pg-overlay" aria-hidden="true"></span>
+          <span class="pg-wm" aria-hidden="true">AI Explorers Academy™ Preview</span>
+          <span class="pg-meta"><span class="pg-label">Family Promise</span><span class="pg-view">View Preview</span></span>
+        </button>
       </div>
     </div>
 
     <!-- Product info -->
     <div class="product-info reveal">
-      <span class="eyebrow">Family Resource</span>
-      <h1>AI Family Starter Kit</h1>
-      <p class="product-sub">Everything your family needs to begin the AI Literacy journey — together. A simple, guided, screen-light starting point for curious households.</p>
+      <span class="eyebrow">Guided Family Experience</span>
+      <h1>The First AI Literacy Journey</h1>
+      <p class="product-sub">7 Family Missions to Raise an AI-Ready Child</p>
 
-      <!-- Price placeholder — update to your actual price -->
-      <div class="product-price">
-        <span class="amount">$19</span>
-        <span class="price-note">One-time · Instant digital download</span>
+      <div class="product-desc">
+        <p>Artificial intelligence is already becoming part of your child's world—but their first lessons about AI should begin with curiosity, creativity, wisdom, and family connection.</p>
+        <p>The First AI Literacy Journey is a beautifully illustrated, guided experience that helps parents and children explore AI together through seven meaningful family missions.</p>
+        <p>Your child will learn to notice where AI appears, ask better questions, create before copying, check information before trusting it, choose kindness, and enjoy technology with balance.</p>
+        <p>No technical experience is required. Just bring your curiosity—and begin the journey together.</p>
       </div>
 
-      <!-- Replace this link with the Stripe Payment Link or Payhip checkout link. -->
-      <a href="#" class="btn btn-gold product-buy">Buy Now <span class="arrow">→</span></a>
-      <p class="buy-note">🔒 Secure checkout via Stripe. We never see or store your card details.</p>
+      <div class="product-price">
+        <span class="amount">$9</span>
+        <span class="price-note">Launch price · One-time purchase · Instant digital download</span>
+      </div>
+
+      <a href="#" class="btn btn-gold product-buy">Begin Our Family Journey — $9 <span class="arrow">→</span></a>
+      <p class="buy-note">🔒 Secure checkout via Stripe · Download immediately after purchase</p>
     </div>
   </div>
 </header>
 
-<!-- ================= PRODUCT DETAILS ================= -->
+<!-- ================= WHAT YOUR FAMILY WILL DISCOVER ================= -->
 <section class="product-detail">
   <div class="wrap">
-    <div class="section-head reveal" style="text-align:left;margin-bottom:36px;max-width:760px;">
-      <span class="eyebrow">About this kit</span>
-      <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-top:12px;">A calm, confident first step into AI at home</h2>
-      <p style="margin-top:14px;">You don't need to be a tech expert to raise an AI-ready child. The AI Family Starter Kit gives you plain-language guidance, conversation starters, and playful activities to explore AI together — safely and thoughtfully.</p>
+    <div class="section-head reveal">
+      <span class="eyebrow">What your family will discover</span>
+      <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-top:12px;">Seven missions. Seven habits for an AI-powered world.</h2>
     </div>
+    <div class="mission-grid reveal">
+      <article class="mission-card"><span class="m-num">Mission 1</span><h3>Become AI Detectives</h3><p>Notice where AI already appears in everyday life.</p></article>
+      <article class="mission-card"><span class="m-num">Mission 2</span><h3>Ask Better Questions</h3><p>Develop curiosity and learn that thoughtful questions lead to better understanding.</p></article>
+      <article class="mission-card"><span class="m-num">Mission 3</span><h3>Create First</h3><p>Protect imagination by creating original ideas before asking AI for help.</p></article>
+      <article class="mission-card"><span class="m-num">Mission 4</span><h3>Check Before You Trust</h3><p>Practice verifying information instead of believing every answer.</p></article>
+      <article class="mission-card"><span class="m-num">Mission 5</span><h3>Choose Kindness</h3><p>Use technology with empathy, respect, and responsibility.</p></article>
+      <article class="mission-card"><span class="m-num">Mission 6</span><h3>Balance Matters</h3><p>Build healthy habits that keep family relationships, play, and real life at the center.</p></article>
+      <article class="mission-card"><span class="m-num">Mission 7</span><h3>We Are an AI-Ready Family</h3><p>Celebrate your progress and create your family's promise for using AI wisely.</p></article>
+    </div>
+  </div>
+</section>
 
+<!-- ================= WHAT'S INCLUDED / PERFECT FOR ================= -->
+<section>
+  <div class="wrap">
     <div class="pd-cols">
       <div class="pd-block reveal">
-        <h2>Who it's for</h2>
-        <ul class="pd-list">
-          <li>Parents who are new to AI and want a trustworthy starting point</li>
-          <li>Families with children roughly ages 5–12</li>
-          <li>Homeschooling families building AI literacy at home</li>
-          <li>Anyone who wants to talk about AI with kids — without the overwhelm</li>
+        <h2>Inside your digital journey</h2>
+        <ul class="pd-list pd-included">
+          <li>7 beautifully illustrated family missions</li>
+          <li>Parent-child conversation prompts</li>
+          <li>Hands-on and screen-light activities</li>
+          <li>Hidden-picture challenges</li>
+          <li>7 colorable achievement badges</li>
+          <li>AI Explorers Compass™ learning connections</li>
+          <li>Creativity, critical-thinking, kindness, and balance activities</li>
+          <li>An AI-Ready Family Promise</li>
+          <li>A final family celebration page</li>
+          <li>17 printable pages</li>
+          <li>PDF format</li>
+          <li>Designed primarily for families with children ages 5–9</li>
         </ul>
       </div>
       <div class="pd-block reveal">
-        <h2>What's included</h2>
-        <ul class="pd-list pd-included">
-          <li>Printable AI Literacy Starter Guide for parents</li>
-          <li>10 family conversation cards to spark curiosity</li>
-          <li>"AI in Our Home" discovery activity sheets</li>
-          <li>Parent quick-reference glossary of key AI terms</li>
-          <li>Bonus: 30-day family AI exploration calendar</li>
+        <h2>Perfect for your family if…</h2>
+        <ul class="pd-list">
+          <li>You know your child will grow up with AI, but you do not know where to begin.</li>
+          <li>You want more than instructions about apps and prompts.</li>
+          <li>You want your child to remain curious, creative, thoughtful, and kind.</li>
+          <li>You prefer meaningful family activities over additional passive screen time.</li>
+          <li>You want to explore AI alongside your child without needing to be a technology expert.</li>
         </ul>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">How it works</span>
+      <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-top:12px;">Three simple steps</h2>
+    </div>
+    <div class="step-grid reveal">
+      <article class="step-card"><span class="s-num">1</span><h3>Download</h3><p>Receive the complete journey immediately after checkout.</p></article>
+      <article class="step-card"><span class="s-num">2</span><h3>Choose one mission</h3><p>Complete the missions daily, weekly, or at your family's own pace.</p></article>
+      <article class="step-card"><span class="s-num">3</span><h3>Explore together</h3><p>Talk, create, complete the challenge, and color the mission badge.</p></article>
+    </div>
+    <p class="step-note reveal">Most missions are designed to become one meaningful family activity rather than another formal lesson.</p>
   </div>
 </section>
 
@@ -126,24 +276,44 @@
     </div>
     <div class="faq reveal">
       <details>
-        <summary>What format is the kit?</summary>
-        <p>It's a digital download (PDF). After purchase you'll get an instant link to download and print everything at home — no app or special software required.</p>
+        <summary>What ages is this journey designed for?</summary>
+        <p>It is designed primarily for families with children ages 5–9. Younger children may participate with more parent guidance, while older siblings can join the discussions and challenges.</p>
       </details>
       <details>
-        <summary>What age is it designed for?</summary>
-        <p>The activities work best for children roughly ages 5–12, and the parent guidance is written for any caregiver, regardless of tech background.</p>
+        <summary>Does my child need to use an AI tool?</summary>
+        <p>No. Several missions are screen-light or completely screen-free. The goal is to build foundational thinking habits before focusing on specific tools.</p>
       </details>
       <details>
-        <summary>Do I need any technical experience?</summary>
-        <p>Not at all. Everything is written in plain language. If you can hold a conversation with your child, you can use this kit.</p>
+        <summary>Do parents need previous AI experience?</summary>
+        <p>Not at all. Every mission includes simple explanations, discussion questions, and guided activities that parents and children can complete together.</p>
       </details>
       <details>
-        <summary>How do I access it after purchase?</summary>
-        <p>Checkout is handled securely by Stripe. As soon as your payment is confirmed, you'll receive a download link by email and on the confirmation screen.</p>
+        <summary>How long does the journey take?</summary>
+        <p>Your family can complete one mission each day, one each week, or follow your own rhythm. It is designed to fit naturally into family life rather than feel like additional homework.</p>
       </details>
       <details>
-        <summary>What's your refund policy?</summary>
-        <p>Because this is an instant digital product, please review the description before purchasing. If something isn't right, reach out at missjoy@aiexplorersacademy.org and we'll help.</p>
+        <summary>What will I receive?</summary>
+        <p>You will receive a 17-page digital PDF containing seven illustrated family missions, activities, conversation prompts, colorable badges, a Family Promise, and a final celebration experience.</p>
+      </details>
+      <details>
+        <summary>Is this a physical product?</summary>
+        <p>No. This is an instant digital download. No physical item will be shipped.</p>
+      </details>
+      <details>
+        <summary>May I print it?</summary>
+        <p>Yes. Your purchase includes permission to print one copy for use within your immediate household.</p>
+      </details>
+      <details>
+        <summary>Can teachers, churches, groups, or schools use it?</summary>
+        <p>The family license is intended for one household. Teachers, churches, groups, and schools should contact AI Explorers Academy for educational or institutional licensing.</p>
+      </details>
+      <details>
+        <summary>What materials will we need?</summary>
+        <p>Most activities require only simple household materials such as paper, pencils, crayons, or a device when a mission includes optional AI exploration.</p>
+      </details>
+      <details>
+        <summary>What is the refund policy?</summary>
+        <p>Because this is an instantly accessible digital product, purchases are generally non-refundable. If you experience a technical problem receiving or opening the file, please contact us for support.</p>
       </details>
     </div>
   </div>
@@ -152,14 +322,33 @@
 <!-- ================= FINAL CTA ================= -->
 <section class="final-cta">
   <div class="wrap reveal">
-    <div class="motto-stack" style="font-size:clamp(2rem,5vw,3.4rem);">
-      <span class="c-white">Begin your family's</span>
-      <span class="c-acad">AI Literacy journey.</span>
+    <div class="motto-stack" style="font-size:clamp(1.9rem,4.6vw,3rem);">
+      <span class="c-white">Begin Your Family's</span>
+      <span class="c-acad">First AI Literacy Journey</span>
     </div>
-    <!-- Replace this link with the Stripe Payment Link or Payhip checkout link. -->
-    <a href="#" class="btn btn-gold" style="font-size:1.05rem;padding:18px 36px;margin-top:28px;">Buy Now <span class="arrow">→</span></a>
+    <p style="max-width:64ch;margin:22px auto 0;color:var(--ink-soft);line-height:1.7;">Seven joyful missions can help your family move from uncertainty about AI to curiosity, creativity, discernment, kindness, and confident learning together.</p>
+    <div class="product-price" style="justify-content:center;margin:24px 0 0;"><span class="amount">$9</span></div>
+    <a href="#" class="btn btn-gold" style="font-size:1.05rem;padding:18px 36px;margin-top:22px;">Begin Our Family Journey — $9 <span class="arrow">→</span></a>
   </div>
 </section>
+
+<!-- ================= PREVIEW LIGHTBOX (prev/next + counter) ================= -->
+<!-- Light deterrent only: draggable=false + right-click disabled on preview images;
+     subtle PREVIEW watermark overlay. The full PDF is never exposed publicly. -->
+<div class="modal exp-lightbox" id="pgLightbox" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Journey preview gallery">
+  <button type="button" class="exp-lb-close" id="pgLbClose" aria-label="Close preview">✕</button>
+  <div class="exp-lb-stage">
+    <button type="button" class="exp-lb-nav" id="pgLbPrev" aria-label="Previous preview">‹</button>
+    <div class="exp-lb-mediawrap">
+      <div class="exp-lb-media">
+        <img id="pgLbImg" src="" alt="Journey preview" draggable="false">
+        <span class="exp-wm" aria-hidden="true">PREVIEW</span>
+      </div>
+      <div class="exp-lb-bar"><span class="cap" id="pgLbCap">Preview</span><span id="pgLbCount">1 / 8</span></div>
+    </div>
+    <button type="button" class="exp-lb-nav" id="pgLbNext" aria-label="Next preview">›</button>
+  </div>
+</div>
 
 <!-- ================= FOOTER ================= -->
 <footer class="footer">
@@ -191,6 +380,67 @@
 </footer>
 
 <script src="js/main.js?v=29"></script>
+<script>
+/* The First AI Literacy Journey — preview lightbox (page-scoped, prev/next + counter) */
+(function () {
+  var lb = document.getElementById("pgLightbox");
+  if (!lb) return;
+  var base = "assets/products/first-ai-literacy-journey/";
+  var items = [
+    { src: base + "product-mockup.jpeg",              label: "The First AI Literacy Journey" },
+    { src: base + "cover.jpeg",                       label: "Cover" },
+    { src: base + "preview-01-welcome.jpeg",          label: "Welcome" },
+    { src: base + "preview-02-ai-detectives.jpeg",    label: "Become AI Detectives" },
+    { src: base + "preview-03-create-first.jpeg",     label: "Create First" },
+    { src: base + "preview-04-check-before-trust.jpeg", label: "Check Before You Trust" },
+    { src: base + "preview-05-kindness.jpeg",         label: "Choose Kindness" },
+    { src: base + "preview-06-family-promise.jpeg",   label: "AI-Ready Family Promise" }
+  ];
+  var img = document.getElementById("pgLbImg");
+  var cap = document.getElementById("pgLbCap");
+  var count = document.getElementById("pgLbCount");
+  var closeBtn = document.getElementById("pgLbClose");
+  var current = 0;
+
+  function render(i) {
+    var it = items[i];
+    img.src = it.src; img.alt = it.label + " preview";
+    cap.textContent = it.label; count.textContent = (i + 1) + " / " + items.length;
+  }
+  function open(i) {
+    current = i; render(i);
+    lb.classList.add("open"); lb.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    if (closeBtn) closeBtn.focus();
+  }
+  function close() {
+    lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = ""; img.src = "";
+  }
+  function step(d) { current = (current + d + items.length) % items.length; render(current); }
+
+  document.querySelectorAll(".pg-open").forEach(function (t) {
+    var idx = parseInt(t.getAttribute("data-index"), 10) || 0;
+    t.addEventListener("click", function () { open(idx); });
+    t.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(idx); } });
+  });
+  if (closeBtn) closeBtn.addEventListener("click", close);
+  var prev = document.getElementById("pgLbPrev"), next = document.getElementById("pgLbNext");
+  if (prev) prev.addEventListener("click", function (e) { e.stopPropagation(); step(-1); });
+  if (next) next.addEventListener("click", function (e) { e.stopPropagation(); step(1); });
+  lb.addEventListener("click", function (e) { if (e.target === lb || e.target.classList.contains("exp-lb-stage")) close(); });
+  document.addEventListener("keydown", function (e) {
+    if (!lb.classList.contains("open")) return;
+    if (e.key === "Escape") close();
+    else if (e.key === "ArrowLeft") step(-1);
+    else if (e.key === "ArrowRight") step(1);
+  });
+  /* light deterrent: block right-click on preview images only */
+  document.addEventListener("contextmenu", function (e) {
+    if (e.target.closest(".pg-thumb, .pg-cover, .exp-lb-media")) e.preventDefault();
+  });
+})();
+</script>
 <!-- Vercel Web Analytics -->
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
 <script defer src="/_vercel/insights/script.js"></script>
