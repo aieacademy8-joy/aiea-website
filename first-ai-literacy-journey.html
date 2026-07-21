@@ -84,11 +84,16 @@
   /* Mission 7 spans the full row so the grid ends intentionally (1 col on mobile). */
   .journey-page .mission-grid .mission-card:last-child { grid-column: 1 / -1; }
 
-  /* Price positioning */
-  .journey-page .product-price { flex-wrap: wrap; align-items: baseline; gap: 12px; }
-  .journey-page .price-value { color: var(--ink-faint); font-size: .92rem; }
-  .journey-page .price-note { display: block; color: var(--ink-faint); font-size: .88rem; margin-top: 8px; line-height: 1.55; max-width: 46ch; }
-  .journey-page .final-cta .price-note { margin-inline: auto; }
+  /* Pricing card — reuses the 30 Days .exp-offer card (border, radius, gold wash,
+     spacing and type scale) so both pages read identically. $9 is the dominant
+     element; $29 is shown plainly as the genuine value (no strikethrough). */
+  .journey-page .exp-offer { margin: 4px 0 22px; max-width: 430px; }
+  .journey-page .exp-offer-launch { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .journey-page .exp-offer-launch strong { font-size: 1.55em; font-weight: 700; letter-spacing: -.01em; }
+  .journey-page .offer-label { font-family: var(--sans); font-size: .46em; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); opacity: .9; }
+  .journey-page .exp-offer-fine { font-size: .76rem; color: var(--ink-faint); margin-top: 5px; line-height: 1.5; }
+  .journey-page .final-cta .exp-offer { margin: 26px auto 22px; text-align: center; }
+  .journey-page .final-cta .exp-offer-launch { justify-content: center; }
 
   /* FAQ heading matches the page's other section headings; tighten FAQ → final CTA. */
   .journey-page .faq-section .section-head h2 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); }
@@ -208,11 +213,12 @@
         <p>No technical experience is required. Just bring your curiosity—and begin the journey together.</p>
       </div>
 
-      <div class="product-price">
-        <span class="amount">$9</span>
-        <span class="price-value">Introductory Price · Educational Value: <s>$15</s></span>
+      <div class="exp-offer">
+        <span class="exp-offer-value">$29 Full Educational Value</span>
+        <span class="exp-offer-launch"><strong>$9</strong><span class="offer-label">Introductory Price</span></span>
+        <span class="exp-offer-note">Priced intentionally lower to help more families begin their first AI literacy journey.</span>
+        <span class="exp-offer-fine">One-time purchase · Instant digital download · Family-use license</span>
       </div>
-      <p class="price-note">Introductory access · One-time purchase · Instant digital download · Family-use license</p>
 
       <a href="#" class="btn btn-gold product-buy">Begin Our Family Journey — $9 <span class="arrow">→</span></a>
       <p class="buy-note">Instant download · Secure Stripe checkout · Print for one household</p>
@@ -350,12 +356,13 @@
       <span class="c-acad">First AI Literacy Journey</span>
     </div>
     <p style="max-width:64ch;margin:22px auto 0;color:var(--ink-soft);line-height:1.7;">Seven joyful missions can help your family move from uncertainty about AI to curiosity, creativity, discernment, kindness, and confident learning together.</p>
-    <div class="product-price" style="justify-content:center;margin:24px 0 0;">
-      <span class="amount">$9</span>
-      <span class="price-value">Introductory Price · Educational Value: <s>$15</s></span>
+    <div class="exp-offer">
+      <span class="exp-offer-value">$29 Full Educational Value</span>
+      <span class="exp-offer-launch"><strong>$9</strong><span class="offer-label">Introductory Price</span></span>
+      <span class="exp-offer-note">Priced intentionally lower to help more families begin their first AI literacy journey.</span>
+      <span class="exp-offer-fine">One-time purchase · Instant digital download · Family-use license</span>
     </div>
-    <p class="price-note" style="text-align:center;">Introductory access · One-time purchase · Instant digital download · Family-use license</p>
-    <a href="#" class="btn btn-gold" style="font-size:1.05rem;padding:18px 36px;margin-top:22px;">Begin Our Family Journey — $9 <span class="arrow">→</span></a>
+    <a href="#" class="btn btn-gold" style="font-size:1.05rem;padding:18px 36px;">Begin Our Family Journey — $9 <span class="arrow">→</span></a>
     <p class="buy-note" style="justify-content:center;">Instant download · Secure Stripe checkout · Print for one household</p>
   </div>
 </section>
