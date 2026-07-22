@@ -69,8 +69,8 @@
   <div class="wrap" style="max-width:720px;">
     <span class="eyebrow" style="color:var(--gold);">Payment Confirmed</span>
     <div class="thanks-heading">
-      <span class="th-line c-white">Thank you.</span>
-      <span class="th-line gold-grad">Your guide is ready.</span>
+      <span class="th-line c-white" id="th-line-1">Thank you.</span>
+      <span class="th-line gold-grad" id="th-line-2">Your guide is ready.</span>
     </div>
 
     <div class="thanks-access" id="access-status" aria-live="polite">
@@ -112,11 +112,37 @@
 
 <script src="js/main.js?v=41"></script>
 <script>
-/* Post-purchase delivery: verify the Stripe session, then reveal the private download link. */
+/* Post-purchase delivery: verify the Stripe session, then reveal the private download link.
+   Product-aware: /api/check-access returns which product was purchased, and the heading and
+   download label adapt to it. The default markup is the Parenting Guide wording, so that
+   flow renders identically whether or not this map is consulted. */
 (function () {
   var status = document.getElementById("access-status");
   if (!status) return;
   var sid = new URLSearchParams(window.location.search).get("session_id");
+
+  var COPY = {
+    "ai-parenting-survival-guide": {
+      l1: "Thank you.",
+      l2: "Your guide is ready.",
+      btn: "Download your guide"
+    },
+    "first-ai-literacy-journey": {
+      l1: "The First AI Literacy Journey",
+      l2: "Your 7 family missions are ready.",
+      btn: "Download your missions"
+    }
+  };
+
+  function applyCopy(product, productName) {
+    var c = COPY[product];
+    if (!c) c = { l1: productName || "Thank you.", l2: "Your download is ready.", btn: "Download now" };
+    var l1 = document.getElementById("th-line-1");
+    var l2 = document.getElementById("th-line-2");
+    if (l1) l1.textContent = c.l1;
+    if (l2) l2.textContent = c.l2;
+    return c;
+  }
 
   function showError(msg) {
     status.innerHTML = '<p class="thanks-err">' + msg + '</p>';
@@ -133,8 +159,9 @@
       if (!res.ok || !res.data || !res.data.ok || !res.data.download) {
         throw new Error((res.data && res.data.error) || "not_verified");
       }
+      var c = applyCopy(res.data.product, res.data.productName);
       status.innerHTML =
-        '<a class="btn btn-gold" href="' + res.data.download + '">Download your guide <span class="arrow">→</span></a>' +
+        '<a class="btn btn-gold" href="' + res.data.download + '">' + c.btn + ' <span class="arrow">→</span></a>' +
         '<p class="thanks-note">This is a private, time-limited link — please save the PDF to your device. We’ve also emailed your private access link to the address used at checkout.</p>';
     })
     .catch(function () {

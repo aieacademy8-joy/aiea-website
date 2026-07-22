@@ -1,26 +1,36 @@
 // ============================================================
-// AI Explorers Academy — Post-purchase access check
+// AI Explorers Academy — Post-purchase access check (multi-product)
 // Vercel Serverless Function.  GET /api/check-access?session_id=cs_…
 //
-// Verifies a *paid* Stripe Checkout Session for the AI Parenting Survival Guide
-// (server-side, using STRIPE_SECRET_KEY) and returns a short-lived, HMAC-signed
-// download link. The PDF URL is never exposed here — only a token that
-// /api/download-guide will validate before streaming the file.
+// Verifies a *paid* Stripe Checkout Session (server-side, using STRIPE_SECRET_KEY),
+// identifies WHICH product was purchased from the session metadata, and returns a
+// short-lived HMAC download token BOUND TO THAT PRODUCT. No PDF path or URL is ever
+// exposed here — only a token that /api/download-guide validates before streaming.
+//
+// Product identity resolution (in order):
+//   metadata.productKey  → metadata.product (legacy)  → DEFAULT_PRODUCT
+// The final fallback preserves the original behaviour for older Parenting Guide
+// sessions that were created before product metadata existed.
 //
 // Required Vercel env vars:
 //   STRIPE_SECRET_KEY        – Stripe secret key (sk_live_…) to retrieve the session
 //   DOWNLOAD_TOKEN_SECRET    – HMAC secret used to sign download tokens
 // Optional:
-//   STRIPE_PARENTING_PAYMENT_LINK – Payment Link id (plink_…); if set, the session's
-//                                   payment_link must match (extra product scoping)
+//   STRIPE_PARENTING_PAYMENT_LINK – Payment Link id (plink_…); if set, a Parenting
+//                                   Guide session's payment_link must match it
 //
-// No npm dependencies — uses Node's built-in `crypto` + the Stripe REST API via fetch.
+// No npm dependencies — Node's built-in `crypto` + the Stripe REST API via fetch.
 // ============================================================
 
 const crypto = require("crypto");
 
-var EXPECTED_PRODUCT = "ai-parenting-survival-guide";
-var TOKEN_TTL_SECONDS = 6 * 3600; // link valid for 6 hours; re-issued whenever this page reloads
+// Server-side product registry (never shipped to the browser).
+var PRODUCTS = {
+  "ai-parenting-survival-guide": { name: "AI Parenting Survival Guide" },
+  "first-ai-literacy-journey": { name: "The First AI Literacy Journey" },
+};
+var DEFAULT_PRODUCT = "ai-parenting-survival-guide"; // legacy sessions without metadata
+var TOKEN_TTL_SECONDS = 6 * 3600; // link valid for 6 hours; re-issued whenever the page reloads
 
 module.exports = async (req, res) => {
   if (req.method !== "GET") {
@@ -55,25 +65,32 @@ module.exports = async (req, res) => {
   var paid = session.payment_status === "paid" || session.status === "complete";
   if (!paid) return res.status(402).json({ error: "Payment not completed for this order." });
 
-  // Product scoping: if metadata.product is present it must match; and if the optional
-  // Payment Link id env var is set, the session's payment_link must match it too.
-  var product = session.metadata && session.metadata.product;
-  if (product && product !== EXPECTED_PRODUCT) {
-    return res.status(403).json({ error: "This order is for a different product." });
-  }
-  var expectedLink = process.env.STRIPE_PARENTING_PAYMENT_LINK;
-  if (expectedLink && session.payment_link && session.payment_link !== expectedLink) {
+  // Which product was purchased?
+  var md = session.metadata || {};
+  var key = String(md.productKey || md.product || DEFAULT_PRODUCT);
+  var cfg = PRODUCTS[key];
+  if (!cfg) {
+    console.log("[access] unknown product on session");
     return res.status(403).json({ error: "This order is for a different product." });
   }
 
+  // Legacy extra scoping for the Parenting Guide only (unchanged behaviour).
+  var expectedLink = process.env.STRIPE_PARENTING_PAYMENT_LINK;
+  if (key === DEFAULT_PRODUCT && expectedLink && session.payment_link && session.payment_link !== expectedLink) {
+    return res.status(403).json({ error: "This order is for a different product." });
+  }
+
+  // Token is bound to the product — /api/download-guide will only serve that product's PDF.
   var token = signToken(
-    { p: EXPECTED_PRODUCT, sid: session.id, exp: Math.floor(Date.now() / 1000) + TOKEN_TTL_SECONDS },
+    { p: key, sid: session.id, exp: Math.floor(Date.now() / 1000) + TOKEN_TTL_SECONDS },
     tokenSecret
   );
 
+  console.log("[access] ok product=" + key);
   return res.status(200).json({
     ok: true,
-    product: EXPECTED_PRODUCT,
+    product: key,
+    productName: cfg.name,
     download: "/api/download-guide?token=" + encodeURIComponent(token),
     expires_in: TOKEN_TTL_SECONDS,
   });

@@ -223,7 +223,7 @@
         <span class="exp-offer-fine">One-time purchase · Instant digital download · Family-use license</span>
       </div>
 
-      <a href="#" class="btn btn-gold product-buy">Begin Our Family Journey — $9 <span class="arrow">→</span></a>
+      <a href="#" class="btn btn-gold product-buy js-journey-checkout">Begin Our Family Journey — $9 <span class="arrow">→</span></a>
       <p class="buy-note">Instant download · Secure Stripe checkout · Print for one household</p>
     </div>
   </div>
@@ -365,7 +365,7 @@
       <span class="exp-offer-note">Priced intentionally lower to help more families begin their first AI literacy journey.</span>
       <span class="exp-offer-fine">One-time purchase · Instant digital download · Family-use license</span>
     </div>
-    <a href="#" class="btn btn-gold" style="font-size:1.05rem;padding:18px 36px;">Begin Our Family Journey — $9 <span class="arrow">→</span></a>
+    <a href="#" class="btn btn-gold js-journey-checkout" style="font-size:1.05rem;padding:18px 36px;">Begin Our Family Journey — $9 <span class="arrow">→</span></a>
     <p class="buy-note" style="justify-content:center;">Instant download · Secure Stripe checkout · Print for one household</p>
   </div>
 </section>
@@ -418,6 +418,56 @@
 </footer>
 
 <script src="js/main.js?v=29"></script>
+<script>
+/* The First AI Literacy Journey — Stripe checkout trigger.
+   Posts only the product KEY; the Price ID and secret key live server-side in
+   /api/create-checkout and are never present in this page. While a session is being
+   created BOTH buttons are disabled to prevent duplicate charges. */
+(function () {
+  var buttons = document.querySelectorAll(".js-journey-checkout");
+  if (!buttons.length) return;
+  var busy = false;
+
+  function setLoading(on) {
+    busy = on;
+    Array.prototype.forEach.call(buttons, function (b) {
+      if (on) {
+        b.setAttribute("data-loading", "1");
+        b.setAttribute("aria-busy", "true");
+        b.style.pointerEvents = "none";
+        b.style.opacity = "0.7";
+      } else {
+        b.removeAttribute("data-loading");
+        b.removeAttribute("aria-busy");
+        b.style.pointerEvents = "";
+        b.style.opacity = "";
+      }
+    });
+  }
+
+  Array.prototype.forEach.call(buttons, function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (busy) return;
+      setLoading(true);
+      fetch("/api/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ product: "first-ai-literacy-journey" })
+      })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, data: d }; }); })
+        .then(function (res) {
+          if (res.ok && res.data && res.data.url) { window.location.href = res.data.url; return; }
+          throw new Error((res.data && res.data.error) || "checkout_failed");
+        })
+        .catch(function () {
+          setLoading(false);
+          alert("Sorry — checkout is temporarily unavailable. Please try again in a moment, or email missjoy@aiexplorersacademy.org.");
+        });
+    });
+  });
+})();
+</script>
 <script>
 /* The First AI Literacy Journey — preview lightbox (page-scoped, prev/next + counter) */
 (function () {

@@ -2,11 +2,17 @@
 // AI Explorers Academy — Stripe webhook + email fulfillment
 // Vercel Serverless Function.  POST /api/stripe-webhook
 //
-// Verifies the Stripe webhook signature, then (for the AI Parenting Survival Guide
-// ONLY) emails the buyer a branded "Access Your Guide" link once payment is actually
-// successful. The email link reopens the existing thank-you page, which re-verifies
-// the paid Stripe session server-side and issues a fresh 6-hour download token — so
-// NO Blob URL, PDF URL, or download token is ever placed in the email.
+// Verifies the Stripe webhook signature, then emails the buyer a branded access link
+// once payment is actually successful. The product is resolved from the Checkout
+// Session metadata (metadata.product / metadata.productKey) against a server-side
+// registry, and each product has its own subject and body copy.
+//
+// The email link reopens the existing thank-you page, which re-verifies the paid
+// Stripe session server-side and issues a fresh 6-hour, product-bound download token —
+// so NO Blob URL, PDF URL, or download token is ever placed in the email.
+//
+// An unknown or absent product is skipped without sending (unchanged behaviour), so a
+// future product can never accidentally trigger the wrong email.
 //
 // Handles immediate (card) and delayed (ACH/bank) payment methods:
 //   • checkout.session.completed              → send only if payment_status === "paid"
@@ -37,9 +43,37 @@
 
 const crypto = require("crypto");
 
-var FULFILL_PRODUCT = "ai-parenting-survival-guide";
 var ORIGIN = "https://www.aiexplorersacademy.org";
 var SUPPORT_EMAIL = "missjoy@aiexplorersacademy.org";
+
+// Server-side product registry (never shipped to the browser). Keyed by the product key
+// written to Checkout Session metadata by /api/create-checkout. The Parenting Guide copy
+// below is byte-identical to the email that is already live — its flow is unchanged.
+var PRODUCTS = {
+  "ai-parenting-survival-guide": {
+    name: "AI Parenting Survival Guide",
+    subject: "Your AI Parenting Survival Guide is ready",
+    heading: "Your guide is ready.",
+    paragraphs: [
+      "Thank you for purchasing the AI Parenting Survival Guide.",
+      "Use the secure button below to access and download your guide. Your purchase will be verified before a private, time-limited download link is generated.",
+    ],
+    buttonLabel: "Access Your Guide",
+    license: "",
+  },
+  "first-ai-literacy-journey": {
+    name: "The First AI Literacy Journey",
+    subject: "Your First AI Literacy Journey Is Ready",
+    heading: "Your journey is ready.",
+    paragraphs: [
+      "Thank you for beginning The First AI Literacy Journey with your family.",
+      "Your purchase includes 7 guided family missions designed to help children think, create, question, and grow wisely with AI.",
+      "Use the secure button below to access and download your journey. Your purchase will be verified before a private, time-limited download link is generated.",
+    ],
+    buttonLabel: "Access Your Journey",
+    license: "Your purchase is licensed for use within one household.",
+  },
+};
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
@@ -92,10 +126,12 @@ module.exports = async (req, res) => {
 module.exports.config = { api: { bodyParser: false } };
 
 // ============================================================
-// Fulfillment — AI Parenting Survival Guide ONLY
+// Fulfillment — any product present in the PRODUCTS registry
 // ============================================================
 async function maybeFulfill(session, eventType) {
-  if (prod(session) !== FULFILL_PRODUCT) {
+  var key = prod(session);
+  var cfg = PRODUCTS[key];
+  if (!cfg) {
     console.log("[fulfillment] skip (other/no product) session=" + safeId(session.id));
     return;
   }
@@ -139,13 +175,13 @@ async function maybeFulfill(session, eventType) {
   }
 
   var accessUrl = ORIGIN + "/thank-you.html?session_id=" + encodeURIComponent(session.id);
-  var sent = await sendGuideEmail(apiKey, from, email, accessUrl);
+  var sent = await sendFulfillmentEmail(apiKey, from, email, accessUrl, cfg);
 
   if (!sent) {
-    console.error("[fulfillment] guide email FAILED session=" + safeId(session.id) + " via=" + eventType);
+    console.error("[fulfillment] email FAILED product=" + key + " session=" + safeId(session.id) + " via=" + eventType);
     return;
   }
-  console.log("[fulfillment] guide email sent session=" + safeId(session.id) + " via=" + eventType + " name=" + (name ? "y" : "n"));
+  console.log("[fulfillment] email sent product=" + key + " session=" + safeId(session.id) + " via=" + eventType + " name=" + (name ? "y" : "n"));
 
   if (piId && stripeKey) {
     var marked = await markPiFulfilled(stripeKey, piId);
@@ -186,7 +222,7 @@ async function markPiFulfilled(stripeKey, piId) {
   }
 }
 
-async function sendGuideEmail(apiKey, from, to, accessUrl) {
+async function sendFulfillmentEmail(apiKey, from, to, accessUrl, cfg) {
   try {
     var r = await fetch("https://api.postmarkapp.com/email", {
       method: "POST",
@@ -199,9 +235,9 @@ async function sendGuideEmail(apiKey, from, to, accessUrl) {
         From: from,
         To: to,
         ReplyTo: SUPPORT_EMAIL,
-        Subject: "Your AI Parenting Survival Guide is ready",
-        HtmlBody: emailHtml(accessUrl),
-        TextBody: emailText(accessUrl),
+        Subject: cfg.subject,
+        HtmlBody: emailHtml(accessUrl, cfg),
+        TextBody: emailText(accessUrl, cfg),
         MessageStream: "outbound",
       }),
     });
@@ -218,26 +254,38 @@ async function sendGuideEmail(apiKey, from, to, accessUrl) {
   }
 }
 
-function prod(s) { return (s && s.metadata && s.metadata.product) || "none"; }
+// productKey preferred, product = legacy key still written by /api/create-checkout.
+function prod(s) {
+  var m = (s && s.metadata) || {};
+  return String(m.productKey || m.product || "none");
+}
 function safeId(id) { return id ? (String(id).slice(0, 8) + "…" + String(id).slice(-4)) : "unknown"; }
 
 // ---- Branded transactional email (navy/gold, table-based, email-client safe) ----
-function emailHtml(accessUrl) {
+// Same structure, sender and branding for every product; only the copy varies.
+function emailHtml(accessUrl, cfg) {
   var href = escapeAttr(accessUrl);
+  var paras = cfg.paragraphs.map(function (p, i) {
+    var last = i === cfg.paragraphs.length - 1;
+    return '<p style="margin:0' + (last ? "" : " 0 16px") + ';">' + escapeHtml(p) + '</p>';
+  }).join("");
+  var licenseRow = cfg.license
+    ? '<tr><td style="padding:18px 40px 0;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.6;color:#8A95AD;">' + escapeHtml(cfg.license) + '</td></tr>'
+    : "";
   return '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-    '<meta name="color-scheme" content="dark light"><title>Your guide is ready</title></head>' +
+    '<meta name="color-scheme" content="dark light"><title>' + escapeHtml(cfg.heading) + '</title></head>' +
     '<body style="margin:0;padding:0;background:#050B1C;">' +
     '<span style="display:none!important;visibility:hidden;opacity:0;color:transparent;height:0;width:0;overflow:hidden;mso-hide:all;">Access your private AI Explorers Academy download.</span>' +
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#050B1C;"><tr><td align="center" style="padding:32px 16px;">' +
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#07122D;border:1px solid rgba(212,175,79,0.28);border-radius:16px;">' +
     '<tr><td style="padding:34px 40px 6px;text-align:center;font-family:Georgia,\'Times New Roman\',serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#D4AF4F;">AI Explorers Academy</td></tr>' +
-    '<tr><td style="padding:6px 40px 0;text-align:center;"><h1 style="margin:0;font-family:Georgia,\'Times New Roman\',serif;font-weight:normal;font-size:30px;line-height:1.15;color:#F5F4EF;">Your guide is ready.</h1></td></tr>' +
+    '<tr><td style="padding:6px 40px 0;text-align:center;"><h1 style="margin:0;font-family:Georgia,\'Times New Roman\',serif;font-weight:normal;font-size:30px;line-height:1.15;color:#F5F4EF;">' + escapeHtml(cfg.heading) + '</h1></td></tr>' +
     '<tr><td style="padding:20px 40px 0;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.65;color:#C9D2E4;">' +
-    '<p style="margin:0 0 16px;">Thank you for purchasing the AI Parenting Survival Guide.</p>' +
-    '<p style="margin:0;">Use the secure button below to access and download your guide. Your purchase will be verified before a private, time-limited download link is generated.</p></td></tr>' +
+    paras + '</td></tr>' +
     '<tr><td align="center" style="padding:28px 40px 6px;">' +
-    '<a href="' + href + '" style="display:inline-block;background:#D4AF4F;color:#2A1E00;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;text-decoration:none;padding:15px 36px;border-radius:999px;">Access Your Guide</a></td></tr>' +
+    '<a href="' + href + '" style="display:inline-block;background:#D4AF4F;color:#2A1E00;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;text-decoration:none;padding:15px 36px;border-radius:999px;">' + escapeHtml(cfg.buttonLabel) + '</a></td></tr>' +
+    licenseRow +
     '<tr><td style="padding:16px 40px 0;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.6;color:#8A95AD;">Need help? Contact <a href="mailto:' + SUPPORT_EMAIL + '" style="color:#D4AF4F;text-decoration:none;">' + SUPPORT_EMAIL + '</a>.</td></tr>' +
     '<tr><td style="padding:24px 40px 34px;text-align:center;border-top:1px solid rgba(255,255,255,0.06);">' +
     '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:14px;color:#F5F4EF;">AI Explorers Academy</div>' +
@@ -245,17 +293,21 @@ function emailHtml(accessUrl) {
     '</table></td></tr></table></body></html>';
 }
 
-function emailText(accessUrl) {
-  return 'Your guide is ready.\n\n' +
-    'Thank you for purchasing the AI Parenting Survival Guide.\n\n' +
-    'Use the secure link below to access and download your guide. Your purchase will be verified before a private, time-limited download link is generated.\n\n' +
-    'Access Your Guide:\n' + accessUrl + '\n\n' +
+function emailText(accessUrl, cfg) {
+  return cfg.heading + '\n\n' +
+    cfg.paragraphs.join('\n\n').replace("secure button below", "secure link below") + '\n\n' +
+    cfg.buttonLabel + ':\n' + accessUrl + '\n\n' +
+    (cfg.license ? cfg.license + '\n\n' : '') +
     'Need help? Contact ' + SUPPORT_EMAIL + '.\n\n' +
     'AI Explorers Academy\nDiscover • Imagine • Create with AI\n';
 }
 
 function escapeAttr(s) {
   return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 // ---- helpers (unchanged) ----

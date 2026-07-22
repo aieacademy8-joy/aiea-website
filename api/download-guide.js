@@ -6,39 +6,57 @@
 // Edge-compatible. We still avoid the ~4.5 MB buffered-response cap by STREAMING the
 // object (Readable.fromWeb(...).pipe(res)) instead of buffering it.
 //
-// Retrieves the PRIVATE guide by STABLE PATHNAME from the connected Blob store via
-// get(). Config holds only a pathname (GUIDE_PDF_BLOB_PATH) — never a store-specific
-// hostname or full object URL — so re-uploading the PDF to the same pathname can never
-// break the live download again.
+// MULTI-PRODUCT: the signed token carries the product key (claims.p). That key selects
+// which env var holds the PDF location and which filename is served — so a token issued
+// for one product can NEVER download the other product's PDF. An unknown key is refused.
+//
+// Each product's PDF stays PRIVATE in the connected Blob store and is fetched by STABLE
+// PATHNAME via get(). Config holds only a pathname — never a store-specific hostname —
+// so re-uploading a PDF to the same pathname can never break the live download again.
+// (If a full https:// object URL is configured instead, we defensively reduce it to its
+// pathname so a pasted URL still resolves.)
 //
 // Auth: OIDC arrives on the `x-vercel-oidc-token` request header (process.env is empty
 // at runtime), so we pass get()'s oidcToken + storeId explicitly; BLOB_READ_WRITE_TOKEN
 // is the fallback (a private store rejects RW-only, so OIDC is tried first).
 //
-// Preserved: paid-session HMAC token (DOWNLOAD_TOKEN_SECRET) verification, product
-// bind, private storage, Content-Disposition filename, chunked streaming (no
-// Content-Length), branded HTML failure page (never a JSON body saved as ".pdf"), and
-// safe category-only logging (never secrets, emails, tokens, or private URLs).
+// Preserved: paid-session HMAC token (DOWNLOAD_TOKEN_SECRET) verification, product bind,
+// private storage, Content-Disposition filename, chunked streaming (no Content-Length),
+// branded HTML failure page (never a JSON body saved as ".pdf"), and safe category-only
+// logging (never secrets, emails, tokens, or private URLs).
 //
-// Env: DOWNLOAD_TOKEN_SECRET, GUIDE_PDF_BLOB_PATH, BLOB_STORE_ID,
-//      (OIDC via request header), (optional) BLOB_READ_WRITE_TOKEN
+// Env: DOWNLOAD_TOKEN_SECRET, BLOB_STORE_ID, (OIDC via request header),
+//      (optional) BLOB_READ_WRITE_TOKEN, plus per-product:
+//        GUIDE_PDF_BLOB_PATH                     – AI Parenting Survival Guide (unchanged)
+//        FIRST_AI_LITERACY_JOURNEY_PDF_BLOB_URL  – The First AI Literacy Journey
 // ============================================================
 
 const { get } = require("@vercel/blob");
 const crypto = require("crypto");
 const { Readable } = require("node:stream");
 
-var EXPECTED_PRODUCT = "ai-parenting-survival-guide";
-var FILENAME = "AI-Parenting-Survival-Guide.pdf";
+// Server-side product registry (never shipped to the browser).
+// The token's product key selects exactly one entry — this IS the cross-product guard.
+var PRODUCTS = {
+  "ai-parenting-survival-guide": {
+    name: "AI Parenting Survival Guide",
+    pdfEnv: "GUIDE_PDF_BLOB_PATH",
+    filename: "AI-Parenting-Survival-Guide.pdf",
+  },
+  "first-ai-literacy-journey": {
+    name: "The First AI Literacy Journey",
+    pdfEnv: "FIRST_AI_LITERACY_JOURNEY_PDF_BLOB_URL",
+    filename: "The-First-AI-Literacy-Journey.pdf",
+  },
+};
 
 module.exports = async (req, res) => {
   if (req.method !== "GET") return sendErrorPage(res, 405, "generic");
 
   var token = (req.query && req.query.token) || "";
   var tokenSecret = process.env.DOWNLOAD_TOKEN_SECRET;
-  var pathname = process.env.GUIDE_PDF_BLOB_PATH;
-  if (!tokenSecret || !pathname) {
-    console.log("[dl] fail cat=not_configured secret=" + (!!tokenSecret) + " path=" + (!!pathname));
+  if (!tokenSecret) {
+    console.log("[dl] fail cat=not_configured secret=false");
     return sendErrorPage(res, 500, "generic");
   }
 
@@ -49,12 +67,21 @@ module.exports = async (req, res) => {
     console.log("[dl] fail cat=token_rejected reason=" + (e && e.message));
     return sendErrorPage(res, 403, "token");
   }
-  if (claims.p !== EXPECTED_PRODUCT) {
+
+  // Product bind: the signed key decides which PDF may be served.
+  var cfg = PRODUCTS[claims.p];
+  if (!cfg) {
     console.log("[dl] fail cat=product_mismatch");
     return sendErrorPage(res, 403, "token");
   }
 
-  // Retrieve the private guide by pathname. get()'s explicit `token` option always wins
+  var pathname = toBlobPathname(process.env[cfg.pdfEnv]);
+  if (!pathname) {
+    console.log("[dl] fail cat=not_configured product=" + claims.p + " path=false");
+    return sendErrorPage(res, 500, "generic");
+  }
+
+  // Retrieve the private PDF by pathname. get()'s explicit `token` option always wins
   // over OIDC, so we set ONE credential per attempt: OIDC (from the request header)
   // first, RW token fallback, retrying only when the store rejects auth (401/403).
   var oidcToken = (req.headers && req.headers["x-vercel-oidc-token"]) || process.env.VERCEL_OIDC_TOKEN || "";
@@ -81,7 +108,7 @@ module.exports = async (req, res) => {
   }
 
   if (!result || result.statusCode !== 200 || !result.stream) {
-    console.log("[dl] fail cat=blob_unavailable status=" + lastStatus + " auth=" + usedAuth);
+    console.log("[dl] fail cat=blob_unavailable product=" + claims.p + " status=" + lastStatus + " auth=" + usedAuth);
     return sendErrorPage(res, 502, "generic");
   }
 
@@ -89,18 +116,29 @@ module.exports = async (req, res) => {
   // the buffered-response cap and the Chrome ERR_CONTENT_LENGTH_MISMATCH abort.
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/pdf");
-  res.setHeader("Content-Disposition", 'attachment; filename="' + FILENAME + '"');
+  res.setHeader("Content-Disposition", 'attachment; filename="' + cfg.filename + '"');
   res.setHeader("Cache-Control", "private, no-store");
   res.setHeader("X-Robots-Tag", "noindex");
-  console.log("[dl] ok auth=" + usedAuth);
+  console.log("[dl] ok product=" + claims.p + " auth=" + usedAuth);
   var nodeStream = Readable.fromWeb(result.stream);
   nodeStream.on("error", function () { try { res.destroy(); } catch (e) {} });
   nodeStream.pipe(res);
 };
 
+// Accept a stable pathname ("folder/File.pdf"). If a full object URL was configured,
+// reduce it to its pathname so the SDK lookup still succeeds.
+function toBlobPathname(value) {
+  var v = String(value || "").trim();
+  if (!v) return "";
+  if (v.indexOf("http://") === 0 || v.indexOf("https://") === 0) {
+    try { v = decodeURIComponent(new URL(v).pathname); } catch (e) { return ""; }
+  }
+  return v.replace(/^\/+/, "");
+}
+
 // Branded HTML failure page (text/html, no attachment) so the browser SHOWS it instead
-// of saving a JSON body as "AI-Parenting-Survival-Guide.pdf". The thank-you link has no
-// download attribute, so failures navigate here while success still downloads.
+// of saving a JSON body as a ".pdf". The thank-you link has no download attribute, so
+// failures navigate here while success still downloads.
 function sendErrorPage(res, status, kind) {
   var msg = kind === "token"
     ? "Your download link may have expired. Please reopen your confirmation page (from your purchase email) to get a fresh link."
@@ -114,7 +152,7 @@ function sendErrorPage(res, status, kind) {
     '<div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#D4AF4F;">AI Explorers Academy</div>' +
     '<h1 style="font-family:Georgia,\'Times New Roman\',serif;font-weight:normal;font-size:30px;line-height:1.2;margin:14px 0 10px;">We couldn’t prepare your download</h1>' +
     '<p style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.65;color:#C9D2E4;margin:0 0 14px;">' + msg + '</p>' +
-    '<p style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.65;color:#C9D2E4;margin:0;">Need help? Email <a href="mailto:missjoy@aiexplorersacademy.org" style="color:#D4AF4F;">missjoy@aiexplorersacademy.org</a> and we’ll send your guide right away.</p>' +
+    '<p style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.65;color:#C9D2E4;margin:0;">Need help? Email <a href="mailto:missjoy@aiexplorersacademy.org" style="color:#D4AF4F;">missjoy@aiexplorersacademy.org</a> and we’ll send your file right away.</p>' +
     '</div></body></html>';
   res.statusCode = status;
   res.setHeader("Content-Type", "text/html; charset=utf-8");
