@@ -167,15 +167,19 @@
         if (rmSubmit) { rmSubmit.disabled = true; rmSubmit.textContent = "Sending…"; }
 
         // Submits to our Vercel function, which subscribes the visitor to the matching
-        // MailerLite group (Parents / Teachers / School Leaders). The group's automation
-        // emails the correct PDF — no direct download is exposed here.
+        // MailerLite group (Parents / Teachers / School Leaders) AND emails the correct
+        // resource link via Postmark. Success is shown ONLY when the server confirms the
+        // email was accepted (data.success && data.emailAccepted) — never on subscribe alone.
         fetch("/api/subscribe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         })
-          .then(function (r) {
-            if (!r.ok) throw new Error("subscribe_failed");
+          .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, data: d }; }); })
+          .then(function (res) {
+            if (!res.ok || !res.data || res.data.success !== true || res.data.emailAccepted !== true) {
+              throw new Error("subscribe_failed");
+            }
             rmForm.hidden = true;
             if (rmThanks) rmThanks.hidden = false;
             setTimeout(closeResourceModal, 3000); // show success, then close

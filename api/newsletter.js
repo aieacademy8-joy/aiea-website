@@ -19,7 +19,7 @@
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({ success: false, error: "METHOD_NOT_ALLOWED" });
   }
 
   var body = req.body;
@@ -30,14 +30,17 @@ module.exports = async (req, res) => {
   var email = String(body.email || "").trim();
   var consent = body.consent === true || body.consent === "true" || body.consent === "on";
 
+  console.log("[newsletter] request received");
+
   if (!firstName || !email || !consent) {
-    return res.status(400).json({ error: "First name, email and consent are required." });
+    return res.status(400).json({ success: false, error: "MISSING_FIELDS" });
   }
 
   var apiKey = process.env.MAILERLITE_API_KEY;
   var groupId = process.env.ML_GROUP_NEWSLETTER;
   if (!apiKey || !groupId) {
-    return res.status(500).json({ error: "Server is not configured yet." });
+    console.error("[newsletter] not configured ml=" + !!apiKey + " group=" + !!groupId);
+    return res.status(500).json({ success: false, error: "SERVER_NOT_CONFIGURED" });
   }
 
   var BASE = "https://connect.mailerlite.com/api";
@@ -71,6 +74,7 @@ module.exports = async (req, res) => {
       .catch(function () { return null; });
   }
 
+  console.log("[newsletter] mailerlite subscribe started");
   try {
     var priorStatus = await lookupStatus();
 
@@ -80,21 +84,33 @@ module.exports = async (req, res) => {
       // 2) Verify it actually persisted; some accounts/regulations block API reactivation.
       var verified = await lookupStatus();
       if (verified === "active") {
-        return res.status(200).json({ ok: true, status: "resubscribed" });
+        console.log("[newsletter] final=resubscribed");
+        return res.status(200).json({ success: true, ok: true, status: "resubscribed" });
       }
       // 3) Compliant fallback: route them through double opt-in so they restore it themselves.
       await upsert("unconfirmed");
-      return res.status(200).json({ ok: true, status: "reconfirm_required" });
+      console.log("[newsletter] final=reconfirm_required");
+      return res.status(200).json({ success: true, ok: true, status: "reconfirm_required" });
     }
 
     // New subscriber, or already active/unconfirmed → ensure active + in the Newsletter group.
     var r = await upsert("active");
     if (r.ok) {
-      return res.status(200).json({ ok: true, status: "subscribed" });
+      console.log("[newsletter] final=subscribed");
+      return res.status(200).json({ success: true, ok: true, status: "subscribed" });
     }
-    var detail = await r.text();
-    return res.status(502).json({ error: "MailerLite rejected the request.", detail: detail });
+    // Log the provider reason server-side; never return the raw provider body to the browser.
+    var detail = await safeBody(r);
+    console.error("[newsletter] mailerlite rejected status=" + r.status + " body=" + detail);
+    return res.status(502).json({ success: false, error: "SUBSCRIBE_FAILED" });
   } catch (e) {
-    return res.status(502).json({ error: "Could not reach MailerLite." });
+    console.error("[newsletter] mailerlite unreachable: " + (e && e.message));
+    return res.status(502).json({ success: false, error: "SUBSCRIBE_FAILED" });
   }
 };
+
+// Read a provider error body safely for logs (never throws, bounded length).
+async function safeBody(r) {
+  try { return String(await r.text()).replace(/\s+/g, " ").slice(0, 200); }
+  catch (e) { return "(unreadable)"; }
+}

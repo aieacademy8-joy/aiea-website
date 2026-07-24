@@ -22,7 +22,7 @@
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({ success: false, error: "METHOD_NOT_ALLOWED" });
   }
 
   var body = req.body;
@@ -35,8 +35,10 @@ module.exports = async (req, res) => {
   var consent = body.consent === true || body.consent === "true" || body.consent === "on";
   var wantsNewsletter = body.newsletter === true || body.newsletter === "true" || body.newsletter === "on";
 
+  console.log("[launch] request received audience=" + (audience || "none") + " newsletter=" + wantsNewsletter);
+
   if (!firstName || !email || !consent) {
-    return res.status(400).json({ error: "First name, email and consent are required." });
+    return res.status(400).json({ success: false, error: "MISSING_FIELDS" });
   }
 
   var LAUNCH_GROUPS = {
@@ -47,15 +49,20 @@ module.exports = async (req, res) => {
   var apiKey = process.env.MAILERLITE_API_KEY;
 
   if (!apiKey || !launchGroup) {
-    return res.status(500).json({ error: "Server is not configured yet." });
+    // Distinguish a missing API key from an unset launch group so the Vercel logs point
+    // straight at the variable to fix (the group ID is per-product and set separately).
+    console.error("[launch] not configured ml=" + !!apiKey + " group[" + audience + "]=" + !!launchGroup);
+    return res.status(500).json({ success: false, error: "SERVER_NOT_CONFIGURED" });
   }
 
   var groups = [String(launchGroup)];
-  // Only join the general Newsletter group if the visitor separately opted in.
+  // Only join the general Newsletter group if the visitor SEPARATELY opted in — a launch
+  // signup alone never joins the Newsletter.
   if (wantsNewsletter && process.env.ML_GROUP_NEWSLETTER) {
     groups.push(String(process.env.ML_GROUP_NEWSLETTER));
   }
 
+  console.log("[launch] mailerlite subscribe started audience=" + audience + " groups=" + groups.length);
   try {
     var mlRes = await fetch("https://connect.mailerlite.com/api/subscribers", {
       method: "POST",
@@ -73,11 +80,22 @@ module.exports = async (req, res) => {
     });
 
     if (mlRes.ok) {
-      return res.status(200).json({ ok: true });
+      console.log("[launch] final=success audience=" + audience);
+      return res.status(200).json({ success: true });
     }
-    var detail = await mlRes.text();
-    return res.status(502).json({ error: "MailerLite rejected the request.", detail: detail });
+    // Log the provider reason server-side (e.g. "groups.0 is invalid" → a bad group ID in
+    // Vercel); never return the raw provider body to the browser.
+    var detail = await safeBody(mlRes);
+    console.error("[launch] mailerlite rejected audience=" + audience + " status=" + mlRes.status + " body=" + detail);
+    return res.status(502).json({ success: false, error: "SUBSCRIBE_FAILED" });
   } catch (e) {
-    return res.status(502).json({ error: "Could not reach MailerLite." });
+    console.error("[launch] mailerlite unreachable: " + (e && e.message));
+    return res.status(502).json({ success: false, error: "SUBSCRIBE_FAILED" });
   }
 };
+
+// Read a provider error body safely for logs (never throws, bounded length).
+async function safeBody(r) {
+  try { return String(await r.text()).replace(/\s+/g, " ").slice(0, 200); }
+  catch (e) { return "(unreadable)"; }
+}
