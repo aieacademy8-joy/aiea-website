@@ -25,19 +25,29 @@
     margin: 0; padding: 0; border: 0; cursor: pointer; display: block; background: var(--navy-2);
   }
   .video-facade img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* Subtle, even darken so the play button reads instantly against the thumbnail. */
   .video-facade::after {
     content: ""; position: absolute; inset: 0;
-    background: radial-gradient(120% 120% at 50% 50%, rgba(7,18,45,.10), rgba(7,18,45,.48));
+    background: linear-gradient(180deg, rgba(7,18,45,.30), rgba(7,18,45,.44));
     transition: background .3s;
   }
-  .video-facade:hover::after { background: radial-gradient(120% 120% at 50% 50%, rgba(7,18,45,0), rgba(7,18,45,.34)); }
+  .video-facade:hover::after { background: linear-gradient(180deg, rgba(7,18,45,.16), rgba(7,18,45,.30)); }
+  /* Familiar YouTube-style play button: solid red rounded rectangle + white triangle. */
   .video-play {
     position: absolute; z-index: 1; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 82px; height: 82px; border-radius: 999px; display: grid; place-items: center;
-    color: #2A1E00; background: linear-gradient(135deg, #F2CD6B, var(--gold));
-    box-shadow: 0 12px 34px rgba(212,175,79,.42); transition: transform .3s;
+    width: clamp(76px, 12vw, 94px); height: clamp(54px, 8.5vw, 66px);
+    border-radius: clamp(16px, 2.4vw, 20px); display: grid; place-items: center;
+    color: #fff; background: #FF0000;
+    box-shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.08);
+    transition: transform .3s, background .3s, box-shadow .3s;
   }
-  .video-facade:hover .video-play { transform: translate(-50%, -50%) scale(1.06); }
+  .video-play svg { width: clamp(30px, 4.8vw, 40px); height: auto; margin-left: 2px; }
+  .video-facade:hover .video-play,
+  .video-facade:focus-visible .video-play {
+    transform: translate(-50%, -50%) scale(1.08);
+    background: #FF1A1A;
+    box-shadow: 0 16px 40px rgba(0,0,0,.5), 0 0 26px -4px rgba(255,0,0,.55);
+  }
   .video-facade:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
   .video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
   .video-link { margin-top: clamp(18px, 2.6vw, 26px); }
