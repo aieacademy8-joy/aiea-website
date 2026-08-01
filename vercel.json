@@ -5,5 +5,11 @@
       "destination": "/first-ai-literacy-journey.html",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/episodes",
+      "destination": "/episodes.html"
+    }
   ]
 }

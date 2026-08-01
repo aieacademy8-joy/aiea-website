@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Explorer Episodes — AI Explorers Academy™</title>
+<meta name="description" content="Watch each AI Explorers Academy™ episode, complete the Explorer Mission, and collect a new badge for your AI Explorer Passport. The official companion hub for the AI Explorer Episodes.">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=41">
+<style>
+  /* ============================================================
+     Episodes page — page-scoped components.
+     Reuses the shared design tokens/typography/buttons; the global
+     stylesheet is NOT modified. Styles here only affect this page.
+     ============================================================ */
+
+  /* Hero action row */
+  .ep-actions { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: clamp(26px, 4vw, 34px); }
+  .ep-hero { padding-bottom: 4px; }
+
+  /* Section intro reused via .section-head; a lighter section-head variant */
+  .ep-section-head h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
+
+  /* 1 · How It Works — steps */
+  .ep-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .ep-step {
+    background: var(--card); border: 1px solid var(--stroke); border-radius: var(--radius);
+    padding: clamp(28px, 3.4vw, 38px) clamp(22px, 2.6vw, 30px); text-align: center;
+    transition: transform .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease);
+  }
+  .ep-step:hover { transform: translateY(-6px); border-color: color-mix(in srgb, var(--gold) 45%, transparent); box-shadow: 0 20px 48px rgba(0,0,0,.4); }
+  .ep-step-num {
+    width: 56px; height: 56px; margin: 0 auto 18px; border-radius: 50%;
+    display: grid; place-items: center; font-family: var(--serif); font-weight: 600; font-size: 1.5rem;
+    color: var(--gold); background: rgba(212,175,79,.12);
+    border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
+  }
+  .ep-step h3 { font-size: 1.2rem; margin-bottom: 10px; }
+  .ep-step p { color: var(--ink-soft); font-size: .95rem; }
+
+  /* 2 · Passport panel */
+  .ep-pack {
+    display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(28px, 4vw, 52px); align-items: center;
+    background: linear-gradient(160deg, var(--navy-2), var(--navy-3));
+    border: 1px solid color-mix(in srgb, var(--gold) 30%, var(--stroke));
+    border-radius: var(--radius); padding: clamp(28px, 4vw, 52px);
+    box-shadow: 0 30px 70px rgba(0,0,0,.42);
+  }
+  .ep-pack h2 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); }
+  .ep-pack .pack-lead { color: var(--ink-soft); margin-top: 14px; }
+  .ep-pack .pd-list { margin: 22px 0 28px; }
+  .ep-pack-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+  /* Decorative passport visual (no image asset) */
+  .ep-passport {
+    aspect-ratio: 5 / 6; border-radius: 18px; padding: clamp(22px, 3vw, 30px);
+    background: radial-gradient(120% 120% at 20% 0%, rgba(212,175,79,.16), transparent 60%), var(--navy);
+    border: 1px solid color-mix(in srgb, var(--gold) 34%, var(--stroke));
+    display: flex; flex-direction: column; justify-content: space-between;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 18px 44px rgba(0,0,0,.4);
+  }
+  .ep-passport .pp-top { font-family: var(--sans); font-size: .68rem; font-weight: 700; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); }
+  .ep-passport .pp-emblem { font-size: clamp(3rem, 8vw, 4.4rem); text-align: center; }
+  .ep-passport .pp-title { font-family: var(--serif); font-size: 1.3rem; }
+  .ep-passport .pp-sub { color: var(--ink-faint); font-size: .82rem; margin-top: 4px; }
+
+  /* Chips (learning focus / explorer promise / status) */
+  .ep-chip { display: inline-flex; align-items: center; gap: 6px; font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 6px 13px; border-radius: 999px; }
+  .ep-chip.focus   { color: var(--blue); background: color-mix(in srgb, var(--blue) 14%, transparent);  border: 1px solid color-mix(in srgb, var(--blue) 34%, transparent); }
+  .ep-chip.promise { color: var(--gold); background: rgba(212,175,79,.12);                               border: 1px solid color-mix(in srgb, var(--gold) 38%, transparent); }
+
+  /* 3 · Featured episode */
+  .ep-featured {
+    background: var(--card); border: 1px solid var(--stroke); border-left: 3px solid var(--gold);
+    border-radius: var(--radius); padding: clamp(28px, 4vw, 48px);
+  }
+  .ep-featured .ep-meta { display: flex; flex-wrap: wrap; gap: 10px; margin: 4px 0 18px; }
+  .ep-featured h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); }
+  .ep-featured p { color: var(--ink-soft); font-size: 1.05rem; max-width: 640px; margin-top: 14px; }
+  .ep-featured .ep-actions { justify-content: flex-start; }
+
+  /* 4 · Episode collection grid */
+  .ep-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .ep-card {
+    display: flex; flex-direction: column; position: relative;
+    background: var(--card); border: 1px solid var(--stroke); border-radius: var(--radius);
+    padding: 30px 28px; min-height: 230px;
+  }
+  .ep-card.available { transition: transform .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease); }
+  .ep-card.available:hover { transform: translateY(-6px); border-color: color-mix(in srgb, var(--gold) 50%, transparent); box-shadow: 0 20px 48px rgba(0,0,0,.4); }
+  .ep-card.soon { opacity: .78; }
+  .ep-card .ep-num { font-family: var(--serif); color: var(--gold); font-size: .8rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+  .ep-card.soon .ep-num { color: var(--ink-faint); }
+  .ep-card h3 { font-size: 1.3rem; margin: 10px 0 6px; }
+  .ep-card .ep-focus-line { color: var(--ink-soft); font-size: .92rem; }
+  .ep-card .ep-card-foot { margin-top: auto; padding-top: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .ep-status { font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+  .ep-status.available { color: var(--emerald); background: color-mix(in srgb, var(--emerald) 14%, transparent); border: 1px solid color-mix(in srgb, var(--emerald) 36%, transparent); }
+  .ep-status.soon { color: var(--ink-faint); background: rgba(255,255,255,.04); border: 1px solid var(--stroke); }
+
+  /* 5 · Parent note */
+  .ep-note {
+    max-width: 820px; margin: 0 auto; text-align: center;
+    background: var(--card); border: 1px solid var(--stroke); border-radius: var(--radius);
+    padding: clamp(30px, 4vw, 52px);
+  }
+  .ep-note h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+  .ep-note p { color: var(--ink-soft); margin-top: 16px; font-size: 1.06rem; }
+
+  /* 6 · Final CTA */
+  .ep-final { text-align: center; }
+  .ep-final h2 { font-size: clamp(2rem, 5vw, 3.4rem); }
+  .ep-final .ep-actions { margin-top: 30px; }
+
+  /* Accessible keyboard focus states (page-scoped) */
+  .ep-page a.btn:focus-visible,
+  .ep-page a.btn-text:focus-visible,
+  .ep-page .back-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 999px; }
+
+  /* Passport panel title (section heading moved to .section-head above the panel) */
+  .ep-pack-title { font-size: clamp(1.4rem, 2.6vw, 1.9rem); }
+
+  /* Badge cards: status pill sits under the badge name; a single full-width action button in the footer */
+  .ep-badge-card .ep-status { align-self: flex-start; margin-top: 12px; }
+  .ep-badge-card .ep-card-foot { justify-content: flex-start; }
+  .ep-badge-card .ep-card-foot .btn { width: 100%; justify-content: center; }
+
+  /* Small helper note under an active badge button (readable, never overpowering) */
+  .ep-print-note { color: var(--ink-faint); font-size: .78rem; line-height: 1.55; margin-top: 12px; }
+  .ep-featured .ep-print-note { max-width: 460px; }
+
+  /* Passport signup modal — audience select + privacy line (reuses shared .modal/.field styles) */
+  .passport-privacy { text-align: center; color: var(--ink-faint); font-size: .8rem; margin-top: 14px; }
+  .passport-privacy a { color: var(--gold); }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .ep-steps { grid-template-columns: repeat(3, 1fr); }
+    .ep-grid  { grid-template-columns: repeat(2, 1fr); }
+    .ep-pack  { grid-template-columns: 1fr; }
+    .ep-passport { max-width: 360px; margin: 4px auto 0; width: 100%; }
+  }
+  @media (max-width: 640px) {
+    .ep-steps { grid-template-columns: 1fr; }
+    .ep-grid  { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body class="ep-page">
+
+<!--
+  ============================================================
+  LINK STATUS (all connected — no placeholders remain):
+    • Passport buttons (Hero, Passport section, Final CTA) → open the .passport-trigger
+      signup modal → POST /api/passport-signup (MailerLite subscribe + Postmark delivery).
+      The Passport PDF URL is intentionally NOT in this page; it is emailed after signup.
+    • Episode 1 "Stay Curious" badge → direct public PDF (new tab), Featured + Badge section.
+    • Episode 1 YouTube links → live Premiere URL (unchanged).
+    • Episodes 2–3 badges remain disabled "Coming Soon" (their PDFs are NOT linked/exposed).
+  ============================================================
+-->
+
+<!-- ================= NAV ================= -->
+<nav class="nav scrolled" id="nav">
+  <a class="brand" href="index.html">
+    <img src="assets/logo.png" alt="AI Explorers Academy logo">
+    <span class="wordmark"><span class="c-ai">AI</span> <span class="c-explore">EXPLORERS</span> <span class="c-acad">ACADEMY</span><sup>™</sup></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html#mission">About</a></li>
+    <li><a href="index.html#programs">Programs</a></li>
+    <li><a href="/episodes" aria-current="page">Episodes</a></li>
+    <li><a href="index.html#resources">Resources</a></li>
+    <li><a href="index.html#speaking">Speaking</a></li>
+    <li><a href="index.html#free-resources" class="nav-free">FREE</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="index.html#licensing" class="btn btn-gold nav-partner">Become a Partner</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu">☰</button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <button class="close" id="menuClose" aria-label="Close menu">✕</button>
+  <a href="index.html#mission">About</a>
+  <a href="index.html#programs">Programs</a>
+  <a href="/episodes" aria-current="page">Episodes</a>
+  <a href="index.html#resources">Resources</a>
+  <a href="index.html#speaking">Speaking</a>
+  <a href="index.html#free-resources" class="nav-free">FREE</a>
+  <a href="index.html#contact">Contact</a>
+</div>
+
+<!-- Universal back link -->
+<div class="back-bar"><a href="index.html" class="back-link" id="backLink"><span class="arrow-l">←</span> Back</a></div>
+
+<!-- ================= 1. HERO ================= -->
+<header class="page-head ep-hero" id="top">
+  <span class="eyebrow">Watch • Explore • Collect</span>
+  <h1>AI Explorer Episodes</h1>
+  <p>Watch each AI Explorers Academy episode, complete the Explorer Mission, and collect a new badge for your AI Explorer Passport.</p>
+  <div class="ep-actions">
+    <a class="btn btn-gold" href="https://youtu.be/9BvFso0BB1k" target="_blank" rel="noopener noreferrer">Watch Episode 1 <span class="arrow">→</span></a>
+    <a class="btn btn-ghost passport-trigger" href="#">Download the Free Passport</a>
+  </div>
+</header>
+
+<!-- ================= 2. HOW IT WORKS ================= -->
+<section id="how-it-works" aria-labelledby="how-heading">
+  <div class="wrap">
+    <div class="section-head ep-section-head reveal">
+      <span class="eyebrow">The Explorer Method</span>
+      <h2 id="how-heading">How It Works</h2>
+    </div>
+    <div class="ep-steps reveal">
+      <article class="ep-step">
+        <div class="ep-step-num" aria-hidden="true">1</div>
+        <h3>Watch</h3>
+        <p>Enjoy a short AI learning episode with Miss JOY and the Explorer Crew.</p>
+      </article>
+      <article class="ep-step">
+        <div class="ep-step-num" aria-hidden="true">2</div>
+        <h3>Explore</h3>
+        <p>Complete the simple Explorer Mission with a parent, teacher, or grown-up.</p>
+      </article>
+      <article class="ep-step">
+        <div class="ep-step-num" aria-hidden="true">3</div>
+        <h3>Collect</h3>
+        <p>Download the episode badge and add it to your AI Explorer Passport.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3. PASSPORT ================= -->
+<section id="passport" aria-labelledby="passport-heading">
+  <div class="wrap">
+    <div class="section-head ep-section-head reveal">
+      <span class="eyebrow">Your Passport</span>
+      <h2 id="passport-heading">Start Your Explorer Journey</h2>
+    </div>
+    <div class="ep-pack reveal">
+      <div>
+        <h3 class="ep-pack-title">AI Explorer Passport — Season 1</h3>
+        <p class="pack-lead">Download the official Season 1 Passport, complete each Explorer Mission, and collect a new badge after every episode.</p>
+        <div class="ep-pack-actions">
+          <a class="btn btn-gold passport-trigger" href="#">Get the Free Passport <span class="arrow">→</span></a>
+        </div>
+      </div>
+      <div class="ep-passport" aria-hidden="true">
+        <div class="pp-top">AI Explorer Passport</div>
+        <div class="pp-emblem">🧭</div>
+        <div>
+          <div class="pp-title">Season 1</div>
+          <div class="pp-sub">Stay Curious • Explore • Collect</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4. EPISODE 1 FEATURED ================= -->
+<section id="episode-1" aria-labelledby="ep1-heading">
+  <div class="wrap">
+    <div class="ep-featured reveal">
+      <span class="eyebrow">Featured Episode</span>
+      <h2 id="ep1-heading">Episode 1: What Is AI?</h2>
+      <div class="ep-meta">
+        <span class="ep-chip focus">Learning Focus: Awareness</span>
+        <span class="ep-chip promise">Explorer Promise: Stay Curious</span>
+      </div>
+      <p>Children discover what AI is, what it can help people create, and why human thinking and creativity still matter most.</p>
+      <div class="ep-actions">
+        <a class="btn btn-gold" href="https://youtu.be/9BvFso0BB1k" target="_blank" rel="noopener noreferrer">Watch Episode 1 <span class="arrow">→</span></a>
+        <a class="btn btn-ghost" href="https://4uo1t9wfadibcgrd.public.blob.vercel-storage.com/season-1/episode-1-stay-curious-badge.pdf" target="_blank" rel="noopener noreferrer">Get Badge <span class="arrow">→</span></a>
+      </div>
+      <p class="ep-print-note">Printing tip: To fit the badge inside your Passport, choose Custom Scale and enter 16% in the print settings.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. EPISODE COLLECTION ================= -->
+<section id="collection" aria-labelledby="collection-heading">
+  <div class="wrap">
+    <div class="section-head ep-section-head reveal">
+      <span class="eyebrow">Season 1</span>
+      <h2 id="collection-heading">Episode Collection</h2>
+      <p>New episodes are released one mission at a time. Begin with Episode 1 today.</p>
+    </div>
+    <div class="ep-grid reveal">
+      <!-- Episode 1 — Available -->
+      <article class="ep-card available" aria-labelledby="c-ep1-title">
+        <span class="ep-num">Episode 1</span>
+        <h3 id="c-ep1-title">What Is AI?</h3>
+        <p class="ep-focus-line">Explorer Promise: Stay Curious</p>
+        <div class="ep-card-foot">
+          <a class="btn-text" href="https://youtu.be/9BvFso0BB1k" target="_blank" rel="noopener noreferrer">Watch now <span class="arrow">→</span></a>
+          <span class="ep-status available">Available</span>
+        </div>
+      </article>
+      <!-- Episode 2 — Coming Soon (not clickable) -->
+      <article class="ep-card soon" aria-label="Episode 2 — Where Is AI? — AI Detective — Coming Soon">
+        <span class="ep-num">Episode 2</span>
+        <h3>Where Is AI?</h3>
+        <p class="ep-focus-line">Explorer Promise: AI Detective</p>
+        <div class="ep-card-foot">
+          <span class="ep-status soon">Coming Soon</span>
+        </div>
+      </article>
+      <!-- Episode 3 — Coming Soon (not clickable) -->
+      <article class="ep-card soon" aria-label="Episode 3 — How Does AI Learn? — Keep Learning — Coming Soon">
+        <span class="ep-num">Episode 3</span>
+        <h3>How Does AI Learn?</h3>
+        <p class="ep-focus-line">Explorer Promise: Keep Learning</p>
+        <div class="ep-card-foot">
+          <span class="ep-status soon">Coming Soon</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6. EPISODE BADGES ================= -->
+<section id="badges" aria-labelledby="badges-heading">
+  <div class="wrap">
+    <div class="section-head ep-section-head reveal">
+      <span class="eyebrow">Collectibles</span>
+      <h2 id="badges-heading">Collect Your Episode Badges</h2>
+      <p>Earn a new badge after every episode and add it to your AI Explorer Passport.</p>
+    </div>
+    <div class="ep-grid reveal">
+      <!-- Episode 1 badge — Available -->
+      <article class="ep-card available ep-badge-card" aria-labelledby="b-ep1-title">
+        <span class="ep-num">Episode 1: What Is AI?</span>
+        <h3 id="b-ep1-title">Stay Curious Badge</h3>
+        <span class="ep-status available">Available</span>
+        <div class="ep-card-foot">
+          <a class="btn btn-gold btn-sm" href="https://4uo1t9wfadibcgrd.public.blob.vercel-storage.com/season-1/episode-1-stay-curious-badge.pdf" target="_blank" rel="noopener noreferrer">Get Badge <span class="arrow">→</span></a>
+        </div>
+        <p class="ep-print-note">Printing tip: To fit the badge inside your Passport, choose Custom Scale and enter 16% in the print settings.</p>
+      </article>
+      <!-- Episode 2 badge — Coming Soon (disabled button) -->
+      <article class="ep-card soon ep-badge-card" aria-labelledby="b-ep2-title">
+        <span class="ep-num">Episode 2: Where Is AI?</span>
+        <h3 id="b-ep2-title">AI Detective Badge</h3>
+        <span class="ep-status soon">Coming Soon</span>
+        <div class="ep-card-foot">
+          <button type="button" class="btn btn-ghost btn-sm" disabled>Coming Soon</button>
+        </div>
+      </article>
+      <!-- Episode 3 badge — Coming Soon (disabled button) -->
+      <article class="ep-card soon ep-badge-card" aria-labelledby="b-ep3-title">
+        <span class="ep-num">Episode 3: How Does AI Learn?</span>
+        <h3 id="b-ep3-title">Keep Learning Badge</h3>
+        <span class="ep-status soon">Coming Soon</span>
+        <div class="ep-card-foot">
+          <button type="button" class="btn btn-ghost btn-sm" disabled>Coming Soon</button>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 7. PARENT NOTE ================= -->
+<section id="parent-note" aria-labelledby="parent-heading">
+  <div class="wrap">
+    <div class="ep-note reveal">
+      <span class="eyebrow">For Grown-Ups</span>
+      <h2 id="parent-heading">Designed for Children. Guided by Grown-Ups.</h2>
+      <p>AI Explorer Episodes are designed to help families begin thoughtful, age-appropriate conversations about AI. We encourage parents, teachers, and caregivers to watch, explore, and reflect together with children.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 8. FINAL CTA ================= -->
+<section id="begin" class="ep-final" aria-labelledby="begin-heading">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">Begin the Adventure</span>
+      <h2 id="begin-heading">Ready to Begin the First Mission?</h2>
+      <div class="ep-actions">
+        <a class="btn btn-gold" href="https://youtu.be/9BvFso0BB1k" target="_blank" rel="noopener noreferrer">Watch Episode 1 <span class="arrow">→</span></a>
+        <a class="btn btn-ghost passport-trigger" href="#">Download the Free Passport</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PASSPORT SIGNUP MODAL =================
+     Same architecture as the Scorecard signup: posts to /api/passport-signup, which
+     stores the subscriber in MailerLite and delivers the Passport via Postmark. The
+     Passport PDF URL is NEVER placed here — it is emailed after a successful signup. -->
+<div class="modal" id="passportModal" role="dialog" aria-modal="true" aria-labelledby="passportModalHeading" aria-hidden="true">
+  <div class="modal-card">
+    <button type="button" class="modal-close" id="passportModalClose" aria-label="Close">✕</button>
+    <span class="eyebrow">Free Download</span>
+    <h3 id="passportModalHeading">Get Your Free AI Explorer Passport</h3>
+    <p class="modal-resource">Enter your email and we'll send the Season 1 AI Explorer Passport directly to your inbox.</p>
+
+    <form class="modal-form" id="passportForm">
+      <div class="field"><label for="pFirst">First Name</label><input id="pFirst" name="first_name" type="text" placeholder="Your first name" autocomplete="given-name" required></div>
+      <div class="field"><label for="pEmail">Email Address</label><input id="pEmail" name="email" type="email" placeholder="you@example.com" autocomplete="email" required></div>
+      <div class="field"><label for="pAudience">I am a…</label>
+        <select id="pAudience" name="audience">
+          <option value="">I'd rather not say</option>
+          <option value="parents">Parent / Family</option>
+          <option value="educators">Educator</option>
+          <option value="schools">School Leader</option>
+        </select>
+      </div>
+      <label class="checkbox-row"><input type="checkbox" id="pOptin" name="opt_in" required><span>I agree to receive the AI Explorer Passport and occasional AI Literacy resources from AI Explorers Academy.</span></label>
+      <button type="submit" id="passportSubmit" class="btn btn-gold" style="width:100%;justify-content:center;" disabled>Send My Free Passport <span class="arrow">→</span></button>
+    </form>
+
+    <p class="passport-privacy" id="passportPrivacy">We respect your privacy. Read our <a href="privacy-policy.html">Privacy Policy</a>.</p>
+    <p class="modal-error" id="passportError" hidden></p>
+
+    <div class="modal-thanks" id="passportThanks" hidden>
+      <div class="thanks-ic">🧭</div>
+      <p>Your Passport is on its way! Please check your inbox. While you wait, you can watch Episode 1 and download the Stay Curious badge.</p>
+    </div>
+  </div>
+</div>
+<script>
+/* Passport signup modal — mirrors the Scorecard modal handler in js/main.js.
+   Shows success ONLY when the server confirms MailerLite + Postmark both succeeded
+   (data.success && data.emailAccepted). A loading guard prevents duplicate rapid submits. */
+(function () {
+  var modal = document.getElementById("passportModal");
+  if (!modal) return;
+  var form = document.getElementById("passportForm");
+  var thanks = document.getElementById("passportThanks");
+  var closeBtn = document.getElementById("passportModalClose");
+  var submit = document.getElementById("passportSubmit");
+  var first = document.getElementById("pFirst");
+  var email = document.getElementById("pEmail");
+  var audience = document.getElementById("pAudience");
+  var optin = document.getElementById("pOptin");
+  var errorEl = document.getElementById("passportError");
+  var privacyEl = document.getElementById("passportPrivacy");
+  var submitHTML = submit ? submit.innerHTML : "";
+  var lastFocus = null;
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Enable submit only with a first name, a valid email, and consent.
+  var validate = function () {
+    if (!submit) return;
+    var ready = !!(first && first.value.trim()) &&
+                !!(email && EMAIL_RE.test(email.value.trim())) &&
+                !!(optin && optin.checked);
+    submit.disabled = !ready;
+  };
+  [first, email].forEach(function (el) { if (el) el.addEventListener("input", validate); });
+  if (optin) optin.addEventListener("change", validate);
+
+  var openModal = function () {
+    lastFocus = document.activeElement;
+    if (form) { form.reset(); form.hidden = false; }
+    if (thanks) thanks.hidden = true;
+    if (errorEl) errorEl.hidden = true;
+    if (privacyEl) privacyEl.hidden = false;
+    if (submit) { submit.innerHTML = submitHTML; submit.removeAttribute("data-loading"); }
+    validate();
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    if (first) first.focus();
+  };
+  var closeModal = function () {
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  };
+
+  Array.prototype.forEach.call(document.querySelectorAll(".passport-trigger"), function (t) {
+    t.addEventListener("click", function (e) { e.preventDefault(); openModal(); });
+  });
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
+  });
+
+  if (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (submit && submit.disabled) return;
+      if (submit && submit.getAttribute("data-loading") === "1") return; // block rapid double-submit
+
+      var payload = {
+        first_name: first ? first.value.trim() : "",
+        email: email ? email.value.trim() : "",
+        audience: audience ? audience.value : "",
+        consent: optin ? optin.checked : false
+      };
+      if (!payload.first_name || !EMAIL_RE.test(payload.email) || !payload.consent) {
+        if (errorEl) { errorEl.textContent = "Please enter your first name, a valid email address, and agree to receive the Passport."; errorEl.hidden = false; }
+        return;
+      }
+
+      if (errorEl) errorEl.hidden = true;
+      if (submit) { submit.setAttribute("data-loading", "1"); submit.disabled = true; submit.textContent = "Sending…"; }
+
+      fetch("/api/passport-signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, data: d }; }); })
+        .then(function (res) {
+          if (!res.ok || !res.data || res.data.success !== true || res.data.emailAccepted !== true) {
+            throw new Error("passport_failed");
+          }
+          if (form) form.hidden = true;
+          if (privacyEl) privacyEl.hidden = true;
+          if (thanks) thanks.hidden = false;
+        })
+        .catch(function () {
+          if (submit) { submit.removeAttribute("data-loading"); submit.innerHTML = submitHTML; }
+          validate();
+          if (errorEl) {
+            errorEl.textContent = "Sorry — something went wrong. Please try again, or email missjoy@aiexplorersacademy.org.";
+            errorEl.hidden = false;
+          }
+        });
+    });
+  }
+})();
+</script>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="AI Explorers Academy logo">
+        <span class="wordmark"><span class="c-ai">AI</span> <span class="c-explore">EXPLORERS</span> <span class="c-acad">ACADEMY</span><sup>™</sup></span>
+      </a>
+      <p>The global home of AI Literacy for children. Preparing the first AI-Native Generation.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Explore</h5>
+      <a href="index.html#mission">Our Mission</a><a href="index.html#compass">The Compass™</a><a href="index.html#programs">Programs</a><a href="index.html#journey">The Journey</a>
+    </div>
+    <div class="footer-col">
+      <h5>Engage</h5>
+      <a href="index.html#schools">For Schools</a><a href="index.html#licensing">Partnerships</a><a href="index.html#speaking">Speaking</a><a href="index.html#resources">Resources</a>
+    </div>
+    <div class="footer-col">
+      <h5>Academy</h5>
+      <a href="about-miss-joy.html">About Miss JOY</a><a href="index.html#compass">AI Explorers Compass™</a><a href="ai-literacy-for-children.html">AI Literacy for Children</a><a href="educational-standards.html">Educational Standards</a><a href="intellectual-property.html">Intellectual Property &amp; Permissions</a><a href="privacy-policy.html">Privacy Policy</a><a href="terms-of-use.html">Terms of Use</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-legal">© 2026 AI Explorers Academy™. AI Explorers Compass™, AI Explorers Academy™, Botly™, Pixie Pixel™, Echo™, Miss JOY™, and associated educational materials are the intellectual property of Irene Dostov. All rights reserved.</p>
+    <span class="footer-motto"><span class="d">Discover</span> • <span class="i">Imagine</span> • <span class="c">Create</span> with AI™</span>
+  </div>
+</footer>
+
+<script src="js/main.js?v=42"></script>
+<!-- Vercel Web Analytics -->
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<!-- Vercel Speed Insights -->
+<script>window.si=window.si||function(){(window.siq=window.siq||[]).push(arguments);};</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+</body>
+</html>
