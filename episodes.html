@@ -53,18 +53,14 @@
   .ep-pack .pack-lead { color: var(--ink-soft); margin-top: 14px; }
   .ep-pack .pd-list { margin: 22px 0 28px; }
   .ep-pack-actions { display: flex; gap: 14px; flex-wrap: wrap; }
-  /* Decorative passport visual (no image asset) */
+  /* Passport preview — real Season 1 cover image (framed; PDF is never linked here) */
   .ep-passport {
-    aspect-ratio: 5 / 6; border-radius: 18px; padding: clamp(22px, 3vw, 30px);
-    background: radial-gradient(120% 120% at 20% 0%, rgba(212,175,79,.16), transparent 60%), var(--navy);
+    aspect-ratio: 906 / 1280; border-radius: 18px; overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--gold) 34%, var(--stroke));
-    display: flex; flex-direction: column; justify-content: space-between;
+    background: var(--navy);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 18px 44px rgba(0,0,0,.4);
   }
-  .ep-passport .pp-top { font-family: var(--sans); font-size: .68rem; font-weight: 700; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); }
-  .ep-passport .pp-emblem { font-size: clamp(3rem, 8vw, 4.4rem); text-align: center; }
-  .ep-passport .pp-title { font-family: var(--serif); font-size: 1.3rem; }
-  .ep-passport .pp-sub { color: var(--ink-faint); font-size: .82rem; margin-top: 4px; }
+  .ep-passport img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
   /* Chips (learning focus / explorer promise / status) */
   .ep-chip { display: inline-flex; align-items: center; gap: 6px; font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 6px 13px; border-radius: 999px; }
@@ -134,6 +130,10 @@
   /* Passport signup modal — audience select + privacy line (reuses shared .modal/.field styles) */
   .passport-privacy { text-align: center; color: var(--ink-faint); font-size: .8rem; margin-top: 14px; }
   .passport-privacy a { color: var(--gold); }
+  /* The shared .modal-form sets display:grid, which outranks [hidden]{display:none} at
+     equal specificity — so hide the form explicitly when the success state takes over. */
+  #passportForm[hidden] { display: none; }
+  #passportThanks h3 { margin: 0 0 8px; }
 
   /* Responsive */
   @media (max-width: 900px) {
@@ -250,13 +250,8 @@
           <a class="btn btn-gold passport-trigger" href="#">Get the Free Passport <span class="arrow">→</span></a>
         </div>
       </div>
-      <div class="ep-passport" aria-hidden="true">
-        <div class="pp-top">AI Explorer Passport</div>
-        <div class="pp-emblem">🧭</div>
-        <div>
-          <div class="pp-title">Season 1</div>
-          <div class="pp-sub">Stay Curious • Explore • Collect</div>
-        </div>
+      <div class="ep-passport">
+        <img src="resources/free/images/episodes/ai-explorer-passport-season-1-cover.jpg" alt="AI Explorer Passport — Season 1 cover" width="906" height="1280" loading="lazy">
       </div>
     </div>
   </div>
@@ -418,9 +413,10 @@
     <p class="passport-privacy" id="passportPrivacy">We respect your privacy. Read our <a href="privacy-policy.html">Privacy Policy</a>.</p>
     <p class="modal-error" id="passportError" hidden></p>
 
-    <div class="modal-thanks" id="passportThanks" hidden>
-      <div class="thanks-ic">🧭</div>
-      <p>Your Passport is on its way! Please check your inbox. While you wait, you can watch Episode 1 and download the Stay Curious badge.</p>
+    <div class="modal-thanks" id="passportThanks" role="status" hidden>
+      <h3 id="passportThanksHeading">Your Passport is on its way! 🧭</h3>
+      <p>Please check your inbox. While you wait, watch Episode 1 and collect your Stay Curious badge.</p>
+      <button type="button" class="btn btn-gold" id="passportContinue" style="width:100%;justify-content:center;margin-top:18px;">Continue Exploring</button>
     </div>
   </div>
 </div>
@@ -434,6 +430,7 @@
   var form = document.getElementById("passportForm");
   var thanks = document.getElementById("passportThanks");
   var closeBtn = document.getElementById("passportModalClose");
+  var continueBtn = document.getElementById("passportContinue");
   var submit = document.getElementById("passportSubmit");
   var first = document.getElementById("pFirst");
   var email = document.getElementById("pEmail");
@@ -441,6 +438,10 @@
   var optin = document.getElementById("pOptin");
   var errorEl = document.getElementById("passportError");
   var privacyEl = document.getElementById("passportPrivacy");
+  // The modal's intro (eyebrow + heading + "enter your email…") is hidden once the
+  // confirmed success state takes over, so only the success message shows.
+  var introEls = modal.querySelectorAll(".eyebrow, #passportModalHeading, .modal-resource");
+  var setIntroHidden = function (hidden) { Array.prototype.forEach.call(introEls, function (el) { el.hidden = hidden; }); };
   var submitHTML = submit ? submit.innerHTML : "";
   var lastFocus = null;
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -458,6 +459,7 @@
 
   var openModal = function () {
     lastFocus = document.activeElement;
+    setIntroHidden(false);
     if (form) { form.reset(); form.hidden = false; }
     if (thanks) thanks.hidden = true;
     if (errorEl) errorEl.hidden = true;
@@ -480,6 +482,7 @@
     t.addEventListener("click", function (e) { e.preventDefault(); openModal(); });
   });
   if (closeBtn) closeBtn.addEventListener("click", closeModal);
+  if (continueBtn) continueBtn.addEventListener("click", closeModal);
   modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
@@ -515,9 +518,13 @@
           if (!res.ok || !res.data || res.data.success !== true || res.data.emailAccepted !== true) {
             throw new Error("passport_failed");
           }
+          setIntroHidden(true);
           if (form) form.hidden = true;
           if (privacyEl) privacyEl.hidden = true;
           if (thanks) thanks.hidden = false;
+          // Move focus into the confirmed success state so it's announced and the
+          // next action ("Continue Exploring") is immediately reachable.
+          if (continueBtn) continueBtn.focus();
         })
         .catch(function () {
           if (submit) { submit.removeAttribute("data-loading"); submit.innerHTML = submitHTML; }
