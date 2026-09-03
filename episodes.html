@@ -78,7 +78,7 @@
   .ep-featured .ep-actions { justify-content: flex-start; }
 
   /* 4 · Episode collection grid */
-  .ep-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .ep-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px; }
   .ep-card {
     display: flex; flex-direction: column; position: relative;
     background: var(--card); border: 1px solid var(--stroke); border-radius: var(--radius);
@@ -91,10 +91,24 @@
   .ep-card.soon .ep-num { color: var(--ink-faint); }
   .ep-card h3 { font-size: 1.3rem; margin: 10px 0 6px; }
   .ep-card .ep-focus-line { color: var(--ink-soft); font-size: .92rem; }
-  .ep-card .ep-card-foot { margin-top: auto; padding-top: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .ep-status { font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+  .ep-card .ep-focus-line + .ep-focus-line { margin-top: 3px; }
+  .ep-card .ep-focus-line .ep-k { color: var(--ink-faint); }
+  /* wrap so a card can never overflow when the footer holds a link + a longer status */
+  .ep-card .ep-card-foot { margin-top: auto; padding-top: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .ep-status { font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; white-space: normal; }
   .ep-status.available { color: var(--emerald); background: color-mix(in srgb, var(--emerald) 14%, transparent); border: 1px solid color-mix(in srgb, var(--emerald) 36%, transparent); }
+  /* dated premiere (scheduled) — distinct from an undated "Coming Soon" */
+  .ep-status.upcoming { color: var(--gold); background: rgba(212,175,79,.12); border: 1px solid color-mix(in srgb, var(--gold) 38%, transparent); }
   .ep-status.soon { color: var(--ink-faint); background: rgba(255,255,255,.04); border: 1px solid var(--stroke); }
+  /* Explorer Mission — muted label + concise body; a supporting detail, never the focal point */
+  .ep-mission { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--stroke); }
+  .ep-mission .ep-mission-k { display: block; color: var(--ink-faint); font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 5px; }
+  .ep-mission p { color: var(--ink-soft); font-size: .86rem; line-height: 1.55; }
+  /* Collection cards carry the mission text, so they get roomier 2-up columns.
+     The compact badge grid keeps the 4-up layout. */
+  @media (min-width: 641px) {
+    .ep-grid.ep-grid-wide { grid-template-columns: repeat(2, 1fr); }
+  }
 
   /* 5 · Parent note */
   .ep-note {
@@ -136,6 +150,10 @@
   #passportThanks h3 { margin: 0 0 8px; }
 
   /* Responsive */
+  /* Four episode cards go 2×2 before the cards get too narrow for the meta lines. */
+  @media (max-width: 1080px) {
+    .ep-grid { grid-template-columns: repeat(2, 1fr); }
+  }
   @media (max-width: 900px) {
     .ep-steps { grid-template-columns: repeat(3, 1fr); }
     .ep-grid  { grid-template-columns: repeat(2, 1fr); }
@@ -264,7 +282,7 @@
       <span class="eyebrow">Featured Episode</span>
       <h2 id="ep1-heading">Episode 1: What Is AI?</h2>
       <div class="ep-meta">
-        <span class="ep-chip focus">Learning Focus: Awareness</span>
+        <span class="ep-chip focus">Compass: Awareness</span>
         <span class="ep-chip promise">Explorer Promise: Stay Curious</span>
       </div>
       <p>Children discover what AI is, what it can help people create, and why human thinking and creativity still matter most.</p>
@@ -285,31 +303,62 @@
       <h2 id="collection-heading">Episode Collection</h2>
       <p>New episodes are released one mission at a time. Begin with Episode 1 today.</p>
     </div>
-    <div class="ep-grid reveal">
-      <!-- Episode 1 — Available -->
+    <div class="ep-grid ep-grid-wide reveal">
+      <!-- Episode 1 — Available (live Premiere URL) -->
       <article class="ep-card available" aria-labelledby="c-ep1-title">
         <span class="ep-num">Episode 1</span>
         <h3 id="c-ep1-title">What Is AI?</h3>
-        <p class="ep-focus-line">Explorer Promise: Stay Curious</p>
+        <p class="ep-focus-line"><span class="ep-k">Compass:</span> Awareness</p>
+        <p class="ep-focus-line"><span class="ep-k">Explorer Promise:</span> Stay Curious</p>
+        <div class="ep-mission">
+          <span class="ep-mission-k">Explorer Mission:</span>
+          <p>🔍 Find one smart device in your home. Ask an adult: “Does this use AI?”</p>
+        </div>
         <div class="ep-card-foot">
           <a class="btn-text" href="https://youtu.be/9BvFso0BB1k" target="_blank" rel="noopener noreferrer">Watch now <span class="arrow">→</span></a>
           <span class="ep-status available">Available</span>
         </div>
       </article>
-      <!-- Episode 2 — Coming Soon (not clickable) -->
-      <article class="ep-card soon" aria-label="Episode 2 — Where Is AI? — AI Detective — Coming Soon">
+      <!-- Episode 2 — Premiere page is public (countdown), so the card is linked; airs Sept 5 -->
+      <article class="ep-card available" aria-labelledby="c-ep2-title">
         <span class="ep-num">Episode 2</span>
-        <h3>Where Is AI?</h3>
-        <p class="ep-focus-line">Explorer Promise: AI Detective</p>
+        <h3 id="c-ep2-title">Where Is AI?</h3>
+        <p class="ep-focus-line"><span class="ep-k">Compass:</span> Awareness</p>
+        <p class="ep-focus-line"><span class="ep-k">Explorer Promise:</span> Keep Exploring</p>
+        <div class="ep-mission">
+          <span class="ep-mission-k">Explorer Mission:</span>
+          <p>Find 3 places where AI helps people.</p>
+        </div>
         <div class="ep-card-foot">
-          <span class="ep-status soon">Coming Soon</span>
+          <a class="btn-text" href="https://youtu.be/RtIKUPJrMtY" target="_blank" rel="noopener noreferrer">View Premiere <span class="arrow">→</span></a>
+          <span class="ep-status upcoming">Premieres September&nbsp;5</span>
         </div>
       </article>
-      <!-- Episode 3 — Coming Soon (not clickable) -->
-      <article class="ep-card soon" aria-label="Episode 3 — How Does AI Learn? — Keep Learning — Coming Soon">
+      <!-- Episode 3 — Premiere page is public (countdown), so the card is linked; airs Oct 3 -->
+      <article class="ep-card available" aria-labelledby="c-ep3-title">
         <span class="ep-num">Episode 3</span>
-        <h3>How Does AI Learn?</h3>
-        <p class="ep-focus-line">Explorer Promise: Keep Learning</p>
+        <h3 id="c-ep3-title">How Does AI Learn?</h3>
+        <p class="ep-focus-line"><span class="ep-k">Compass:</span> Awareness</p>
+        <p class="ep-focus-line"><span class="ep-k">Explorer Promise:</span> Keep Learning</p>
+        <div class="ep-mission">
+          <span class="ep-mission-k">Explorer Mission:</span>
+          <p>Learn something completely new today. It could be a new word, a new animal, a new song, or a fun fact.</p>
+        </div>
+        <div class="ep-card-foot">
+          <a class="btn-text" href="https://youtu.be/ettT-lRDK2Y" target="_blank" rel="noopener noreferrer">View Premiere <span class="arrow">→</span></a>
+          <span class="ep-status upcoming">Premieres October&nbsp;3</span>
+        </div>
+      </article>
+      <!-- Episode 4 — Coming Soon (not clickable) -->
+      <article class="ep-card soon" aria-labelledby="c-ep4-title">
+        <span class="ep-num">Episode 4</span>
+        <h3 id="c-ep4-title">Can AI Make Mistakes?</h3>
+        <p class="ep-focus-line"><span class="ep-k">Compass:</span> Critical Thinking</p>
+        <p class="ep-focus-line"><span class="ep-k">Explorer Promise:</span> Keep Practicing</p>
+        <div class="ep-mission">
+          <span class="ep-mission-k">Explorer Mission:</span>
+          <p>Try something that feels difficult. If you make a mistake, practice one more time. Tell yourself: “I’m getting better.”</p>
+        </div>
         <div class="ep-card-foot">
           <span class="ep-status soon">Coming Soon</span>
         </div>
@@ -337,19 +386,37 @@
         </div>
         <p class="ep-print-note">Printing tip: To fit the badge inside your Passport, choose Custom Scale and enter 16% in the print settings.</p>
       </article>
-      <!-- Episode 2 badge — Coming Soon (disabled button) -->
+      <!-- TODO: Activate Episode 2 AI Detective Badge after release.
+           Canonical PDF (do not rename): episode-2-ai-detective-badge.pdf
+           To activate: replace the disabled button with a "Get Badge" link to that PDF
+           (class="btn btn-gold btn-sm", target="_blank", rel="noopener noreferrer"), set the
+           article class "soon" to "available", set the status to Available, and copy
+           Episode 1's ep-print-note paragraph in after the card footer. -->
       <article class="ep-card soon ep-badge-card" aria-labelledby="b-ep2-title">
         <span class="ep-num">Episode 2: Where Is AI?</span>
         <h3 id="b-ep2-title">AI Detective Badge</h3>
+        <span class="ep-status upcoming">Premieres September&nbsp;5</span>
+        <div class="ep-card-foot">
+          <button type="button" class="btn btn-ghost btn-sm" disabled>Coming Soon</button>
+        </div>
+      </article>
+      <!-- TODO: Activate Episode 3 Keep Learning Badge after release.
+           Canonical PDF (do not rename): episode-3-keep-learning-badge.pdf
+           Activation steps are the same as Episode 2 above. -->
+      <article class="ep-card soon ep-badge-card" aria-labelledby="b-ep3-title">
+        <span class="ep-num">Episode 3: How Does AI Learn?</span>
+        <h3 id="b-ep3-title">Keep Learning Badge</h3>
         <span class="ep-status soon">Coming Soon</span>
         <div class="ep-card-foot">
           <button type="button" class="btn btn-ghost btn-sm" disabled>Coming Soon</button>
         </div>
       </article>
-      <!-- Episode 3 badge — Coming Soon (disabled button) -->
-      <article class="ep-card soon ep-badge-card" aria-labelledby="b-ep3-title">
-        <span class="ep-num">Episode 3: How Does AI Learn?</span>
-        <h3 id="b-ep3-title">Keep Learning Badge</h3>
+      <!-- TODO: Activate Episode 4 Keep Practicing Badge after release.
+           Canonical PDF (do not rename): episode-4-keep-practicing-badge.pdf
+           Activation steps are the same as Episode 2 above. -->
+      <article class="ep-card soon ep-badge-card" aria-labelledby="b-ep4-title">
+        <span class="ep-num">Episode 4: Can AI Make Mistakes?</span>
+        <h3 id="b-ep4-title">Keep Practicing Badge</h3>
         <span class="ep-status soon">Coming Soon</span>
         <div class="ep-card-foot">
           <button type="button" class="btn btn-ghost btn-sm" disabled>Coming Soon</button>
