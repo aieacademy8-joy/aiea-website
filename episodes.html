@@ -62,21 +62,6 @@
   }
   .ep-passport img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  /* Chips (learning focus / explorer promise / status) */
-  .ep-chip { display: inline-flex; align-items: center; gap: 6px; font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 6px 13px; border-radius: 999px; }
-  .ep-chip.focus   { color: var(--blue); background: color-mix(in srgb, var(--blue) 14%, transparent);  border: 1px solid color-mix(in srgb, var(--blue) 34%, transparent); }
-  .ep-chip.promise { color: var(--gold); background: rgba(212,175,79,.12);                               border: 1px solid color-mix(in srgb, var(--gold) 38%, transparent); }
-
-  /* 3 · Featured episode */
-  .ep-featured {
-    background: var(--card); border: 1px solid var(--stroke); border-left: 3px solid var(--gold);
-    border-radius: var(--radius); padding: clamp(28px, 4vw, 48px);
-  }
-  .ep-featured .ep-meta { display: flex; flex-wrap: wrap; gap: 10px; margin: 4px 0 18px; }
-  .ep-featured h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); }
-  .ep-featured p { color: var(--ink-soft); font-size: 1.05rem; max-width: 640px; margin-top: 14px; }
-  .ep-featured .ep-actions { justify-content: flex-start; }
-
   /* 4 · Episode collection grid */
   .ep-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px; }
   .ep-card {
@@ -139,7 +124,6 @@
 
   /* Small helper note under an active badge button (readable, never overpowering) */
   .ep-print-note { color: var(--ink-faint); font-size: .78rem; line-height: 1.55; margin-top: 12px; }
-  .ep-featured .ep-print-note { max-width: 460px; }
 
   /* Passport signup modal — audience select + privacy line (reuses shared .modal/.field styles) */
   .passport-privacy { text-align: center; color: var(--ink-faint); font-size: .8rem; margin-top: 14px; }
@@ -275,33 +259,13 @@
   </div>
 </section>
 
-<!-- ================= 4. EPISODE 1 FEATURED ================= -->
-<section id="episode-1" aria-labelledby="ep1-heading">
-  <div class="wrap">
-    <div class="ep-featured reveal">
-      <span class="eyebrow">Featured Episode</span>
-      <h2 id="ep1-heading">Episode 1: What Is AI?</h2>
-      <div class="ep-meta">
-        <span class="ep-chip focus">Compass: Awareness</span>
-        <span class="ep-chip promise">Explorer Promise: Stay Curious</span>
-      </div>
-      <p>Children discover what AI is, what it can help people create, and why human thinking and creativity still matter most.</p>
-      <div class="ep-actions">
-        <a class="btn btn-gold" href="https://youtu.be/9BvFso0BB1k" target="_blank" rel="noopener noreferrer">Watch Episode 1 <span class="arrow">→</span></a>
-        <a class="btn btn-ghost" href="https://4uo1t9wfadibcgrd.public.blob.vercel-storage.com/season-1/episode-1-stay-curious-badge.pdf" target="_blank" rel="noopener noreferrer">Get Badge <span class="arrow">→</span></a>
-      </div>
-      <p class="ep-print-note">Printing tip: To fit the badge inside your Passport, choose Custom Scale and enter 16% in the print settings.</p>
-    </div>
-  </div>
-</section>
-
 <!-- ================= 5. EPISODE COLLECTION ================= -->
 <section id="collection" aria-labelledby="collection-heading">
   <div class="wrap">
     <div class="section-head ep-section-head reveal">
       <span class="eyebrow">Season 1</span>
       <h2 id="collection-heading">Episode Collection</h2>
-      <p>New episodes are released one mission at a time. Begin with Episode 1 today.</p>
+      <p>New episodes are released one mission at a time. Start with Episode 1 and continue your Explorer Journey.</p>
     </div>
     <div class="ep-grid ep-grid-wide reveal">
       <!-- Episode 1 — Available (live Premiere URL) -->
