@@ -20,3 +20,10 @@ assets/book/30-days-of-ai-adventures/missions/
 assets/book/30-days-of-ai-adventures/passport/
 assets/book/30-days-of-ai-adventures/stickers/
 assets/book/30-days-of-ai-adventures/web-previews/*.png
+
+# Portal local secrets and Supabase CLI state
+.env
+.env.*
+!.env.example
+supabase/.temp/
+supabase/.branches/
