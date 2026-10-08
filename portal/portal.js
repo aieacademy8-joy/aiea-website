@@ -75,7 +75,31 @@
   }
   var selected = null, generation = 0, controller, expiry, signingOut = false, remotePending = false;
   var pendingRecovery, pendingUntil = 0, pendingGrace = 10000, pendingValidation = false;
+  var curriculumGeneration = 0, curriculumController, curriculumVersion = null, curriculumMission = null;
+  var contextAuthority = null, readingContext = null, periodicRequest = 0;
+  function authority(data) {
+    var workspace = data.workspaces.find(function (item) { return item.id === data.selected_workspace_id; });
+    return workspace && { workspace: workspace.id, kind: workspace.kind, role: workspace.role, expires: data.session_expires_at,
+      versions: Array.from(new Set(data.entitlements.filter(function (e) { return e.status === 'ACTIVE'; })
+        .map(function (e) { return e.program_version_id; }))).sort() };
+  }
+  function sameAuthority(resume, fresh) {
+    return fresh && resume.workspace === fresh.workspace && resume.kind === fresh.kind && resume.role === fresh.role &&
+      resume.expires === fresh.expires && (resume.version ? fresh.versions.includes(resume.version) :
+        JSON.stringify(resume.versions) === JSON.stringify(fresh.versions));
+  }
+  function clearCurriculum() {
+    readingContext = null;
+    curriculumGeneration++; if (curriculumController) curriculumController.abort();
+    $('curriculum').hidden = true; $('curriculum-list').replaceChildren();
+    ['curriculum-title','curriculum-locale','curriculum-version','curriculum-description','program-guidance',
+      'mission-instructions','mission-reflection','curriculum-notice'].forEach(function (id) { $(id).textContent = ''; });
+    ['programs-back','missions-back','program-guidance-section','mission-instructions-section',
+      'mission-reflection-section','curriculum-retry'].forEach(function (id) { $(id).hidden = true; });
+  }
   function clear() {
+    contextAuthority = null; periodicRequest = 0;
+    clearCurriculum(); curriculumVersion = null; curriculumMission = null;
     $('workspace-detail').hidden = true; $('workspace-controls').hidden = true;
     $('empty-workspaces').hidden = true;
     ['workspace-name','workspace-kind','workspace-role'].forEach(function (id) { $(id).textContent = ''; });
@@ -86,11 +110,14 @@
     generation++; if (controller) controller.abort(); clear();
     window.location.replace('/portal/login.html?expired=1');
   }
-  async function load() {
+  async function load(resume, periodic) {
     if (signingOut || remotePending) return;
     var requestId = ++generation;
     if (controller) controller.abort(); controller = new AbortController();
     clear(); message('Loading your workspaces…');
+    // Only the periodic caller supplies a route snapshot, never curriculum bytes.
+    if (resume && resume.workspace === selected) periodicRequest = requestId;
+    else { resume = null; if (periodic === true) periodicRequest = requestId; }
     try {
       var response = await fetch('/api/portal/context' + (selected ? '?workspace_id=' + encodeURIComponent(selected) : ''),
         { credentials: 'same-origin', cache: 'no-store', signal: controller.signal });
@@ -106,6 +133,7 @@
       if (response.status === 403) { selected = null; message('Workspace access has changed.'); await load(); return; }
       if (!response.ok) throw new Error();
       var data = await response.json(); if (requestId !== generation) return;
+      if (data.session_expires_at * 1000 <= Date.now()) { endSession(); return; }
       expiry = window.setTimeout(endSession, Math.max(0, data.session_expires_at * 1000 - Date.now()));
       selected = data.selected_workspace_id;
       if (!data.workspaces.length) { $('empty-workspaces').hidden = false; message(''); return; }
@@ -118,6 +146,7 @@
       $('workspace-select').value = selected || ''; $('workspace-controls').hidden = false;
       var workspace = data.workspaces.find(function (item) { return item.id === selected; });
       if (!workspace) { message('Select a workspace to continue.'); return; }
+      contextAuthority = authority(data);
       $('workspace-name').textContent = workspace.display_name;
       $('workspace-kind').textContent = workspace.kind === 'FAMILY' ? 'Family workspace' : 'School workspace';
       $('workspace-role').textContent = 'Your role: ' + ({ OWNER: 'Owner', SCHOOL_ADMIN: 'School administrator', TEACHER: 'Teacher' })[workspace.role];
@@ -131,13 +160,111 @@
         var empty = document.createElement('li'); empty.textContent = 'No program access is listed for this workspace.'; $('entitlements').append(empty);
       }
       $('workspace-detail').hidden = false; message('');
+      if (resume) {
+        if (sameAuthority(resume, contextAuthority)) await loadCurriculum(resume.version, resume.mission, resume);
+        else message('Your access has changed. Open My Programs to see what is available.');
+      }
     } catch (error) {
       if (requestId !== generation || error.name === 'AbortError') return;
       clear(); message('We couldn’t load your workspace. Please try again.'); $('retry').hidden = false;
     } finally {
+      if (periodicRequest === requestId) periodicRequest = 0;
       if (requestId === generation) pendingValidation = false;
     }
   }
+  async function loadCurriculum(version, mission, resume) {
+    if (!selected || signingOut || remotePending || document.hidden) return;
+    clearCurriculum(); curriculumVersion = version || null; curriculumMission = mission || null;
+    var requestId = curriculumGeneration, workspaceId = selected, sessionGeneration = generation;
+    curriculumController = new AbortController(); message('Loading your programs…');
+    var query = '?workspace_id=' + encodeURIComponent(workspaceId) + '&locale=en-US';
+    if (version) query += '&program_version_id=' + encodeURIComponent(version);
+    if (mission) query += '&mission_id=' + encodeURIComponent(mission);
+    function current() { return requestId === curriculumGeneration && sessionGeneration === generation && selected === workspaceId; }
+    try {
+      var response = await fetch('/api/portal/curriculum' + query,
+        { credentials: 'same-origin', cache: 'no-store', signal: curriculumController.signal });
+      if (!current()) return;
+      var data = await response.json(); if (!current()) return;
+      if (response.status === 401) {
+        if (data.error === 'signout_required') { clear(); window.location.replace('/portal/login.html?signout_pending=1'); }
+        else endSession();
+        return;
+      }
+      if (response.status === 403) { clear(); selected = null; message('Workspace access has changed. Choose an available workspace.'); $('retry').hidden = false; return; }
+      if (!response.ok) {
+        var notice = response.status === 409 ? 'This program is unavailable in the requested language.' :
+          response.status === 404 ? 'This curriculum is no longer available for this workspace.' : 'We couldn’t load your program. Please try again.';
+        clearCurriculum(); $('curriculum').hidden = false; $('curriculum-notice').textContent = notice;
+        $('programs-back').hidden = false; $('curriculum-retry').hidden = false; message(''); return;
+      }
+      if (data.workspace_id !== workspaceId || data.view !== (mission ? 'mission' : version ? 'program' : 'catalog')) throw new Error();
+      if (resume) {
+        // Reconcile after the fresh curriculum read, before any automatic display.
+        var checked = await fetch('/api/portal/context?workspace_id=' + encodeURIComponent(workspaceId),
+          { credentials: 'same-origin', cache: 'no-store', signal: curriculumController.signal });
+        if (!current()) return;
+        var fresh = await checked.json(); if (!current()) return;
+        if (checked.status === 401) {
+          if (fresh.error === 'signout_required') { clear(); window.location.replace('/portal/login.html?signout_pending=1'); }
+          else endSession();
+          return;
+        }
+        if (checked.status === 403) { clear(); selected = null; message('Workspace access has changed. Choose an available workspace.'); $('retry').hidden = false; return; }
+        if (!checked.ok) throw new Error();
+        if (fresh.session_expires_at * 1000 <= Date.now() || data.session_expires_at * 1000 <= Date.now()) { endSession(); return; }
+        var freshAuthority = authority(fresh);
+        var sameContent = freshAuthority && (version ? data.program.program_version_id === version && (!mission || data.mission.id === mission) :
+          JSON.stringify(data.programs.map(function (item) { return item.program_version_id; }).sort()) === JSON.stringify(freshAuthority.versions));
+        if (!sameAuthority(resume, freshAuthority) || data.session_expires_at !== freshAuthority.expires || !sameContent) {
+          // Valid transitions refresh the summary without continuing the old route.
+          await load(null, true); return;
+        }
+      }
+      window.clearTimeout(expiry);
+      expiry = window.setTimeout(endSession, Math.max(0, data.session_expires_at * 1000 - Date.now()));
+      $('curriculum-title').textContent = data.view === 'catalog' ? 'My Programs' : data.view === 'program' ? data.program.title : data.mission.title;
+      $('programs-back').hidden = data.view === 'catalog'; $('missions-back').hidden = data.view !== 'mission';
+      if (data.program) {
+        $('curriculum-locale').textContent = data.program.resolved_locale;
+        $('curriculum-version').textContent = data.program.title + ' · Version ' + data.program.version_key;
+        if (data.view === 'program') {
+          $('curriculum-description').textContent = data.program.description;
+          $('program-guidance').textContent = data.program.guidance;
+          $('program-guidance-section').hidden = !data.program.guidance;
+        }
+      }
+      if (data.view === 'mission') {
+        $('mission-instructions').textContent = data.mission.instructions;
+        $('mission-reflection').textContent = data.mission.reflection;
+        $('mission-instructions-section').hidden = false; $('mission-reflection-section').hidden = !data.mission.reflection;
+      } else {
+        var list = data.view === 'catalog' ? data.programs : data.missions;
+        list.forEach(function (item) {
+          var li = document.createElement('li'), button = document.createElement('button'), detail = document.createElement('span');
+          button.type = 'button'; button.className = 'curriculum-choice';
+          button.textContent = data.view === 'catalog' ? (item.title || item.program_key) : item.sequence + '. ' + item.title;
+          button.addEventListener('click', function () {
+            loadCurriculum(data.view === 'catalog' ? item.program_version_id : version, data.view === 'catalog' ? null : item.id);
+          });
+          detail.textContent = data.view === 'catalog' ? 'Version ' + item.version_key + (item.resolved_locale ? ' · ' + item.resolved_locale : ' · Language unavailable') : 'Mission ' + item.sequence;
+          li.append(button, detail); $('curriculum-list').append(li);
+        });
+        if (!list.length) $('curriculum-notice').textContent = data.view === 'catalog' ? 'No programs are available for this workspace.' : 'No missions are published for this program.';
+      }
+      readingContext = { workspace: contextAuthority.workspace, kind: contextAuthority.kind, role: contextAuthority.role,
+        expires: contextAuthority.expires, versions: contextAuthority.versions, version: version || null, mission: mission || null };
+      $('curriculum').hidden = false; message(''); $('curriculum-title').focus();
+    } catch (error) {
+      if (!current() || error.name === 'AbortError') return;
+      clearCurriculum(); $('curriculum').hidden = false; $('curriculum-notice').textContent = 'We couldn’t load your program. Please try again.';
+      $('programs-back').hidden = false; $('curriculum-retry').hidden = false; message('');
+    }
+  }
+  $('programs-open').addEventListener('click', function () { loadCurriculum(null, null); });
+  $('programs-back').addEventListener('click', function () { loadCurriculum(null, null); });
+  $('missions-back').addEventListener('click', function () { loadCurriculum(curriculumVersion, null); });
+  $('curriculum-retry').addEventListener('click', function () { loadCurriculum(curriculumVersion, curriculumMission); });
   $('workspace-select').addEventListener('change', function () { selected = this.value || null; load(); });
   $('retry').addEventListener('click', load);
   $('signout').addEventListener('click', async function () {
@@ -175,7 +302,11 @@
   // the monotonic deadline if background timer delivery was deferred.
   window.setInterval(function () {
     // An active recovery already revalidates; periodic work must not starve it.
-    if (!pendingValidation || !controller || controller.signal.aborted) sessionChanged();
+    if (periodicRequest) return;
+    if (!pendingValidation || !controller || controller.signal.aborted) {
+      if (readingContext && !document.hidden && !signingOut && !remotePending && !pendingValidation) load(readingContext);
+      else sessionChanged();
+    }
   }, 30000);
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) { generation++; if (controller) controller.abort(); clear(); }

@@ -10,7 +10,8 @@ const config = JSON.parse(await fs.readFile(path.join(root, 'vercel.json'), 'utf
 const routes = new Map([
   ['/portal', require('../../api/portal/index.js')], ['/portal/', require('../../api/portal/index.js')],
   ['/api/portal', require('../../api/portal/index.js')], ['/api/portal/index', require('../../api/portal/index.js')],
-  ['/api/portal/auth', require('../../api/portal/auth.js')], ['/api/portal/context', require('../../api/portal/context.js')]
+  ['/api/portal/auth', require('../../api/portal/auth.js')], ['/api/portal/context', require('../../api/portal/context.js')],
+  ['/api/portal/curriculum', require('../../api/portal/curriculum.js')]
 ]);
 const types = { '.html':'text/html; charset=utf-8', '.css':'text/css', '.js':'text/javascript', '.png':'image/png', '.jpg':'image/jpeg', '.svg':'image/svg+xml' };
 const server = http.createServer(async (req, res) => {

@@ -168,3 +168,103 @@ Stop/remove local stack volumes with local CLI `stop --no-backup` afterward, sto
 the test server/browser, and verify cleanup. No hosted CLI link/push/configuration.
 Production numeric template/SMTP, approved origins, abuse controls, hosted assurance,
 real adult provisioning, and broader launch remain separate Human Authority gates.
+
+## Sprint 01C — published curriculum reads
+
+Sprint 01C extends the protected document with My Programs → exact program
+version → ordered mission list → mission text. The earlier sections describe the
+accepted Sprint 01B baseline; curriculum reads are the separately authorized 01C
+addition. No domain write, Level model, activity/completion/evidence control,
+content_blocks renderer, resource delivery or publishing tooling is added.
+
+`GET /api/portal/curriculum` requires `workspace_id`, accepts optional
+`program_version_id` and then `mission_id`, and accepts a single bounded `locale`
+(omitted means the UI's `en-US`). Mission requires version. Other/duplicate or
+malformed parameters are rejected. Requests reuse accepted Auth, profile and
+pending-signout checks. Read-only aggregation forwards the adult JWT under
+existing RLS. Because curriculum RLS authorizes a union of workspaces, each
+response is additionally restricted to the selected workspace's ACTIVE exact
+entitlements, with Auth/workspace/entitlement revalidation before success.
+PUBLISHED and previously entitled RETIRED versions remain accessible; duplicate
+billing bases do not duplicate catalog versions. No service credential is used.
+
+Locale choice is requested PUBLISHED locale → explicit PUBLISHED fallback →
+unavailable. A default locale never becomes an implicit fallback. Missing catalog
+localization is explicit (null title/locale); a localized detail unavailable in
+that language returns 409. Inaccessible versions/missions return 404; inaccessible
+workspaces return 403. Incomplete published trees, unexpected upstream shapes,
+overflow and provider failures fail closed with sanitized 503 responses. The
+server reads explicit columns and returns only the fields recorded in the
+implementation plan, with bounded text/rows and a 512-KiB response cap.
+
+The browser renders literal textContent only. New curriculum state is cleared
+and in-flight reads invalidated by the accepted clear/session/coordination path,
+including workspace changes, blur/hide, periodic revalidation and signout.
+The 01C-A01 correction retains only transient route/authority metadata for an open
+catalog/program/mission when the 30-second timer fires. It clears private DOM,
+freshly validates the same selected workspace/context, then freshly fetches that
+exact curriculum route. Changed/denied authority never resumes the old route.
+Repeated ticks coalesce while that validation/refetch is outstanding; ordinary
+session/workspace/coordination events still invalidate the attempt. No curriculum
+bytes are restored from cache, and no private data or navigation authority is
+persisted.
+
+The 01C-A02 correction adds one final fresh context request after a successful
+automatic curriculum response, before any title/body/reflection is displayed.
+The same selected workspace/kind/role/session and route-relevant ACTIVE version
+checks apply again. A catalog's returned version set must also match the final
+ACTIVE context set. Changed context cancels continuation and refreshes the
+workspace summary through the existing loader; valid role transitions and new
+entitlements remain available through explicit fresh navigation. Errors and stale
+generations stay fail-closed. The periodic chain coalesces through this final
+reconciliation and the single summary refresh after a valid mismatch. This is a bounded reconciliation, with no new polling or server
+contract. The initial implementation, A01 report and both independent reports
+retain their historical evidence; see the separate A02 correction/revalidation
+report for current results.
+
+The consumer reads Portal-owned published rows only. There is no Factory runtime
+dependency, package format/importer/ingestion/publishing pipeline or production
+curriculum provisioning. Section R commerce repairs and hosted operational gates
+remain prerequisites to real delivery. All five OPEN NOTES above remain unchanged.
+
+Additional validation sources:
+
+- `node --test scripts/portal/test-curriculum.mjs`: mocked handler authorization,
+  locale, field projection, limits and final-response revalidation.
+- `node --test scripts/portal/test-curriculum-client.mjs`: actual client with
+  deterministic DOM/clock and held mocked replies; tests navigation, literal text,
+  failures, session/workspace changes and non-renewable coordination recovery.
+  Includes the retained 01C-A01 fresh-refetch regression, 01C-A02 between-request
+  role/catalog-set challenges, and final reconciliation failure/stale-generation
+  checks. Optional `AIEA_PORTAL_CLIENT_SOURCE` runs the targeted regressions against
+  saved pre-correction clients as negative controls; those controls must fail.
+- `python3 supabase/tests/curriculum.native.py`: after unchanged 01B numeric
+  fixtures and accepted entry tests on a clean disposable stack. Adds synthetic
+  Portal curriculum through existing guards with genuine managed TOTP, then tests
+  native Auth/PostgREST/RLS and handler isolation. Snapshots compare learning,
+  cohort, learner, evidence and assessment records before/after browsing. Fixture
+  setup is test-only and must never target production.
+- `node scripts/portal/test-curriculum-browser.mjs`: after the new native fixture
+  script, with the ordinary loopback adapter and the same installed Playwright/
+  Chrome/private credential environment used by existing browser tests. Exercises
+  native-backed navigation, literal HTML-like text, responsive layouts, held
+  native responses across workspace changes, coordination clearing and signout.
+  The 01C-A01 extension separately holds native context and mission replies,
+  proves automatic resumption without clicks, and changes disposable synthetic
+  entitlement/membership/workspace/profile authority while revalidation is held.
+  A02 additionally accepts native periodic context, holds automatic curriculum
+  BEFORE the application, changes synthetic role/entitlement/membership/workspace/
+  profile authority, and proves no automatic display. Explicit navigation still
+  permits SCHOOL_ADMIN and newly ACTIVE versions. Final reconciliation is held
+  separately to check empty DOM and timer coalescing.
+  Test-only operator SQL snapshots all 28 Portal tables across successful reads
+  and ten learning/cohort/evidence/assessment tables across adversarial checks.
+  This script requires local Docker access for those fixture operations.
+  Its unavailable display is an injected response; focus events and the browser
+  clock are controlled and do not establish operating-system/hosted scheduling.
+
+Run accepted 01B audit/pending/replayed browser regressions before adding 01C
+fixtures: those historical tests deliberately assert the original single fixture
+entitlement summary. Their sources/assertions stay unchanged. Capture logs and
+screenshots only beside private temporary credentials, then stop/remove the
+disposable stack volumes, adapter, copied project and credential/fixture files.
