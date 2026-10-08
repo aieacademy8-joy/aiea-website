@@ -1,0 +1,18 @@
+[
+  "HR03 registry forces RLS",
+  "HR03 browser and service roles have no registry privileges",
+  "HR03 browser and service roles have no allocator privileges",
+  "HR03 issuance hook not caller executable",
+  "HR03 only trusted Auth hook uses invoker privileges",
+  "HR03 trusted hook cannot reset allocator or mutate identities",
+  "HR03 malformed trusted context denied",
+  "HR03 mismatched issuance identity denied",
+  "HR03 initial issuance binds five separate sessions",
+  "HR03 subsequent issuance advances generation",
+  "HR03 other sessions remain independent",
+  "HR03 rollback preserves authoritative registry",
+  "HR03 rollback consumes allocator values without reusing authority",
+  "HR03 direct registry update denied",
+  "HR03 direct issuance hook call denied",
+  "HR03 direct generation allocation denied"
+]

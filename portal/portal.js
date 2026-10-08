@@ -77,6 +77,15 @@
   var pendingRecovery, pendingUntil = 0, pendingGrace = 10000, pendingValidation = false;
   var curriculumGeneration = 0, curriculumController, curriculumVersion = null, curriculumMission = null;
   var contextAuthority = null, readingContext = null, periodicRequest = 0;
+  var progressGeneration = 0, progressController, progressSubject = null, progressData = null;
+  function clearProgress() {
+    progressGeneration++; if (progressController) progressController.abort();
+    progressSubject = null; progressData = null;
+    $('progress-panel').hidden = true; $('progress-open').hidden = true;
+    $('subject-select').replaceChildren(); $('progress-list').replaceChildren();
+    ['subject-label','progress-explanation','progress-notice'].forEach(function (id) { $(id).textContent = ''; });
+    ['progress-start','progress-finish','progress-retry'].forEach(function (id) { $(id).hidden = true; $(id).disabled = false; });
+  }
   function authority(data) {
     var workspace = data.workspaces.find(function (item) { return item.id === data.selected_workspace_id; });
     return workspace && { workspace: workspace.id, kind: workspace.kind, role: workspace.role, expires: data.session_expires_at,
@@ -89,6 +98,7 @@
         JSON.stringify(resume.versions) === JSON.stringify(fresh.versions));
   }
   function clearCurriculum() {
+    clearProgress();
     readingContext = null;
     curriculumGeneration++; if (curriculumController) curriculumController.abort();
     $('curriculum').hidden = true; $('curriculum-list').replaceChildren();
@@ -174,6 +184,11 @@
   }
   async function loadCurriculum(version, mission, resume) {
     if (!selected || signingOut || remotePending || document.hidden) return;
+    // Keep only the subject ID within this exact workspace/version. Every
+    // navigation obtains fresh subject authorization/status before displaying it.
+    var progressResume = resume && resume.progressOpen ? { subject: resume.progressSubject } :
+      readingContext && readingContext.progressOpen && readingContext.workspace === selected && readingContext.version === version ?
+        { subject: readingContext.progressSubject } : null;
     clearCurriculum(); curriculumVersion = version || null; curriculumMission = mission || null;
     var requestId = curriculumGeneration, workspaceId = selected, sessionGeneration = generation;
     curriculumController = new AbortController(); message('Loading your programs…');
@@ -255,12 +270,89 @@
       readingContext = { workspace: contextAuthority.workspace, kind: contextAuthority.kind, role: contextAuthority.role,
         expires: contextAuthority.expires, versions: contextAuthority.versions, version: version || null, mission: mission || null };
       $('curriculum').hidden = false; message(''); $('curriculum-title').focus();
+      $('progress-open').hidden = data.view === 'catalog';
+      if (progressResume) await loadProgress(progressResume.subject);
     } catch (error) {
       if (!current() || error.name === 'AbortError') return;
       clearCurriculum(); $('curriculum').hidden = false; $('curriculum-notice').textContent = 'We couldn’t load your program. Please try again.';
       $('programs-back').hidden = false; $('curriculum-retry').hidden = false; message('');
     }
   }
+  async function loadProgress(subject) {
+    if (!selected || !curriculumVersion || !readingContext || signingOut || remotePending || document.hidden) return;
+    clearProgress(); $('progress-open').hidden = false;
+    var requestId = progressGeneration, sessionId = generation, curriculumId = curriculumGeneration;
+    var workspaceId = selected, versionId = curriculumVersion;
+    progressSubject = subject || null; progressController = new AbortController();
+    function current() { return requestId === progressGeneration && sessionId === generation && curriculumId === curriculumGeneration && selected === workspaceId; }
+    $('progress-panel').hidden = false; $('progress-notice').textContent = 'Loading mission status…';
+    var query = '?workspace_id=' + encodeURIComponent(workspaceId) + '&program_version_id=' + encodeURIComponent(versionId);
+    if (subject) query += '&subject_id=' + encodeURIComponent(subject);
+    try {
+      var response = await fetch('/api/portal/progress' + query, { credentials: 'same-origin', cache: 'no-store', signal: progressController.signal });
+      if (!current()) return;
+      var data = await response.json(); if (!current()) return;
+      if (response.status === 401) { clear(); window.location.replace('/portal/login.html?' + (data.error === 'signout_required' ? 'signout_pending=1' : 'expired=1')); return; }
+      if (response.status === 403) { clear(); message('Your status access has changed. Reload your workspace.'); $('retry').hidden = false; return; }
+      if (!response.ok) throw new Error();
+      if (data.workspace_id !== workspaceId || data.program_version_id !== versionId || data.subject_id !== progressSubject ||
+          !contextAuthority || data.kind !== contextAuthority.kind || data.session_expires_at !== contextAuthority.expires ||
+          data.session_expires_at * 1000 <= Date.now() || !Array.isArray(data.subjects) || !Array.isArray(data.missions)) throw new Error();
+      progressData = data;
+      var family = data.kind === 'FAMILY';
+      $('subject-label').textContent = family ? 'Select a learner code' : 'Select a cohort';
+      $('progress-explanation').textContent = family ? 'Record activity for one learner code. Completion is available only when the published requirements support adult confirmation.' :
+        'Record delivery to this cohort. Delivery does not record individual completion or mastery.';
+      var placeholder = document.createElement('option'); placeholder.value = ''; placeholder.textContent = family ? 'Choose a learner code' : 'Choose a cohort';
+      $('subject-select').append(placeholder);
+      data.subjects.forEach(function (s) { var option = document.createElement('option'); option.value = s.id; option.textContent = s.display_code; $('subject-select').append(option); });
+      $('subject-select').value = progressSubject || '';
+      if (subject && !data.subjects.some(function (s) { return s.id === subject; })) throw new Error();
+      if (subject) data.missions.forEach(function (m) { var li = document.createElement('li'); li.textContent = 'Mission ' + m.sequence + ' · ' + m.status.replace(/_/g, ' '); $('progress-list').append(li); });
+      var mission = data.missions.find(function (m) { return m.mission_id === curriculumMission; });
+      $('progress-start').hidden = !subject || !mission;
+      $('progress-start').disabled = !!mission && mission.status !== 'NOT_STARTED';
+      $('progress-finish').hidden = !subject || !mission || (family ? mission.status !== 'IN_PROGRESS' || !mission.completion_allowed : mission.status !== 'STARTED');
+      $('progress-finish').textContent = family ? 'Mark completed' : 'Mark delivered';
+      $('progress-notice').textContent = !data.subjects.length ? 'No authorized active ' + (family ? 'learner codes' : 'cohorts') + ' are available. Contact AIEA for help.' :
+        !subject ? 'Choose a ' + (family ? 'learner code' : 'cohort') + ' to see saved status.' :
+        !curriculumMission ? 'Open a mission to record its status.' : family && mission && mission.status === 'IN_PROGRESS' && !mission.completion_allowed ?
+        'Completion is unavailable under this mission’s published requirements.' : 'Status loaded.';
+      readingContext.progressOpen = true; readingContext.progressSubject = progressSubject;
+    } catch (error) {
+      if (!current() || error.name === 'AbortError') return;
+      clearProgress(); $('progress-open').hidden = false; $('progress-panel').hidden = false;
+      $('progress-notice').textContent = 'We couldn’t load status. Reload to check your current access.'; $('progress-retry').hidden = false;
+    }
+  }
+  async function saveProgress(action) {
+    if (!progressData || !progressSubject || !curriculumMission || signingOut || remotePending || document.hidden) return;
+    var id = progressGeneration, sid = generation, cid = curriculumGeneration, subject = progressSubject;
+    var body = { workspace_id: selected, program_version_id: curriculumVersion, mission_id: curriculumMission, subject_id: subject, action: action };
+    progressData = null; $('progress-start').disabled = true; $('progress-finish').disabled = true;
+    $('progress-notice').textContent = 'Saving status…';
+    function current() { return id === progressGeneration && sid === generation && cid === curriculumGeneration; }
+    try {
+      var response = await fetch('/api/portal/progress', { method: 'POST', credentials: 'same-origin', cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: progressController.signal });
+      if (!current()) return;
+      var data = await response.json(); if (!current()) return;
+      if (response.status === 401) { clear(); window.location.replace('/portal/login.html?' + (data.error === 'signout_required' ? 'signout_pending=1' : 'expired=1')); return; }
+      if (response.status === 403) { clear(); message('Your status access has changed. Reload your workspace.'); $('retry').hidden = false; return; }
+      if (!response.ok || data.workspace_id !== body.workspace_id || data.program_version_id !== body.program_version_id ||
+          data.subject_id !== subject || data.mission_id !== body.mission_id) throw new Error();
+      await loadProgress(subject); // fresh read only; never automatically repeat a write
+    } catch (error) {
+      if (!current() || error.name === 'AbortError') return;
+      clearProgress(); $('progress-open').hidden = false; $('progress-panel').hidden = false;
+      $('progress-notice').textContent = 'Status was not confirmed. Reload status before trying again.'; $('progress-retry').hidden = false;
+    }
+  }
+  $('progress-open').addEventListener('click', function () { loadProgress(null); });
+  $('subject-select').addEventListener('change', function () { loadProgress(this.value || null); });
+  $('progress-start').addEventListener('click', function () { saveProgress('start'); });
+  $('progress-finish').addEventListener('click', function () { saveProgress(contextAuthority && contextAuthority.kind === 'FAMILY' ? 'complete' : 'deliver'); });
+  $('progress-retry').addEventListener('click', function () { loadProgress(null); });
   $('programs-open').addEventListener('click', function () { loadCurriculum(null, null); });
   $('programs-back').addEventListener('click', function () { loadCurriculum(null, null); });
   $('missions-back').addEventListener('click', function () { loadCurriculum(curriculumVersion, null); });

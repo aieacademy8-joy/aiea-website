@@ -219,3 +219,96 @@ Sources for security assumptions: [Supabase RLS](https://supabase.com/docs/guide
 [JWT claims/AMR](https://supabase.com/docs/guides/auth/jwt-fields),
 [TOTP](https://supabase.com/docs/guides/auth/auth-mfa/totp). These supplement the frozen
 contract; they do not replace it or expand the authorized sprint.
+
+## Sprint 01D forward migration and managed write boundary
+
+`20261008000100_portal_mission_status.sql` adds no tables or columns and changes
+none of the three accepted migrations. Only authenticated receives EXECUTE on
+`portal.record_mission_progress(uuid,uuid,uuid,uuid,text)` and
+`portal.record_cohort_delivery(uuid,uuid,uuid,uuid,text)`; PUBLIC, anon and
+service_role execution are revoked. There are no new table-DML grants or broad
+write policies. Private helpers remain outside the exposed schema, with no
+caller execution grant.
+
+Both fixed SECURITY DEFINER RPCs use qualified names and an empty search_path.
+They independently validate the signed native JWT's adult role, non-anonymous
+identity, iat/exp, the managed Auth account (not banned/deleted/anonymous), and the
+same adult's live session_id, matching managed AAL and unelapsed not_after. HR03's
+forward migration `20261008000200_portal_write_generation.sql` replaces the
+insufficient epoch-second freshness comparison with an issuer-signed
+`aiea_write_generation` claim and exact locked private registry matching. Auth
+account/session and generation rows are share-locked, followed by active adult-confirmed profile,
+workspace, membership, exact ACTIVE entitlements, PUBLISHED/RETIRED version and
+mission. Session/expiry is checked again after waiting for subject locks. No
+browser-supplied claims are installed into a service context.
+
+This is a bounded new mutation gate. The private SECURITY INVOKER Custom Access
+Token Hook derives identity from trusted native issuance context, verifies/locks
+the managed session FOR UPDATE, and binds a fresh positive bigint generation to
+that session/adult. A private noncycling allocator prevents generation reuse;
+rollback gaps are expected. Registry RLS is forced. Only supabase_auth_admin has
+hook execution and required registry/allocator privileges; it has no registry
+DELETE/TRUNCATE/identity UPDATE or allocator reset grant. Browser/service roles
+have no registry/allocator privileges or hook execution. Private schema exposure
+is unchanged. Missing/malformed claims/state fail closed. An obsolete token cannot
+repair authority or substitute generation via API/RPC arguments.
+
+Configure the hook ONLY in a disposable copied LOCAL config during validation:
+
+```toml
+[auth.hook.custom_access_token]
+enabled = true
+uri = "pg-functions://postgres/portal_private/issue_write_generation"
+```
+
+This does not activate the hook in repository/hosted configuration. Without
+activation, tokens lack write authority; no backfill/repair RPC exists. Native
+issuance and registry advancement share a transaction. A write holding authority
+locks may finish before refresh; a committed refresh first denies waiting obsolete
+writes, including same-second issuance. Independent sessions remain independent.
+OTP UX, access-cookie behavior and refresh-token discard remain unchanged.
+
+The gate does not invalidate ordinary stateless bearer access or select the latest
+login across independent sessions. Auth signature/issuer/
+expiry validation remains native PostgREST; the Vercel API additionally validates
+Auth /user. SNV06 remains OPEN for ordinary stateless Data API behavior.
+
+FAMILY requires OWNER and an ACTIVE learner in that FAMILY workspace. SCHOOL
+requires an ACTIVE cohort in that SCHOOL workspace and OWNER/SCHOOL_ADMIN or the
+exact ACTIVE teacher assignment. SCHOOL individual progress is denied. Entitled
+RETIRED versions remain usable; no new entitlement is created.
+
+Subject-row UPDATE locks serialize absent-row insertion and advancement. Start
+creates IN_PROGRESS/STARTED; complete/deliver requires a started record and advances
+to COMPLETED/DELIVERED. A terminal record never regresses. Repeated achieved actions
+perform no DML, preserving timestamps/audit counts. The creator actor stays fixed;
+existing audit triggers record each actual updater. Delivery timestamps come from
+the server. Unknown/empty/additional completion rules fail closed: both version
+and mission require exactly {"method":"ADULT_ATTESTATION"}, and mission evidence
+expectations require exactly {"required":false}.
+
+Authorization rows are locked before mutation. A revocation committed before the
+waiting check denies the action; a revocation waiting behind an already-authorized
+write follows that commit. Neither response reconciliation nor client abortion
+undoes a committed action. Lost acknowledgement resolves through reread and an
+explicit idempotent retry. This is a transactional ordering guarantee, not recall
+of already-delivered bytes or committed records.
+
+The separate 01D SQL runner reuses only the accepted foundation fixture prelude,
+with explicit test-only completion rules and extra synthetic managed Auth fields.
+It checks the unchanged 188-name foundation inventory under all forward migrations,
+a separate 16-name generation inventory and 15-name status inventory, then rolls
+back; accepted foundation source/bootstrap/inventory remain unchanged. Native validation uses genuine
+managed Auth/TOTP and direct PostgREST RPCs, eight-way concurrent writes, and held
+learner/teacher-assignment/session revocation transactions. No Auth schema DDL is
+added to a production migration. No hosted stack/provider configuration or real
+customer data is authorized by these test sources.
+
+`write-generation.native.py` separately covers genuine same-/cross-second
+issuance in both RPC/API modes, native transaction ordering, rollback/timeout/
+availability, independent/concurrent sessions, privileges and original-gate
+negative controls. Test-only triggers/gate replacement exist only in disposable
+SQL, are restored/removed, and never enter a production migration. The historical
+independent 01D-A01 failure remains preserved. See the HR03 design and correction
+report in docs/portal; local results do not self-accept the sprint or close SNV04/
+SNV06 globally. Hosted activation requires separate Human Authority authorization.

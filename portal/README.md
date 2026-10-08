@@ -268,3 +268,64 @@ fixtures: those historical tests deliberately assert the original single fixture
 entitlement summary. Their sources/assertions stay unchanged. Capture logs and
 screenshots only beside private temporary credentials, then stop/remove the
 disposable stack volumes, adapter, copied project and credential/fixture files.
+
+## Sprint 01D — explicit adult-recorded mission status
+
+`GET /api/portal/progress` requires workspace_id and program_version_id; an
+optional subject_id loads that subject's statuses. Only existing ACTIVE FAMILY
+learner references or authorized ACTIVE SCHOOL cohorts are listed. Select fields
+and 100-row/512-KiB bounds remain explicit. Reads recheck Auth, selected-workspace
+entitlement and subject visibility before returning. Opening curriculum/status
+creates no product records.
+
+`POST /api/portal/progress` accepts exactly workspace_id, program_version_id,
+mission_id, subject_id and action. Same-origin JSON and native Auth/profile/cookie/
+pending-signout checks apply. FAMILY actions are start/complete; SCHOOL actions
+are start/deliver. The fixed RPC is chosen from the verified workspace kind and
+receives the adult JWT using Content-Profile: portal. No service credential or
+caller-supplied actor is used. Direct table writes remain denied.
+
+The explicit “Record mission status” control opens a learner-code/cohort selector.
+Status is confirmed by a fresh read after a successful write. Uncertain responses
+require reload; the UI never retries a mutation automatically. A committed write
+survives navigation, lost acknowledgement or fetch abortion. Subjects/statuses
+clear with the inherited private lifecycle. Periodic continuation keeps only
+transient route/subject IDs and refetches authorization/status; lost subject
+access cannot restore private codes/status. No persistent private cache is added.
+
+Family completion requires BOTH mission and version completion_rules to equal
+`{"method":"ADULT_ATTESTATION"}` exactly, and mission evidence_expectations to
+equal `{"required":false}` exactly. Missing/empty/unknown/additional requirements
+fail closed. This is a bounded execution vocabulary, not a publication operation
+or a claim that existing production curriculum uses it. Start remains explicit
+and completion requires a started record. SCHOOL DELIVERED only records cohort
+facilitation; it never creates learner progress or asserts learning/mastery.
+
+The new database write gate independently validates the live managed Auth account
+and session, even for direct RPC calls. HR03 additionally requires the issuer-signed
+per-session generation to match locked private authority, distinguishing genuine
+same-second issuance. Missing/obsolete generations fail closed. The trusted Auth
+hook is enabled only in disposable local validation configuration; repository and
+hosted configuration remain unchanged. No refresh token or second credential is
+added to the accepted access-token cookie flow. See the Supabase README for locking,
+expiry, trusted issuance and grant details. Existing read/Auth behavior and all
+five OPEN NOTES remain unchanged, including SNV06's ordinary stateless Data API
+limit. Provisioning, observations, assessments, evidence/artifacts, resources,
+individual SCHOOL progress, correction/deletion and other deferred scope remain
+outside 01D.
+
+Separate validation sources: test-progress.mjs (mocked API),
+test-progress-client.mjs (actual client/deterministic lifecycle),
+test-progress-database.mjs with mission-status.sql/mission-status.assertions.json
+(in-memory synthetic SQL), mission-status.native.py (genuine local Auth/direct
+RPC/concurrency/revocation), and test-progress-browser.mjs (local native Chrome).
+Native checks run after accepted 01B/01C fixtures on a disposable numeric-OTP
+stack. --reuse-fixtures is only a local test recovery option, not cleanup or
+production provisioning. Preserve failure evidence; final acceptance requires
+clean-fixture execution. Private credentials and screenshots stay outside Git.
+
+HR03 adds write-generation.sql/write-generation.assertions.json (synthetic trust/
+grant/rollback checks) and write-generation.native.py (genuine Auth/PostgREST/API,
+same-/cross-second refreshes, independent/concurrent sessions, races and hook fault
+injection). Historical 01D-A01 failure/blocker evidence remains unchanged. Local
+validation does not authorize hosted hook activation or self-acceptance.

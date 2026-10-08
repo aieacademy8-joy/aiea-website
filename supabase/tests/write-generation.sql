@@ -1,0 +1,33 @@
+-- Synthetic in-memory trust/ACL tests only. Called inside 01D fixture transaction.
+select pg_temp.ok((select relrowsecurity and relforcerowsecurity from pg_class where oid='portal_private.write_session_generation'::regclass),'HR03 registry forces RLS') as result;
+select pg_temp.ok(not exists(select 1 from unnest(array['anon','authenticated','service_role']) r where has_table_privilege(r,'portal_private.write_session_generation','SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')),'HR03 browser and service roles have no registry privileges') as result;
+select pg_temp.ok(not exists(select 1 from unnest(array['anon','authenticated','service_role']) r where has_sequence_privilege(r,'portal_private.write_generation_seq','USAGE,SELECT,UPDATE')),'HR03 browser and service roles have no allocator privileges') as result;
+select pg_temp.ok(not exists(select 1 from unnest(array['anon','authenticated','service_role']) r where has_function_privilege(r,'portal_private.issue_write_generation(jsonb)','EXECUTE')),'HR03 issuance hook not caller executable') as result;
+select pg_temp.ok(has_function_privilege('supabase_auth_admin','portal_private.issue_write_generation(jsonb)','EXECUTE') and not (select prosecdef from pg_proc where oid='portal_private.issue_write_generation(jsonb)'::regprocedure),'HR03 only trusted Auth hook uses invoker privileges') as result;
+select pg_temp.ok(not has_table_privilege('supabase_auth_admin','portal_private.write_session_generation','DELETE,TRUNCATE') and not has_column_privilege('supabase_auth_admin','portal_private.write_session_generation','user_id','UPDATE') and not has_column_privilege('supabase_auth_admin','portal_private.write_session_generation','session_id','UPDATE') and not has_sequence_privilege('supabase_auth_admin','portal_private.write_generation_seq','UPDATE'),'HR03 trusted hook cannot reset allocator or mutate identities') as result;
+set local role supabase_auth_admin;
+select pg_temp.denied($q$select portal_private.issue_write_generation('{"user_id":"bad","claims":{}}')$q$,'42501','HR03 malformed trusted context denied') as result;
+select pg_temp.denied($q$select portal_private.issue_write_generation('{"user_id":"00000000-0000-0000-0000-000000000002","claims":{"sub":"00000000-0000-0000-0000-000000000003","session_id":"03000000-0000-0000-0000-000000000002","role":"authenticated","is_anonymous":false}}')$q$,'42501','HR03 mismatched issuance identity denied') as result;
+-- Synthetic Auth issuance contexts; native tests independently prove actual signing.
+select portal_private.issue_write_generation(jsonb_build_object('user_id',user_id::text,'claims',jsonb_build_object('sub',user_id::text,'session_id',id::text,'role','authenticated','is_anonymous',false))) from auth.sessions;
+reset role;
+select pg_temp.ok((select count(*)=5 and bool_and(g.user_id=s.user_id and generation>0) from portal_private.write_session_generation g join auth.sessions s on s.id=g.session_id),'HR03 initial issuance binds five separate sessions') as result;
+create temp table hr03_initial as select * from portal_private.write_session_generation;
+set local role supabase_auth_admin;
+select portal_private.issue_write_generation('{"user_id":"00000000-0000-0000-0000-000000000002","claims":{"sub":"00000000-0000-0000-0000-000000000002","session_id":"03000000-0000-0000-0000-000000000002","role":"authenticated","is_anonymous":false,"aiea_write_generation":"untrusted"}}');
+reset role;
+select pg_temp.ok((select g.generation>i.generation from portal_private.write_session_generation g join hr03_initial i using(session_id) where g.user_id='00000000-0000-0000-0000-000000000002'),'HR03 subsequent issuance advances generation') as result;
+select pg_temp.ok(not exists(select 1 from portal_private.write_session_generation g join hr03_initial i using(session_id) where g.user_id<>'00000000-0000-0000-0000-000000000002' and g.generation<>i.generation),'HR03 other sessions remain independent') as result;
+create temp table hr03_before_rollback as select * from portal_private.write_session_generation;
+savepoint hr03_rollback;
+set local role supabase_auth_admin;
+select portal_private.issue_write_generation('{"user_id":"00000000-0000-0000-0000-000000000002","claims":{"sub":"00000000-0000-0000-0000-000000000002","session_id":"03000000-0000-0000-0000-000000000002","role":"authenticated","is_anonymous":false}}');
+rollback to savepoint hr03_rollback;
+reset role;
+select pg_temp.ok(not exists((select * from portal_private.write_session_generation except select * from hr03_before_rollback) union all (select * from hr03_before_rollback except select * from portal_private.write_session_generation)),'HR03 rollback preserves authoritative registry') as result;
+select pg_temp.ok((select last_value>max(generation) from portal_private.write_generation_seq cross join portal_private.write_session_generation group by last_value),'HR03 rollback consumes allocator values without reusing authority') as result;
+set local role authenticated;
+select pg_temp.denied($q$update portal_private.write_session_generation set generation=1$q$,'42501','HR03 direct registry update denied') as result;
+select pg_temp.denied($q$select portal_private.issue_write_generation('{}')$q$,'42501','HR03 direct issuance hook call denied') as result;
+select pg_temp.denied($q$select nextval('portal_private.write_generation_seq')$q$,'42501','HR03 direct generation allocation denied') as result;
+reset role;

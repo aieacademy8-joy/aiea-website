@@ -15,3 +15,8 @@
 .curriculum h2, .curriculum h3 { overflow-wrap: anywhere; }
 .curriculum section { margin-top: 1.5rem; }
 .curriculum [tabindex="-1"]:focus { outline: none; }
+
+.mission-status { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #dce4df; }
+.mission-status select { width: 100%; max-width: 30rem; margin: .5rem 0 1rem; }
+.status-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+#progress-notice { min-height: 1.5em; }

@@ -1,0 +1,17 @@
+[
+ "01D authenticated bounded RPC grant",
+ "01D anonymous RPC denied",
+ "01D managed-session helper private",
+ "01D direct progress DML denied",
+ "01D completion requires explicit start",
+ "01D family starts active owned learner",
+ "01D duplicate start creates no audit mutation",
+ "01D explicit supported attestation completes",
+ "01D terminal progress cannot downgrade",
+ "01D actor derived from adult session",
+ "01D elapsed managed session denied",
+ "01D historical assurance mismatch denied",
+ "01D removed managed session denies still-live JWT",
+ "01D strict explicit completion contract accepted",
+ "01D empty completion rules denied"
+]
