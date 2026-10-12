@@ -1,0 +1,2092 @@
+{
+  "manifest_id": "AIEA-PORTAL-D7.2",
+  "version": "1.0",
+  "date": "2026-10-09",
+  "timezone": "America/Chicago",
+  "artifact_kind": "LOCAL_DOCUMENTATION_AND_SOURCE_IDENTITY_MANIFEST",
+  "authority": {
+    "decision_source": "Human D7.2 instruction in this chat",
+    "d71_acceptance": "PLANNING_AND_EVIDENCE_RECONCILIATION_ONLY",
+    "local_artifact_creation_authorized": true,
+    "production_migration_authorized": false,
+    "hosted_configuration_authorized": false,
+    "hook_activation_authorized": false,
+    "application_code_changes_authorized": false,
+    "deployment_authorized": false,
+    "git_publication_authorized": false,
+    "sprint_01d_status": "UNACCEPTED",
+    "production_release_status": "HOLD",
+    "d73_auto_continuation_authorized": false
+  },
+  "repository": {
+    "root": "/Users/dosfam/Desktop/AIEAcademy/Website/2.0",
+    "branch_at_inspection": "main",
+    "observed_head": "e1b2b8b0e880e2d5a277060514e9a8dac8ffdaa0",
+    "observed_head_title": "AIEA Portal: accept Sprint 01D mission status and trusted write authority",
+    "network_fetch_performed": false
+  },
+  "accepted_baseline": {
+    "commit": "079e7f2a13142e956a5766d6e9e17a1f94718f5f",
+    "tree_oid": "7cac2a07bab9ed051737dcd150e7e7edc411879a",
+    "commit_title": "AIEA Portal: accept Sprint 01C curriculum delivery shell",
+    "acceptance_source": "Current Human Authority instruction naming accepted 01C",
+    "tracked_file_count": 181
+  },
+  "hash_method": "SHA-256 of unmodified blob bytes read from the accepted Git tree; no normalization. Git object IDs and file modes are separately recorded.",
+  "eligible_migrations": [
+    {
+      "order": 1,
+      "label": "M1",
+      "status": "SOURCE_ELIGIBLE_EXECUTION_ON_HOLD",
+      "path": "supabase/migrations/20261006000100_portal_domains.sql",
+      "git_mode": "100644",
+      "git_blob_oid": "636b7249d0567b303ae224b5bdb7be948563fc06",
+      "sha256": "f0bdbe5ed8f4f622362c0a6c149bc26644b06552b8a7358b8d792dbfe05a8464",
+      "bytes": 23301,
+      "matches_current_worktree_at_inspection": true
+    },
+    {
+      "order": 2,
+      "label": "M2",
+      "status": "SOURCE_ELIGIBLE_EXECUTION_ON_HOLD",
+      "path": "supabase/migrations/20261006000200_portal_security.sql",
+      "git_mode": "100644",
+      "git_blob_oid": "fb92aedf05064b6643ee6b02bd582407160a0b64",
+      "sha256": "b5afa539f70e34b6c22080a582de22cc484d294b8f368e11e08c141f745184d4",
+      "bytes": 10607,
+      "matches_current_worktree_at_inspection": true
+    },
+    {
+      "order": 3,
+      "label": "M3",
+      "status": "SOURCE_ELIGIBLE_EXECUTION_ON_HOLD",
+      "path": "supabase/migrations/20261006000300_portal_guards.sql",
+      "git_mode": "100644",
+      "git_blob_oid": "8c09466bc685946b2e6cbeffc5cb2bb2ca3ab619",
+      "sha256": "8fababc9491321f176fcfbf5196ff44a98a41bd657d263a897f51498837bb486",
+      "bytes": 27530,
+      "matches_current_worktree_at_inspection": true
+    }
+  ],
+  "accepted_portal_runtime": {
+    "status": "SOURCE_ELIGIBLE_DEPLOYMENT_ON_HOLD",
+    "source_commit": "079e7f2a13142e956a5766d6e9e17a1f94718f5f",
+    "files": [
+      {
+        "path": "api/portal/auth.js",
+        "git_mode": "100644",
+        "git_blob_oid": "ba800b865aa31eae1d32a0e60af173ca1fab25c5",
+        "sha256": "2599b444f1bce7498cfac7b73e09014cc13b76841f1918e6130e9d48371c414c",
+        "bytes": 3407
+      },
+      {
+        "path": "api/portal/context.js",
+        "git_mode": "100644",
+        "git_blob_oid": "ef276efa048ea40ca7823fe46852d4af62280349",
+        "sha256": "d86f6b9f7b2cae1741db556e9a4ac84e6b38d740372830ecf16fd9628d345bf4",
+        "bytes": 656
+      },
+      {
+        "path": "api/portal/curriculum.js",
+        "git_mode": "100644",
+        "git_blob_oid": "37465a242f367fb9e03ff16d54c5ae91ac0587e5",
+        "sha256": "abf877f3cc53f4b5312ed182245be9f8b29d111d39ba17b98e8fcb2a1ad4e2e8",
+        "bytes": 1074
+      },
+      {
+        "path": "api/portal/index.js",
+        "git_mode": "100644",
+        "git_blob_oid": "0ccbc4630efc269d919acd4150741ae1ead8e9c1",
+        "sha256": "f250234c26f68c19d75e4e6e738c53e5baf5bfb649634f9a7e4e3cbc4a81db32",
+        "bytes": 653
+      },
+      {
+        "path": "lib/portal/curriculum.js",
+        "git_mode": "100644",
+        "git_blob_oid": "63b74d9199497c7f6263d7e53ff7760edfc15744",
+        "sha256": "60d0ea159e029420353aba03b8e81dc52b756c79250c309f9e0a80c74ad7b727",
+        "bytes": 6205
+      },
+      {
+        "path": "lib/portal/runtime.js",
+        "git_mode": "100644",
+        "git_blob_oid": "e40ec8e753a0b2e6718eca1151cc6d1c93aec696",
+        "sha256": "2c68df9e0358c215f422d0ec978025192cebafe2a9108c104bedf2cfc33295d2",
+        "bytes": 9643
+      },
+      {
+        "path": "lib/portal/shell.js",
+        "git_mode": "100644",
+        "git_blob_oid": "a99066845ce594027905079712787b18d2fc7cc7",
+        "sha256": "98291cd862168084a845a0ece8b35c8375832f6e6482364276963466b5086233",
+        "bytes": 3186
+      },
+      {
+        "path": "portal/login.html",
+        "git_mode": "100644",
+        "git_blob_oid": "f2493e79983c2c99c372dc21a6a1285b49b831ac",
+        "sha256": "45aac74c0aa4f61a35a7b974f688046f5f1dd6c6cea01464c1207b2f76093626",
+        "bytes": 2818
+      },
+      {
+        "path": "portal/portal.css",
+        "git_mode": "100644",
+        "git_blob_oid": "897b8f4dbb790d4e81cde8e03017cf593e7d24ef",
+        "sha256": "5494930a4d8258e0af34d226867e14dabce80c25227e2a90211762fa3c7f815b",
+        "bytes": 5253
+      },
+      {
+        "path": "portal/portal.js",
+        "git_mode": "100644",
+        "git_blob_oid": "4d0b669c4710919566962decfaea57cf2eeee99b",
+        "sha256": "75101412b5e3992efbcb571aecf1cc641bae0e6a31238fed7e082a8eb396a1e7",
+        "bytes": 21210
+      },
+      {
+        "path": "package.json",
+        "git_mode": "100644",
+        "git_blob_oid": "b03bf96a5ce172e5bf4fd9f7e8afc2549bf51e64",
+        "sha256": "5e38018d3ff9e3f8b21cb256c705fbdda385abe3ea6c08ec4e9b89ed5ccd7a86",
+        "bytes": 76
+      },
+      {
+        "path": "vercel.json",
+        "git_mode": "100644",
+        "git_blob_oid": "b4c6215a1e9599c07feca27fb03d563bf38f1255",
+        "sha256": "e537fc9aa852f0f2e183c4f51b5f365d78d436366e4d9c045015d03909965a14",
+        "bytes": 1005
+      }
+    ],
+    "contract": {
+      "protected_entry": "GET /portal and /portal/ rewritten to /api/portal/index",
+      "auth_operations": "POST /api/portal/auth: request, verify, signout; existing-adult six-digit email OTP; no stored refresh token",
+      "domain_reads": [
+        "GET /api/portal/context",
+        "GET /api/portal/curriculum"
+      ],
+      "portal_domain_mutation_endpoints": [],
+      "write_generation_claim_required": false,
+      "custom_access_token_hook_required": false,
+      "credentials": "Runtime reads PORTAL_SUPABASE_URL, PORTAL_SUPABASE_PUBLISHABLE_KEY and PORTAL_ORIGIN; no service credential fallback",
+      "scope": "Accepted 01A foundation + 01B protected entry + 01C read-only curriculum delivery"
+    }
+  },
+  "accepted_support_artifacts": {
+    "files": [
+      {
+        "path": ".env.example",
+        "git_mode": "100644",
+        "git_blob_oid": "dfc36e5dd5453ffb3a01d8a9c84b480c69b7c577",
+        "sha256": "966bf48a6f74662a33c74fe40c85fd45930a94925ac0266c05d6dd6fad9c59e6",
+        "bytes": 843
+      },
+      {
+        "path": "supabase/config.toml",
+        "git_mode": "100644",
+        "git_blob_oid": "88257785166d5e6d02234be146024e7c3165658a",
+        "sha256": "f8d8632bca4cea518b2ec898863598064538734e215bd26774a0e63185c94281",
+        "bytes": 782
+      },
+      {
+        "path": "supabase/templates/adult-email-otp.html",
+        "git_mode": "100644",
+        "git_blob_oid": "b5d5edf5d78c559f3d95ff4ac6d903fe4fba8493",
+        "sha256": "f58970e736303b13d95216548c4aed32e250012bac2d3c8fdb98c70c868a6591",
+        "bytes": 514
+      },
+      {
+        "path": "portal/README.md",
+        "git_mode": "100644",
+        "git_blob_oid": "edfe095a96fec78c3da98a6508c0dac096bcd77d",
+        "sha256": "2effa2820aee219153a64a753fc3800f189960b74fd5bfceb26d204f123b9c2c",
+        "bytes": 18569
+      },
+      {
+        "path": "supabase/README.md",
+        "git_mode": "100644",
+        "git_blob_oid": "c093e69623a23df4b7c31e7ea38f0056a647e946",
+        "sha256": "94164b7762de448debe2104db40f8cac9ab3d63fd008e3b3b6b47683ec5e257b",
+        "bytes": 15454
+      },
+      {
+        "path": "scripts/portal/serve-local.mjs",
+        "git_mode": "100644",
+        "git_blob_oid": "7dbb6f82623e4bbe06098da47e0b64fc299a929c",
+        "sha256": "9ad8a33bf385f0e997eae7ac938531b0f0136a8b10515c58365644afc7cce0f8",
+        "bytes": 3059
+      }
+    ],
+    "note": "Configuration/template/local adapter/documentation source pins only. Local TOML and fixture scripts are not hosted configuration or production execution instructions."
+  },
+  "frozen_architecture": {
+    "path": "docs/portal/AIEA_Portal_P0_Architecture_and_Data_Contract_v1.0_FROZEN.md",
+    "git_mode": "100644",
+    "git_blob_oid": "8ba329ffecaf142334ae5eb51972eedc080037fe",
+    "sha256": "f63b7204aa0b76ad94bc11f65479e8b0234c6e7d04ae9a6a0b6db2b9cdf0a755",
+    "bytes": 42312,
+    "freeze_commit": "052101670dc92b38c7ec15c88a2b07572e42d75b",
+    "changes_authorized": false
+  },
+  "baseline_source_inventory": [
+    {
+      "path": ".env.example",
+      "git_mode": "100644",
+      "git_blob_oid": "dfc36e5dd5453ffb3a01d8a9c84b480c69b7c577",
+      "sha256": "966bf48a6f74662a33c74fe40c85fd45930a94925ac0266c05d6dd6fad9c59e6",
+      "bytes": 843,
+      "source_identity_only": true
+    },
+    {
+      "path": ".gitattributes",
+      "git_mode": "100644",
+      "git_blob_oid": "dfe0770424b2a19faf507a501ebfc23be8f54e7b",
+      "sha256": "1a1dbe176bc233b499d35a57db7513f2941c99ab9759f177830c9149be99005b",
+      "bytes": 66,
+      "source_identity_only": true
+    },
+    {
+      "path": ".gitignore",
+      "git_mode": "100644",
+      "git_blob_oid": "fd823deeba5ea8a9af314c116dc25f7aebca13cb",
+      "sha256": "05064f34fa54f724293231fe27f81c92704be294de7d2a4323611dfdd58ba013",
+      "bytes": 901,
+      "source_identity_only": true
+    },
+    {
+      "path": "30-days-ai-adventures.html",
+      "git_mode": "100644",
+      "git_blob_oid": "cc218513ddb2d4459433d8fd59e4dbae7b4ea8a4",
+      "sha256": "385cc87e7da1e43cb0f65453942c369da60ef48ac25b3071989cb6b557ae66a6",
+      "bytes": 38966,
+      "source_identity_only": true
+    },
+    {
+      "path": "CLAUDE.md",
+      "git_mode": "100644",
+      "git_blob_oid": "a6e4fab2ce640f3f64643fd6c41a3bd4daccbc6c",
+      "sha256": "fd4ea7f66674d84efc41195dddda88333677963c627cb66ce9cc2bae50a7443d",
+      "bytes": 1534,
+      "source_identity_only": true
+    },
+    {
+      "path": "README.md",
+      "git_mode": "100644",
+      "git_blob_oid": "88783cd704a4a2664adfb5ab0a0858f82b0e065d",
+      "sha256": "576ce75acaf8cd30511a0aeecf7000e2b0d191f344394e61b7c00065a9fc0781",
+      "bytes": 1294,
+      "source_identity_only": true
+    },
+    {
+      "path": "about-miss-joy.html",
+      "git_mode": "100644",
+      "git_blob_oid": "0445ea7046e885bbd31a060c3c7e37aa94b20608",
+      "sha256": "ff164e3cf25edbb1d74b7a8f4bbb557664056c9f35e791796c6c0308a72f5011",
+      "bytes": 14797,
+      "source_identity_only": true
+    },
+    {
+      "path": "ai-for-little-explorers.html",
+      "git_mode": "100644",
+      "git_blob_oid": "07abad2d9781898af61c67b7ea481c8a8085fa9f",
+      "sha256": "61386e4f5133b02e2b85ae438ced331a44a0e2790bc5994c4ab9cce1cf446187",
+      "bytes": 9827,
+      "source_identity_only": true
+    },
+    {
+      "path": "ai-literacy-for-children.html",
+      "git_mode": "100644",
+      "git_blob_oid": "8354fbf4b6fe45a425ce75df36524d70e9891ac1",
+      "sha256": "47af4343ca738c411e07d3931ce71e8b07397472dd73515c675544a02e8e4daa",
+      "bytes": 21971,
+      "source_identity_only": true
+    },
+    {
+      "path": "ai-parenting-survival-guide.html",
+      "git_mode": "100644",
+      "git_blob_oid": "81dad79acfa522ca8142077e39af01ec6a6f339e",
+      "sha256": "02807e328dc90ccd6fe6d52e26e5c6b597522bbea7dcf624f27da9c4c1d6c57e",
+      "bytes": 21611,
+      "source_identity_only": true
+    },
+    {
+      "path": "api/check-access.js",
+      "git_mode": "100644",
+      "git_blob_oid": "02ab7fd88348dd08215b2c4844feb88eefd8ad8a",
+      "sha256": "b7201315f2a7a6dee4193db62849de7c7eed4094ad3114f3512fceb14a3256da",
+      "bytes": 4423,
+      "source_identity_only": true
+    },
+    {
+      "path": "api/create-checkout.js",
+      "git_mode": "100644",
+      "git_blob_oid": "ecc052eed62a2cf34d2dc08c4954a66abc5a4197",
+      "sha256": "44825e603ba360cff6a0f2f0c9bce8b3503738d69e3262c83f53a6dc9fe7ae52",
+      "bytes": 5619,
+      "source_identity_only": true
+    },
+    {
+      "path": "api/download-guide.js",
+      "git_mode": "100644",
+      "git_blob_oid": "247912f221e1d8484c685dacf1b49534ece123c5",
+      "sha256": "289b74293d2fe9ee2a35e128c908eb9610265f07d69910f11e94cfb017df3e3f",
+      "bytes": 9140,
+      "source_identity_only": true
+    },
+    {
+      "path": "api/guide-health.js",
+      "git_mode": "100644",
+      "git_blob_oid": "1168af9caffe41da2238310d0f841a905114e75f",
+      "sha256": "07f2e669d276155cfa27f67ab5a2566b25af7dd6002ec33df18c2558807a9a69",
+      "bytes": 2760,
+      "source_identity_only": true
+    },
+    {
+      "path": "api/newsletter.js",
+      "git_mode": "100644",
+      "git_blob_oid": "52a0c72ddc794a4a56131cda9424ff627c53c060",
+      "sha256": "54ad6aea6597458a26bf07e0c014ab4609391ced7f1f06ee2fbedf37447618d1",
+      "bytes": 4914,
+      "source_identity_only": true
+    },
+    {
+      "path": "api/notify-launch.js",
+      "git_mode": "100644",
+      "git_blob_oid": "129102125e5058b5887db74d434f02411992ff7f",
+      "sha256": "5787a13abd3922ad30f5265a51c3c88206e8e95737a4d3f9209a7d81654686ca",
+      "bytes": 4407,
+      "source_identity_only": true
+    },
+    {
+      "path": "api/passport-signup.js",
+      "git_mode": "100644",
+      "git_blob_oid": "d4a9dd73b394a48e6e442b39ffe7420d92ef19cf",
+      "sha256": "860abb1da8f8a74d0f090cc2c6e2a12cfdfb85e07216502a23201820d420d17c",
+      "bytes": 13072,
+      "source_identity_only": true
+    },
+    {
+      "path": "api/portal/auth.js",
+      "git_mode": "100644",
+      "git_blob_oid": "ba800b865aa31eae1d32a0e60af173ca1fab25c5",
+      "sha256": "2599b444f1bce7498cfac7b73e09014cc13b76841f1918e6130e9d48371c414c",
+      "bytes": 3407,
+      "source_identity_only": true
+    },
+    {
+      "path": "api/portal/context.js",
+      "git_mode": "100644",
+      "git_blob_oid": "ef276efa048ea40ca7823fe46852d4af62280349",
+      "sha256": "d86f6b9f7b2cae1741db556e9a4ac84e6b38d740372830ecf16fd9628d345bf4",
+      "bytes": 656,
+      "source_identity_only": true
+    },
+    {
+      "path": "api/portal/curriculum.js",
+      "git_mode": "100644",
+      "git_blob_oid": "37465a242f367fb9e03ff16d54c5ae91ac0587e5",
+      "sha256": "abf877f3cc53f4b5312ed182245be9f8b29d111d39ba17b98e8fcb2a1ad4e2e8",
+      "bytes": 1074,
+      "source_identity_only": true
+    },
+    {
+      "path": "api/portal/index.js",
+      "git_mode": "100644",
+      "git_blob_oid": "0ccbc4630efc269d919acd4150741ae1ead8e9c1",
+      "sha256": "f250234c26f68c19d75e4e6e738c53e5baf5bfb649634f9a7e4e3cbc4a81db32",
+      "bytes": 653,
+      "source_identity_only": true
+    },
+    {
+      "path": "api/stripe-webhook.js",
+      "git_mode": "100644",
+      "git_blob_oid": "75da915382b6b69a06e133938b8be843eb0b69a6",
+      "sha256": "240d0e1d3e44aa4e37f4bb13a36aec867611f4fe864a6f45e6a298cb86bdfc64",
+      "bytes": 17400,
+      "source_identity_only": true
+    },
+    {
+      "path": "api/subscribe.js",
+      "git_mode": "100644",
+      "git_blob_oid": "eed46e4fd9f857c77b494e2403549f10e0c86bf7",
+      "sha256": "9d7795de0f286a8f950ea073c9d7e4f8b316ac59f029440710605bea3f5f6101",
+      "bytes": 11336,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/30-days-of-ai-adventures.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "36e474852bb4be484e455e81502d25f95ae2e636",
+      "sha256": "1e41c7cecaa87cfca97ede8d2361891d250a3f4232924c4c95f9f7d81779d886",
+      "bytes": 401110,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/5. AI Literacy Timeline.png",
+      "git_mode": "100644",
+      "git_blob_oid": "ae1ce90533eb564d47a5415b38951582d44b44a7",
+      "sha256": "0993f8fd1c68db11e07a99f68a1e3dbac4f7306b0c0108c6e0ebafd01dc10779",
+      "bytes": 1772409,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "847505fc1f2dfffcc2865b6cc89029c612b40a10",
+      "sha256": "0d19112746447c21478feec2699133b501c6be290363d590b45016a8fbaf3fd3",
+      "bytes": 313235,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/gallery-previews/01-main-cover.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "adaf6e83b70b38a83ad2318bf5e611c36632d498",
+      "sha256": "9c73bbc36d70e65cd6c92bca8d8747c98ca393525b6be10e5202c160bd66a67a",
+      "bytes": 674751,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/gallery-previews/02-welcome-future-explorer.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "761b824fd9170fb4ea2eca3d05419ee52d950474",
+      "sha256": "5b1884accff152bcdd8a435f4feb863a796b920e60d0cfa7bee9d83dd2f2f00a",
+      "bytes": 475874,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/gallery-previews/03-adventure-quest-map.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "a5c13a325829a22b6878335eb630f77675051626",
+      "sha256": "80dc7444b874a3c02884187d379cc989f8f32229d860e8b315fd475e0801fe84",
+      "bytes": 558038,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/gallery-previews/04-six-adventure-journey.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "a2eaa55fbdfaa0ccc9d1e13d6a77711a797a062a",
+      "sha256": "592592e937e85d35f4d2cbda314c816e51a42eac844b6f0426d6b87d504c5984",
+      "bytes": 543124,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/gallery-previews/05-story-page-preview.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "b143c40a7909503c80941ba0ce934189ee2a2457",
+      "sha256": "c6df2e685ebfa5c0c365670ac4966a9ba684e8086333b26e3b1447e2cab45708",
+      "bytes": 559462,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/gallery-previews/06-explorer-mission-preview.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "f50f3160a6b85e5e7cdbcf287709b2896adc750c",
+      "sha256": "ce7a169e436eadf163cd3e618e74f468eff77bb40ba003d7a132e5e0d8c54efd",
+      "bytes": 501089,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/gallery-previews/07-passport-preview.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "36d2c1b3c7e46c48973cc5d63808414d63513b5f",
+      "sha256": "8c17109ad02d531cbad1ad6ea7c529fbcbd7f081a66e051a0c7e761b9339502d",
+      "bytes": 466224,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/gallery-previews/08-badge-collection-preview.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "0f4e228f15391dee5161cad770d70834f8e4b755",
+      "sha256": "424af05d850c424eeda0d797732c330fba1887ef572afe1141dc4d0c066b39ae",
+      "bytes": 287280,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/gallery-previews/09-future-explorer-certificate.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "07910722e07489ba5461d8eead8c8ffe5005e810",
+      "sha256": "60ff6a08047fd5237fcc370d2aaa2b35278abb51d6c214dfbb2b76b3f30d1a5d",
+      "bytes": 455877,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/gallery-previews/10-adventure-continues.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "57b798e2d66c3e394d6d72ef818bd1884c78b62a",
+      "sha256": "0ee2e332f1a483563099a4d92457abfbd35ba01d877aaad354408d5d2fca0476",
+      "bytes": 533652,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/gallery-previews/11-meet-characters.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "9074ebbb492a0e764c640b32d54f583016392730",
+      "sha256": "2017596773fedf31135c7c9d3c7d9b2fc036abe81e3a5676e264894f8df95b61",
+      "bytes": 459426,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/watermark.svg",
+      "git_mode": "100644",
+      "git_blob_oid": "1bc30d5019d9355465b6d8c0d689fd7f06e0a7b7",
+      "sha256": "6c316f08f3ad86b2e044c4a3fa1bbf705db3ebfb150a9a825cf80ff3d88b2fe7",
+      "bytes": 306,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/web-previews/01-main-cover-web.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "e0d0853f6d6987e1e1a48da65305cfba47092b00",
+      "sha256": "6c241d5f39fc9d5a238e5d1db0425f9958c7d76d5dc52bedaa9867fbe1e740d3",
+      "bytes": 45884,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/web-previews/02-welcome-future-explorer-web.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "0560a4be9abb88fa20f8b3c1843cb6436762db38",
+      "sha256": "6f7dcb98612aed993cec9e82b40a51bd8a045d5be2d3107d301d84d596a63e84",
+      "bytes": 46292,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/web-previews/03-adventure-quest-map-web.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "7afb888cdaca52744e4a497eb8cd34c6652f61fc",
+      "sha256": "e40442ee2d8acb8f41cc6a71455aa91a994c8c9749248e92d68a1f6cd80ce265",
+      "bytes": 45627,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/web-previews/04-six-adventure-journey-web.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "098fd158e6907dd19b6ab138e7e7903d88325152",
+      "sha256": "f3136cad096298a2ae1d811b9fa12bcea772a9f2b58aa160c087f3bcef9e8eda",
+      "bytes": 478460,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/web-previews/05-story-page-preview-web.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "b73482df755b055b5ccc724e4a02573a15d94951",
+      "sha256": "a5bec452b4d145f6d718c4d65eb19acdd94d2b59cf0663c51373730ccd65d285",
+      "bytes": 495613,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/web-previews/06-explorer-mission-preview-web.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "960051d88c4605065381b38de8f951d3965d4c74",
+      "sha256": "dc25a04129f00ab900ff3f5a82e73090a6b3867e1e724f10fec79ec2f930ce50",
+      "bytes": 443433,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/web-previews/07-passport-preview-web.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "a03ae6f29f1696710405b876884988339a3ef210",
+      "sha256": "2e9fd10549be040b190976e91d4e5d164b6fd7ef3407e44c7f7a7878e3ef804b",
+      "bytes": 455350,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/web-previews/08-badge-collection-preview-web.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "e531b9261341b400ee281b95a8bf89da70c78ada",
+      "sha256": "568447bff954bbf3ae42eaa6565415936c984d0ac0c74f582112bc8c261c9e27",
+      "bytes": 503406,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/web-previews/09-future-explorer-certificate-web.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "c8b98ae31b8836fc3549d6ab6c512fb14392e953",
+      "sha256": "9b1da4d49340e7b2da8dfd40e3d25c91fb241e65276cf68f7bb41cd28fa5ef1c",
+      "bytes": 453914,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/web-previews/10-adventure-continues-web.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "677ffa57c38d783ba45a4de46d62b1dea526f193",
+      "sha256": "6b6345d7d3b1ff515c674dc53d9fada74a61d0b802363c0c10573b131d26a1e9",
+      "bytes": 470474,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/30-days-of-ai-adventures/web-previews/11-meet-characters-web.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "b5939f410f652bf9550c70cedac34d21c0bc6000",
+      "sha256": "9580175d4d029aa8d25ec1970f6468fe86b79609fd9e316537315acad7bdc500",
+      "bytes": 43123,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/ai-literacy-for-children/back-cover-preview.png",
+      "git_mode": "100644",
+      "git_blob_oid": "fe08102e16fc54b4de17b2217967b423e17d59e2",
+      "sha256": "0f0537248fbd3075d61dbfd86f6f7367b2d18fb50447fba0b2e0598ec86b5e77",
+      "bytes": 3352796,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/ai-literacy-for-children/back-cover-web.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "dbf2e15d537bc3dfa9e1a6444e3d36e9a476c229",
+      "sha256": "c76cf6626d0bb4405f2805ad98217167e6672cef2be163d6800da6361eaea07f",
+      "bytes": 264825,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/ai-literacy-for-children/compass-preview.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "bc33e709bfe8dd44f40a42ed205a4979a692b75c",
+      "sha256": "bbdc27caf3a3d3b55e273130067e0945584bf614587727bf9b93ff2060dad342",
+      "bytes": 314232,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/ai-literacy-for-children/compass-web.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "e39951bfc2ee054a8d5fc3e39b96a6b9d9b10354",
+      "sha256": "7fe48d0b55011816a0995e2907cb0de8076a3b3569fd8b005472b1d695f79c43",
+      "bytes": 238044,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/ai-literacy-for-children/title-page-preview.png",
+      "git_mode": "100644",
+      "git_blob_oid": "3b4a9fe5e22b0067012927d8b1e196a4467061c1",
+      "sha256": "d14ffcc1328196218fb08acb941a74ed1f892882590277d03cd06e318fc67ca9",
+      "bytes": 1884723,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/ai-literacy-for-children/title-page-web.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "2ab20d1e0a2491178d9ef0225615acade13227c2",
+      "sha256": "cd405ef62c3576870521f3f57fbc67d6267dd72d4bc4b88c26fb8cbc6a5ba387",
+      "bytes": 146275,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/book/ai-literacy-for-children/watermark.svg",
+      "git_mode": "100644",
+      "git_blob_oid": "7b71336aab49d3d7e09d05094bebb2dc42485399",
+      "sha256": "2c8537d8b70f0f220e94af0120c57140dfd7077a109a2185a9e2c484843728e8",
+      "bytes": 298,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/card-educators.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "4c252fddf81242e3e44ef4992c65c8e8f939fa8c",
+      "sha256": "3949b5e7fec1c05f0a80b4b8d1580690ae1888a55428308c91ff52798ff546af",
+      "bytes": 262359,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/card-leaders.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "e9ee13425d03a0c68757a1b3d730c0084ff77056",
+      "sha256": "5b3123fdc00b33e8185aafcb221259d28ed66641c51296d7c4f95c05c1bf0705",
+      "bytes": 249913,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/card-parents.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "0765df9b2ff78ee39a2c6f8c3cf113e072ef27d5",
+      "sha256": "1cb398b3d99b47607a7cedb91e7778967d17fe9d94e2f902e96e062618c674c2",
+      "bytes": 264982,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/compass.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "bc33e709bfe8dd44f40a42ed205a4979a692b75c",
+      "sha256": "bbdc27caf3a3d3b55e273130067e0945584bf614587727bf9b93ff2060dad342",
+      "bytes": 314232,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/ecosystem.png",
+      "git_mode": "100644",
+      "git_blob_oid": "b10bb8e7560d39675cc4ae93c1e9daa2366be1f2",
+      "sha256": "c32207cc9cd4661b880ceefe8aa1fe0e8b9f25f188569a755b2c526b20efbe5f",
+      "bytes": 190339,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/hero-image.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "ca5c2eeb8beef872a6b7c3706cb95319586baea7",
+      "sha256": "b1bb1efdbe8a9af782afabf4a6e2c992e9c9589b6b011b7906641bb514792655",
+      "bytes": 742001,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/journey.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "e2d1335e2e6b75189385fbfbdbabcbcf95953f77",
+      "sha256": "064a6ef0a3c6db09b25ec844bdac5b634f513c6e198799c94f2bf7c44e073589",
+      "bytes": 508676,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/logo.png",
+      "git_mode": "100644",
+      "git_blob_oid": "e5112d5c4da507884e98b25a124c2bac0808b3cc",
+      "sha256": "e0952a88f8feea830b0d066f01483ff81add65e535824b711acb5ae9c5a9059e",
+      "bytes": 36864,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/missjoy-portrait.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "9bd5038fc3c56788fe9a86b9f9e8ed57d211d03e",
+      "sha256": "cf946def6290f408d3fce8e550b16847b2cdb7e5ec57db83d8fc196c0e95c06b",
+      "bytes": 277296,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/missjoy.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "df6f2549dfb031b33838ea132f2c833195479313",
+      "sha256": "a1f6c9c58e7638b6751b443e7da6903e904dc9013c307cc86eca0d26ca86962c",
+      "bytes": 319913,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/ai-parenting-survival-guide/cover/cover.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "941e3bd74f50f9e475195ef46d631b595df0d793",
+      "sha256": "3c91aa484ecbdb4ebc459bfb1a4dc1ea4171d6ac0f9493fc85498aed7cea7854",
+      "bytes": 354969,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/ai-parenting-survival-guide/gallery/preview-30-day-plan.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "3cab4c7908acbf8ae1e06ffc4d88b3ee2b10d56b",
+      "sha256": "7ae5e0a5cd2adff103adc607cbacf145c2a9fde1da6f1d9526c81caed33244f6",
+      "bytes": 309083,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/ai-parenting-survival-guide/gallery/preview-ai-tools.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "45d68669ba3047a7e35cbd73b66626b7eb2a223b",
+      "sha256": "e143dfa7671311b3e0f8c4fb962111521330dd7664ad4e3f56bbfcb3f3220fca",
+      "bytes": 325771,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/ai-parenting-survival-guide/gallery/preview-connection.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "22620bfe20eb5b6747383ba97f7f883fa408f8c3",
+      "sha256": "a7214ecb0ef5e31ab491dcddf510fe511b18c811271f54f1ba5a42a50c8db327",
+      "bytes": 329532,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/ai-parenting-survival-guide/gallery/preview-safety.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "a0f9a22781b97a29145f841b0e3f185b8991d933",
+      "sha256": "44fc6df3f5da3fad9baf33e7478e60a9a6e8617e620b3e41384ebb328e2bfa6b",
+      "bytes": 352398,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/ai-parenting-survival-guide/gallery/preview-shift.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "0721fd729678602caec70392961e3bc255c5c996",
+      "sha256": "26321198e68a64c0253f7f6b16deee5fefd8a5fe0d87518efa68b16d47402f39",
+      "bytes": 295627,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/ai-parenting-survival-guide/gallery/preview-what-is-ai.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "bc924413994c74294291cf340b60b14b8ff99db3",
+      "sha256": "eca0ec95c132e4523195bff1f6255571b4f3df5e4eaf6ababfa2e709c7a98d25",
+      "bytes": 287482,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/ai-parenting-survival-guide/watermark.svg",
+      "git_mode": "100644",
+      "git_blob_oid": "133df000cc1840dce660479dea3062f6b6d6e1be",
+      "sha256": "9996cb722546ac4a502f297217e9c4727e49c62b4c5f4c23f2d56014593e5341",
+      "bytes": 306,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/first-ai-literacy-journey/cover.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "54032fcff70b03ac28dfd3d25424f9bc83b76e3a",
+      "sha256": "5c99471f1c507d0b453d520cfc96f9f8f61f08dbde87afab576a0d3c90ce4354",
+      "bytes": 469250,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/first-ai-literacy-journey/preview-01-welcome.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "b07a9b0d4629130e33cfc36f417cbada6a319d64",
+      "sha256": "260758dc9529361ecb0b2daea94cea8f2c7c4b0b9ba80fd0bda3ddee8a2b593c",
+      "bytes": 434093,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/first-ai-literacy-journey/preview-02-ai-detectives.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "4df6932cbc84ca7920595112a70d4217344756d3",
+      "sha256": "2c764de6b373d2494c578c6d46c09609558e10490a7039a611e19e1e4f5c35cd",
+      "bytes": 421973,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/first-ai-literacy-journey/preview-03-create-first.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "28d9583f6cd21aa4ce9618e48e590e251156f5bb",
+      "sha256": "84705346d14289589898a63a4a5e421f833395ebb8f19abeef6252d54637cffb",
+      "bytes": 517928,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/first-ai-literacy-journey/preview-04-check-before-trust.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "d3b7f2dc64956f107ed169e328ec9e7bc1b14a94",
+      "sha256": "6809fad6ff68ec5a93615150fcca84d6e48ab356e632787569e5fa1e04c388e0",
+      "bytes": 392116,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/first-ai-literacy-journey/preview-05-kindness.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "3368bf87929b233bc5b303aa1d38c414bec71bb6",
+      "sha256": "38a466ab9970a0e7405a57f7ab24f49da99bc36090765c508f8a76ef23dce788",
+      "bytes": 373255,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/first-ai-literacy-journey/preview-06-family-promise.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "14963dbf7f6e7ad49477e38d22236fc251516ce1",
+      "sha256": "0880ca9a16358c71039941313e4717aff841823124d362b2d1cb13acf32b4415",
+      "bytes": 820399,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/first-ai-literacy-journey/product-mockup.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "e315ec1c1fa24ddc03d304b5e06694faadb6e589",
+      "sha256": "0c1ffc47ac7d1800a309c7e6fda367e753d374cc5558c465f352afa5e474a963",
+      "bytes": 413463,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/first-ai-literacy-journey/res-first-ai-literacy-journey.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "2a8e168677855beef3263bcf50bb46bab8ab8c19",
+      "sha256": "460d3a094f780fe4b9ab5e2553f04ab8c2c3a12b3e5271033ec5f2ba7014786c",
+      "bytes": 604108,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/products/first-ai-literacy-journey/watermark.svg",
+      "git_mode": "100644",
+      "git_blob_oid": "ce5bfcefa19baadae7414138445dd5f9b80814e9",
+      "sha256": "e056176bd004966a21c56accee296e4bb1cfbbdff6c9442b485502648fc5bd41",
+      "bytes": 364,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/res-family-kit.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "a7068947279e738ff536089f60cf9103c41a2eca",
+      "sha256": "15bb69a6686aa3646856b7c2eac45cef55a76fdc390952b5c214b5cb1e492dc7",
+      "bytes": 239625,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/res-first-ai-literacy-journey.jpeg",
+      "git_mode": "100644",
+      "git_blob_oid": "3bc428bb59869d2df8b85668c3f222b274c43a70",
+      "sha256": "9be176a4cb637d94c36c8450141b0eb68344c6cf66e7f409ea532be4b10f971f",
+      "bytes": 610630,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/res-little-explorers.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "dc486980854cf1f666f0d0c32d3f100c963da9de",
+      "sha256": "4520146aee63fb047def4b9171afe6a3cb36a21f13151c1b1014a8c1b5ea19dd",
+      "bytes": 216517,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/res-parenting-guide.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "7f64e95cdaab8ad39246f170d3e855538d8a9516",
+      "sha256": "19b254a47a830b46601f2618eeb76dd21910de5513acd1634fcd5547b076a047",
+      "bytes": 247083,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/timeline.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "ae1ce90533eb564d47a5415b38951582d44b44a7",
+      "sha256": "0993f8fd1c68db11e07a99f68a1e3dbac4f7306b0c0108c6e0ebafd01dc10779",
+      "bytes": 1772409,
+      "source_identity_only": true
+    },
+    {
+      "path": "assets/universe.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "88ad5b42ff134876f299441b2812566f2650459c",
+      "sha256": "70a1d06dfc3b7e371bfa14aae0b0c0a19e2de74ba3c350e6422a082dbe745b35",
+      "bytes": 625969,
+      "source_identity_only": true
+    },
+    {
+      "path": "content/about-miss-joy.md",
+      "git_mode": "100644",
+      "git_blob_oid": "be6059bcdf4f3894e54ff7618dbad5b7a1d2eae6",
+      "sha256": "cdfedb519ba982fffbffb692cf2bb37214307737fa7f24fff10e4d1eaf0b8154",
+      "bytes": 7348,
+      "source_identity_only": true
+    },
+    {
+      "path": "content/academy-mission.md",
+      "git_mode": "100644",
+      "git_blob_oid": "c9440c6fc98ba52231e646ad6f489577e9f9f3d2",
+      "sha256": "00026257f00826fdb5ccc090e802745e04ad8908aa295fc3668b21b88cc52386",
+      "bytes": 2162,
+      "source_identity_only": true
+    },
+    {
+      "path": "content/ai-literacy-book.md",
+      "git_mode": "100644",
+      "git_blob_oid": "137b43c4f91e9661525bd9a2e25be369c3969061",
+      "sha256": "b4f6303425b36f34968c4840f7890aadef03f16548d24b0c03c397ead4140cd2",
+      "bytes": 6332,
+      "source_identity_only": true
+    },
+    {
+      "path": "content/aiea-brand.md",
+      "git_mode": "100644",
+      "git_blob_oid": "909c53f76f4987387101d12a2613863f8a585596",
+      "sha256": "1bea0fbe2bceba5bfcd831727798027227f7fb517398b03b1cfbaac48b1f066a",
+      "bytes": 5998,
+      "source_identity_only": true
+    },
+    {
+      "path": "content/aiea-manifesto.md",
+      "git_mode": "100644",
+      "git_blob_oid": "9600c0e394cf5e45faa8c702ef0bb8400bde0743",
+      "sha256": "aa24a37b360194e2790763fbc9014d28f73217b2e1a61e27f1ffaaed67948227",
+      "bytes": 5923,
+      "source_identity_only": true
+    },
+    {
+      "path": "content/intellectual-property.md",
+      "git_mode": "100644",
+      "git_blob_oid": "81c314a2f6b19e69057545e0743eaab206015a5f",
+      "sha256": "4e84e2b25bad362829ccf03c1f9908e18f54c13996e5c7625487a9056ef3a8f3",
+      "bytes": 4136,
+      "source_identity_only": true
+    },
+    {
+      "path": "content/legal/privacy-policy.md",
+      "git_mode": "100644",
+      "git_blob_oid": "952c24cf29d2ff53ec92717084c28272730329ba",
+      "sha256": "c56e59a4b92ad641f7c0d097e4d98b6ad94e2e61162c75dcebc02aff7131532c",
+      "bytes": 1815,
+      "source_identity_only": true
+    },
+    {
+      "path": "content/legal/terms.md",
+      "git_mode": "100644",
+      "git_blob_oid": "d1bb426cb57c8fad61a1d918aa4cb6cd92039e32",
+      "sha256": "4a7b1602da0eec7201c0229cf4517a5f456682a83f497d2b9119e2bdf031b37e",
+      "bytes": 1722,
+      "source_identity_only": true
+    },
+    {
+      "path": "content/policies/ai-safety-privacy.md",
+      "git_mode": "100644",
+      "git_blob_oid": "29d1132541a376ba4b8432b01449cfbdf7bc3508",
+      "sha256": "b808cfc88e6c8cf6c09f8366ea3183b56a941d4bff1373560956f19a00bf5c77",
+      "bytes": 1832,
+      "source_identity_only": true
+    },
+    {
+      "path": "content/policies/evidence-of-impact.md",
+      "git_mode": "100644",
+      "git_blob_oid": "ded7bd8d9c3c3d3a86630aba9639d0ccda42cc87",
+      "sha256": "7a412d736611c75544bf9288f812a30f661317cb535e3e37f0e1e73aa291f64c",
+      "bytes": 1896,
+      "source_identity_only": true
+    },
+    {
+      "path": "css/styles.css",
+      "git_mode": "100644",
+      "git_blob_oid": "b6678f699649cbddca804d20c6ea046bb951fba2",
+      "sha256": "04c070253e622042277aa034351b2a73996a743fdf66181dbf4d4512a625f806",
+      "bytes": 73779,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_P0_Architecture_and_Data_Contract_v1.0_FROZEN.md",
+      "git_mode": "100644",
+      "git_blob_oid": "8ba329ffecaf142334ae5eb51972eedc080037fe",
+      "sha256": "f63b7204aa0b76ad94bc11f65479e8b0234c6e7d04ae9a6a0b6db2b9cdf0a755",
+      "bytes": 42312,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_00B_P0_Architecture_Data_Contract_Verification_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "3623c197f545fa7099f850af0a70cc41db23feb2",
+      "sha256": "b2a3a76e88ce03b0121d3394c7dd1f66c268178ce191073b6da304360d9763b3",
+      "bytes": 24574,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_00C_Final_P0_Architecture_Freeze_Candidate_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "311d188ea1dd98888332a09eebcda2ec8804749d",
+      "sha256": "ddea06b7beb657df0fdfc8b6d8eadb946285345e9530e181ade8b0a7d5dc721b",
+      "bytes": 41816,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01A_Correction_Report_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "632640317b9ac42ffa47caa2cc1441faa620a105",
+      "sha256": "ad03c251bd993295dce453ad7942961c14304ba5d6a661d22c4b2524ca1afe14",
+      "bytes": 14175,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01A_Final_Acceptance_and_Repository_Boundary_Review_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "7c2887695756e41c684af197d2d6b414f9490e3c",
+      "sha256": "5d83c395f131beb3ed6366967c97b9df89beefaa7b12e370ee7d8b94f1ffdd8f",
+      "bytes": 19385,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01A_Implementation_Foundation_Report_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "fe6c0a582185aba48af75f77e790e3175d0dd345",
+      "sha256": "0d0917bcfab78a0f9c2bf8718bfd2b7012768fb2d52b25ecd788efdd60e53d35",
+      "bytes": 16019,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01A_Independent_Audit_Handoff_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "7e897b5de06aff9d477b70523f2d70d909f462fc",
+      "sha256": "a3c5fc8c425ce102b64d9e5e51ea5e0d6a45e58af9d305f98f16eca4f6a6b93c",
+      "bytes": 16261,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01A_Independent_Reaudit_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "df3ab75d40dbaa23252801c5924f3d899efd2fb3",
+      "sha256": "f629947719da1145c7df4f58eef6e4d514aa7f3c92d7b6bd3be8dc7ae241f162",
+      "bytes": 25741,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01A_SNV01_Correction_and_Native_Revalidation_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "9c607399b887d507f6c00317e3252fd43f946ed3",
+      "sha256": "ec2a43acdb9eb87925eaa4be014fda5de469921cf29f7c49ce79483885ff25c0",
+      "bytes": 27925,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01A_SNV03_Current_Assurance_Correction_and_Revalidation_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "f1540dc4e89e62ee0e5c45a5fd3a2ec0a3bf1411",
+      "sha256": "98c3cf61fa10724a63c0f0bba70f77966b4a48e447cbb9b68e5a5af548fdc399",
+      "bytes": 27075,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01A_Supabase_Native_Validation_Report_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "1ca03a035f828c282c3a97458a4992d1951de06f",
+      "sha256": "822cafad0584f28e2c1253d306169c39b3810f5eac37aa28dc4c50bf2a8f4bbf",
+      "bytes": 29072,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01B_Audit_Correction_Report_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "8c12df6767bec83b05b4563f11bf263c613aa1f7",
+      "sha256": "28cadf2f8b0d81df4c965ebd3803d6906ee1d9dd07fe64edaeb5db142eac47fc",
+      "bytes": 37381,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01B_Final_Acceptance_and_Repository_Boundary_Review_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "0822202fbda040d85cbd1a8478551c922aeb6f46",
+      "sha256": "e799496c8d8596f69bd2a18f0080782b15e7d5689e80f25d3bed9a0b5416ff82",
+      "bytes": 19270,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01B_Implementation_Plan_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "6acc7acc8f40a6eeddb6ef934e433f86fcb7fa19",
+      "sha256": "7a41cbfafc4e6a852a5351f9d36484e7bdaf151054c445a956131fdb295472b3",
+      "bytes": 8489,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01B_Implementation_and_Validation_Report_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "547604bfc3fdcfcb331732f240696a80c9280ddf",
+      "sha256": "290fcd4f59e40b9c3ee52a117be26f9cff4012c3307343cc990055fa3d343c8b",
+      "bytes": 34064,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01B_Independent_Adversarial_Audit_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "d8e039ecf5a75d8b4da07d39a8950a8a3f0e93a4",
+      "sha256": "fdce7c381edb758bbc924efebc95edaa9080a88aa9af322661b1bb44b5a98ffc",
+      "bytes": 6068,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01C_A01_Correction_and_Revalidation_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "8d6c9087f82356e8dfb3b3d5d9271ed77e1fadbe",
+      "sha256": "65b1bdd77021ab087213a2402cb6ff7133d59440c56c372c8a17a97c5dd4a3df",
+      "bytes": 15831,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01C_A01_Independent_Correction_Reaudit_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "03db626246aa9028c457e2900e7d3c2cc3585084",
+      "sha256": "f32486d3aa6d5d2a234922b6882f021535703d90a79e4478b5adcb8334eb95bb",
+      "bytes": 20549,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01C_A02_Correction_and_Revalidation_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "2e582ca4b6572e5a4cf0259f5a179126a4b10a40",
+      "sha256": "64d439285a3606049e4f2d6ad23dae74b6f0ef3292fe6fe3c0d3d36daeabcbd0",
+      "bytes": 20004,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01C_A02_Independent_Correction_Reaudit_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "b4817d3b4968ce08f8a5d6d3e81a536043f07101",
+      "sha256": "6cc660166a84276078675781fab4ef24a87e4f011e5b3befef5427883867fa35",
+      "bytes": 18407,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01C_Final_Acceptance_and_Repository_Boundary_Review_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "2a560e1714c04f8097c116dae16be46063dde329",
+      "sha256": "e7bdf71777485f30333297e4d02f40a1e6a00919ff95ab36cefb1cd0159ce410",
+      "bytes": 20237,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01C_Implementation_Plan_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "522fa4190ad8203d15318261e3b05a1f8b274ab9",
+      "sha256": "d133b03aa88aeccb73d5403d2e0e81e7a25ae2ee82d929921f6dd332bff0795b",
+      "bytes": 10643,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01C_Implementation_and_Validation_Report_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "43b63c2af3d01c34d3a20128cede7a456ffc0570",
+      "sha256": "c35e83ff8ed58330018ae6e761ae61a81682aa42da0550f7af47f6d35930a1e0",
+      "bytes": 14328,
+      "source_identity_only": true
+    },
+    {
+      "path": "docs/portal/AIEA_Portal_Sprint_01C_Independent_Adversarial_Audit_v1.0.md",
+      "git_mode": "100644",
+      "git_blob_oid": "a0665fcc8df1e73529f1167a504fb59e879495ec",
+      "sha256": "74c06328cbf39025201afbfb586358ad28ffe095f6fe064db5a9f9f276b5476d",
+      "bytes": 22488,
+      "source_identity_only": true
+    },
+    {
+      "path": "educational-standards.html",
+      "git_mode": "100644",
+      "git_blob_oid": "6b4e5b8b3f169d2f322cff092e3a5653ad2cd384",
+      "sha256": "a2f63f579ea02da49d6dd3a7fd71097665355190dd74912cb088ea4769fb5687",
+      "bytes": 13290,
+      "source_identity_only": true
+    },
+    {
+      "path": "episodes.html",
+      "git_mode": "100644",
+      "git_blob_oid": "88828ca1437b2d90a542934dbfbb68c92c96dc1a",
+      "sha256": "341604f99856ea6da7faa1a7e230b1c5d58317e30fefe53a89060cdef73380f1",
+      "bytes": 32975,
+      "source_identity_only": true
+    },
+    {
+      "path": "first-ai-literacy-journey.html",
+      "git_mode": "100644",
+      "git_blob_oid": "2288e2a96f88370ccfd26096c0ac96976d96ded8",
+      "sha256": "6ef5c00eb5534395ac8c7ce06b04c46bb69b69e8ee0968a6ff718e8452df1286",
+      "bytes": 32612,
+      "source_identity_only": true
+    },
+    {
+      "path": "free-resources.html",
+      "git_mode": "100644",
+      "git_blob_oid": "e53936a0dab655908bc912686f5c16a305b04638",
+      "sha256": "3e783012bb8a45bd7175415cd551b79511497c47abad480d28ca14df0cc4e573",
+      "bytes": 12369,
+      "source_identity_only": true
+    },
+    {
+      "path": "index.html",
+      "git_mode": "100644",
+      "git_blob_oid": "e6130bba63af52fc1811f18bd21fe6ecdbbe472b",
+      "sha256": "2611bbc72b4793376b98d24076f0519f783d2ade33b76a66e6f39637268a66a6",
+      "bytes": 43246,
+      "source_identity_only": true
+    },
+    {
+      "path": "intellectual-property.html",
+      "git_mode": "100644",
+      "git_blob_oid": "7836a1eb76bb6fdd8694b287064d621077bcfc7a",
+      "sha256": "6b0fa948f01898ede6e5f25a84e5444a4d03fbc0a436878b646a6413f91ca415",
+      "bytes": 12301,
+      "source_identity_only": true
+    },
+    {
+      "path": "js/main.js",
+      "git_mode": "100644",
+      "git_blob_oid": "62062686497a589e098543f194f29a5d46f9dccf",
+      "sha256": "da4f4fa34eaca4f36cd2ddfc2c89d9c31e768e1eaea67801132165de4a7d2049",
+      "bytes": 24453,
+      "source_identity_only": true
+    },
+    {
+      "path": "legal/privacy-policy.md",
+      "git_mode": "100644",
+      "git_blob_oid": "952c24cf29d2ff53ec92717084c28272730329ba",
+      "sha256": "c56e59a4b92ad641f7c0d097e4d98b6ad94e2e61162c75dcebc02aff7131532c",
+      "bytes": 1815,
+      "source_identity_only": true
+    },
+    {
+      "path": "legal/terms.md",
+      "git_mode": "100644",
+      "git_blob_oid": "d1bb426cb57c8fad61a1d918aa4cb6cd92039e32",
+      "sha256": "4a7b1602da0eec7201c0229cf4517a5f456682a83f497d2b9119e2bdf031b37e",
+      "bytes": 1722,
+      "source_identity_only": true
+    },
+    {
+      "path": "lib/portal/curriculum.js",
+      "git_mode": "100644",
+      "git_blob_oid": "63b74d9199497c7f6263d7e53ff7760edfc15744",
+      "sha256": "60d0ea159e029420353aba03b8e81dc52b756c79250c309f9e0a80c74ad7b727",
+      "bytes": 6205,
+      "source_identity_only": true
+    },
+    {
+      "path": "lib/portal/runtime.js",
+      "git_mode": "100644",
+      "git_blob_oid": "e40ec8e753a0b2e6718eca1151cc6d1c93aec696",
+      "sha256": "2c68df9e0358c215f422d0ec978025192cebafe2a9108c104bedf2cfc33295d2",
+      "bytes": 9643,
+      "source_identity_only": true
+    },
+    {
+      "path": "lib/portal/shell.js",
+      "git_mode": "100644",
+      "git_blob_oid": "a99066845ce594027905079712787b18d2fc7cc7",
+      "sha256": "98291cd862168084a845a0ece8b35c8375832f6e6482364276963466b5086233",
+      "bytes": 3186,
+      "source_identity_only": true
+    },
+    {
+      "path": "package.json",
+      "git_mode": "100644",
+      "git_blob_oid": "b03bf96a5ce172e5bf4fd9f7e8afc2549bf51e64",
+      "sha256": "5e38018d3ff9e3f8b21cb256c705fbdda385abe3ea6c08ec4e9b89ed5ccd7a86",
+      "bytes": 76,
+      "source_identity_only": true
+    },
+    {
+      "path": "portal/README.md",
+      "git_mode": "100644",
+      "git_blob_oid": "edfe095a96fec78c3da98a6508c0dac096bcd77d",
+      "sha256": "2effa2820aee219153a64a753fc3800f189960b74fd5bfceb26d204f123b9c2c",
+      "bytes": 18569,
+      "source_identity_only": true
+    },
+    {
+      "path": "portal/login.html",
+      "git_mode": "100644",
+      "git_blob_oid": "f2493e79983c2c99c372dc21a6a1285b49b831ac",
+      "sha256": "45aac74c0aa4f61a35a7b974f688046f5f1dd6c6cea01464c1207b2f76093626",
+      "bytes": 2818,
+      "source_identity_only": true
+    },
+    {
+      "path": "portal/portal.css",
+      "git_mode": "100644",
+      "git_blob_oid": "897b8f4dbb790d4e81cde8e03017cf593e7d24ef",
+      "sha256": "5494930a4d8258e0af34d226867e14dabce80c25227e2a90211762fa3c7f815b",
+      "bytes": 5253,
+      "source_identity_only": true
+    },
+    {
+      "path": "portal/portal.js",
+      "git_mode": "100644",
+      "git_blob_oid": "4d0b669c4710919566962decfaea57cf2eeee99b",
+      "sha256": "75101412b5e3992efbcb571aecf1cc641bae0e6a31238fed7e082a8eb396a1e7",
+      "bytes": 21210,
+      "source_identity_only": true
+    },
+    {
+      "path": "privacy-policy.html",
+      "git_mode": "100644",
+      "git_blob_oid": "b2523f5045ed9415229de94c2e05ccf58bcd2c2b",
+      "sha256": "9b20df44f0efc0c7f8eba3c0cf4cf549172746834145d388a9348459264a1e96",
+      "bytes": 7783,
+      "source_identity_only": true
+    },
+    {
+      "path": "resources/free/images/card-educators.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "4c252fddf81242e3e44ef4992c65c8e8f939fa8c",
+      "sha256": "3949b5e7fec1c05f0a80b4b8d1580690ae1888a55428308c91ff52798ff546af",
+      "bytes": 262359,
+      "source_identity_only": true
+    },
+    {
+      "path": "resources/free/images/card-leaders.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "e9ee13425d03a0c68757a1b3d730c0084ff77056",
+      "sha256": "5b3123fdc00b33e8185aafcb221259d28ed66641c51296d7c4f95c05c1bf0705",
+      "bytes": 249913,
+      "source_identity_only": true
+    },
+    {
+      "path": "resources/free/images/card-parents.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "0765df9b2ff78ee39a2c6f8c3cf113e072ef27d5",
+      "sha256": "1cb398b3d99b47607a7cedb91e7778967d17fe9d94e2f902e96e062618c674c2",
+      "bytes": 264982,
+      "source_identity_only": true
+    },
+    {
+      "path": "resources/free/images/episodes/ai-explorer-passport-season-1-cover.jpg",
+      "git_mode": "100644",
+      "git_blob_oid": "b55af878d7f99d2f767b785bdb41764a2dca802a",
+      "sha256": "58c1f908c6053e7c87ff63b1dcf15a176bbbbe556e89fcec8f2cb75a544515eb",
+      "bytes": 382771,
+      "source_identity_only": true
+    },
+    {
+      "path": "resources/free/parents/AIEA - 5_Signs_AI-ready_Child.pdf",
+      "git_mode": "100644",
+      "git_blob_oid": "5b3a11f823480dde6f621022e0d101eb0528d83e",
+      "sha256": "1f3eebeed1ffa51fa47e3b98b2288481916917d773f88488164678a5967eef74",
+      "bytes": 2266652,
+      "source_identity_only": true
+    },
+    {
+      "path": "resources/free/parents/Parent-AI-Scorecard.pdf",
+      "git_mode": "100644",
+      "git_blob_oid": "4cadf0e4e169e06a014bb4c898972ba2bdc217f1",
+      "sha256": "d58f0b22c90315a6ff162d9e8327521677e9d0827eae33f434ce05ce4abdc7d5",
+      "bytes": 578206,
+      "source_identity_only": true
+    },
+    {
+      "path": "resources/free/schools/School-AI-Readiness-Scorecard.pdf",
+      "git_mode": "100644",
+      "git_blob_oid": "529c825fc64c9b57c2ba2bf4c11c9b3ad4a2d414",
+      "sha256": "36a66923605cb4991574b0ea21b36252c60f63d21318334cbdf2290c4a515b44",
+      "bytes": 619321,
+      "source_identity_only": true
+    },
+    {
+      "path": "resources/free/teachers/Teacher-AI-Scorecard.pdf",
+      "git_mode": "100644",
+      "git_blob_oid": "e22cd03fc1de486eff77ed6093a87da55342a3da",
+      "sha256": "6fe3f08f73cab0a6e883df15fc3e8c56835b283dd7e52c95aa404618dfc7dc39",
+      "bytes": 625223,
+      "source_identity_only": true
+    },
+    {
+      "path": "school-implementation-guide.html",
+      "git_mode": "100644",
+      "git_blob_oid": "70e65e01267b5284a66ad14578d73764437555b1",
+      "sha256": "8f8364a747441915fc17c1b0aa14067303b8970e572938ec932cd3b645fc7c0e",
+      "bytes": 9906,
+      "source_identity_only": true
+    },
+    {
+      "path": "scripts/portal/serve-local.mjs",
+      "git_mode": "100644",
+      "git_blob_oid": "7dbb6f82623e4bbe06098da47e0b64fc299a929c",
+      "sha256": "9ad8a33bf385f0e997eae7ac938531b0f0136a8b10515c58365644afc7cce0f8",
+      "bytes": 3059,
+      "source_identity_only": true
+    },
+    {
+      "path": "scripts/portal/test-audit-browser.mjs",
+      "git_mode": "100644",
+      "git_blob_oid": "fe1695025f265855eb277fc9a58b50390a17cbc9",
+      "sha256": "15f032352dc30794e8a715a818c16b62a5627ca8d2e44156f08d40b7f3e76dee",
+      "bytes": 12358,
+      "source_identity_only": true
+    },
+    {
+      "path": "scripts/portal/test-browser.mjs",
+      "git_mode": "100644",
+      "git_blob_oid": "5449e561b3d21e78158f2e392ea3b762d5439b5f",
+      "sha256": "d10927f4bd219087a7583c818e68229393c2a4a7ab090a62b289bf634a09778b",
+      "bytes": 8346,
+      "source_identity_only": true
+    },
+    {
+      "path": "scripts/portal/test-coordination.mjs",
+      "git_mode": "100644",
+      "git_blob_oid": "71765ebd0675c2602e64d2fc85b7eb962af5b034",
+      "sha256": "05f44d77b886b9e75f424df871feba8e2f6d20e1480979916e7f8780af62d2cd",
+      "bytes": 10946,
+      "source_identity_only": true
+    },
+    {
+      "path": "scripts/portal/test-curriculum-browser.mjs",
+      "git_mode": "100644",
+      "git_blob_oid": "01d419184f6bbdba7fe09d69a78e2ddfd0fdf1f6",
+      "sha256": "ed57dec1c0a4ce68025a33c29615bef60a2f2b303668391cba222d0c9ce34d48",
+      "bytes": 22126,
+      "source_identity_only": true
+    },
+    {
+      "path": "scripts/portal/test-curriculum-client.mjs",
+      "git_mode": "100644",
+      "git_blob_oid": "3a39784dcc79032d59a41e16ee156305b28837cc",
+      "sha256": "ffda18edb36ed0708d04b31e9a6ea6d4c9b9857109220c02e84bc60f7edd3ae6",
+      "bytes": 24919,
+      "source_identity_only": true
+    },
+    {
+      "path": "scripts/portal/test-curriculum.mjs",
+      "git_mode": "100644",
+      "git_blob_oid": "f3aadf27698897017c416a8af71defab64b39e64",
+      "sha256": "72672dc9c267e4db0d970f3b397fc7bb903dc44f5359e0897a9aabcd0445e64e",
+      "bytes": 12377,
+      "source_identity_only": true
+    },
+    {
+      "path": "scripts/portal/test-database.mjs",
+      "git_mode": "100644",
+      "git_blob_oid": "c670e14ea8794299d2e6d0507289a9e5e5d97218",
+      "sha256": "752fcf9baf19bf43973d55d5642982ef98e7a84b13de67f8700e9d6bab93339e",
+      "bytes": 3454,
+      "source_identity_only": true
+    },
+    {
+      "path": "scripts/portal/test-pending-browser.mjs",
+      "git_mode": "100644",
+      "git_blob_oid": "8e9aebb87ac7b4aff0ad23644d987edf6289852d",
+      "sha256": "321a64e060b2437fb2e0da4aa62a90b09a88dc7b19d01fe28fd7d12407e5a389",
+      "bytes": 8942,
+      "source_identity_only": true
+    },
+    {
+      "path": "scripts/portal/test-replayed-pending-browser.mjs",
+      "git_mode": "100644",
+      "git_blob_oid": "15e11dc64affc5c452aaf80a04c97765b30c8622",
+      "sha256": "f42c89432ec0a4e1876e4d5aef9e035cb7af51516cd67d888f3b71f495408819",
+      "bytes": 9862,
+      "source_identity_only": true
+    },
+    {
+      "path": "scripts/portal/test-runtime.mjs",
+      "git_mode": "100644",
+      "git_blob_oid": "27dc8db0ff72ee87e32a5c2b9cc426cb6265bba1",
+      "sha256": "9bb3520f0a6804d2cf3d0e857d0333c17595abfc1ab15019b1896e48dd8da7c6",
+      "bytes": 19978,
+      "source_identity_only": true
+    },
+    {
+      "path": "scripts/portal/validate-foundation.py",
+      "git_mode": "100644",
+      "git_blob_oid": "957fe39bc7d9ad82f8ea44a55701b66e92297638",
+      "sha256": "52957e0cb23aec87960d2828b059470b3dafa2acf1c4548d8a8ceacbdad77884",
+      "bytes": 4909,
+      "source_identity_only": true
+    },
+    {
+      "path": "supabase/README.md",
+      "git_mode": "100644",
+      "git_blob_oid": "c093e69623a23df4b7c31e7ea38f0056a647e946",
+      "sha256": "94164b7762de448debe2104db40f8cac9ab3d63fd008e3b3b6b47683ec5e257b",
+      "bytes": 15454,
+      "source_identity_only": true
+    },
+    {
+      "path": "supabase/config.toml",
+      "git_mode": "100644",
+      "git_blob_oid": "88257785166d5e6d02234be146024e7c3165658a",
+      "sha256": "f8d8632bca4cea518b2ec898863598064538734e215bd26774a0e63185c94281",
+      "bytes": 782,
+      "source_identity_only": true
+    },
+    {
+      "path": "supabase/migrations/20261006000100_portal_domains.sql",
+      "git_mode": "100644",
+      "git_blob_oid": "636b7249d0567b303ae224b5bdb7be948563fc06",
+      "sha256": "f0bdbe5ed8f4f622362c0a6c149bc26644b06552b8a7358b8d792dbfe05a8464",
+      "bytes": 23301,
+      "source_identity_only": true
+    },
+    {
+      "path": "supabase/migrations/20261006000200_portal_security.sql",
+      "git_mode": "100644",
+      "git_blob_oid": "fb92aedf05064b6643ee6b02bd582407160a0b64",
+      "sha256": "b5afa539f70e34b6c22080a582de22cc484d294b8f368e11e08c141f745184d4",
+      "bytes": 10607,
+      "source_identity_only": true
+    },
+    {
+      "path": "supabase/migrations/20261006000300_portal_guards.sql",
+      "git_mode": "100644",
+      "git_blob_oid": "8c09466bc685946b2e6cbeffc5cb2bb2ca3ab619",
+      "sha256": "8fababc9491321f176fcfbf5196ff44a98a41bd657d263a897f51498837bb486",
+      "bytes": 27530,
+      "source_identity_only": true
+    },
+    {
+      "path": "supabase/templates/adult-email-otp.html",
+      "git_mode": "100644",
+      "git_blob_oid": "b5d5edf5d78c559f3d95ff4ac6d903fe4fba8493",
+      "sha256": "f58970e736303b13d95216548c4aed32e250012bac2d3c8fdb98c70c868a6591",
+      "bytes": 514,
+      "source_identity_only": true
+    },
+    {
+      "path": "supabase/tests/assertions.json",
+      "git_mode": "100644",
+      "git_blob_oid": "06807cf5dfcdb2ca98c142188008e197483a95a7",
+      "sha256": "2e3b73baa824bc33d672ab8b50840a5402dc0fcbd16e74a99dcb662cfacfd1db",
+      "bytes": 9104,
+      "source_identity_only": true
+    },
+    {
+      "path": "supabase/tests/auth-otp.native.py",
+      "git_mode": "100644",
+      "git_blob_oid": "fb0c7823ace2ccb3d1017e407087443b32f2c50b",
+      "sha256": "31d2b963bf6477a0636ab0b3fd74c811c1602d1cdc51127ba7de82ee668e7f19",
+      "bytes": 5750,
+      "source_identity_only": true
+    },
+    {
+      "path": "supabase/tests/bootstrap.pglite.sql",
+      "git_mode": "100644",
+      "git_blob_oid": "cc23d7c3fca219d006984efeca56c07fb4c61f69",
+      "sha256": "884610c99b70941768e67de32fef7c5aa6f523c7bf295265d12257cc8c3e9460",
+      "bytes": 1194,
+      "source_identity_only": true
+    },
+    {
+      "path": "supabase/tests/curriculum.native.py",
+      "git_mode": "100644",
+      "git_blob_oid": "01ed724893e9df8727ef00fb91086b082fbbb877",
+      "sha256": "ddce4861a73a69d2a1d972bacf995956e733bf3d706f2688ae56dcf04e348c90",
+      "bytes": 14589,
+      "source_identity_only": true
+    },
+    {
+      "path": "supabase/tests/foundation.sql",
+      "git_mode": "100644",
+      "git_blob_oid": "20f8dd89b1c9b8dce64b9ddae8d92e1e13d3ee58",
+      "sha256": "8b2fb04b699e00c4dd632c5411502424c02fc827e660660764909eaf0c4f2842",
+      "bytes": 61182,
+      "source_identity_only": true
+    },
+    {
+      "path": "supabase/tests/portal-entry.native.py",
+      "git_mode": "100644",
+      "git_blob_oid": "2a8bdee35db990855ff245cbc65d8393cfbc38fc",
+      "sha256": "3c21f88578dc812175e047b94732e527f8bc7abd59310510d789dfb50daa8750",
+      "bytes": 17810,
+      "source_identity_only": true
+    },
+    {
+      "path": "supabase/tests/staff-assurance.native.py",
+      "git_mode": "100644",
+      "git_blob_oid": "273be8b7d5a4f7f70b7e4f3ded73174d0857c76d",
+      "sha256": "7e99c876e8b3fa2f38eb61399cf33af408a2c47b032006dd7084ebf3e494ee4d",
+      "bytes": 13265,
+      "source_identity_only": true
+    },
+    {
+      "path": "teacher-resource-packs.html",
+      "git_mode": "100644",
+      "git_blob_oid": "b059351c31e95d43850679809b5a628f9a4274ce",
+      "sha256": "62fd1e1a5bd83d3c4639d3a6d829a1e8ff66dac3c9a028a1d3e76ac4a1cd0c74",
+      "bytes": 9878,
+      "source_identity_only": true
+    },
+    {
+      "path": "terms-of-use.html",
+      "git_mode": "100644",
+      "git_blob_oid": "38b11ada91d0b84b8c7d0be60bcbeb4879e5b688",
+      "sha256": "db0c8182e84aa026e78b61af9372d7d52e4631781b8b2860141bc7777671405d",
+      "bytes": 7470,
+      "source_identity_only": true
+    },
+    {
+      "path": "thank-you.html",
+      "git_mode": "100644",
+      "git_blob_oid": "d1403758e3f7ab5dfc4ccc18538d2cac9a598fd1",
+      "sha256": "642a00339acd3db8fc4d5f6bfd95baa7281a65d198055746e840a5dbdd4921a6",
+      "bytes": 9204,
+      "source_identity_only": true
+    },
+    {
+      "path": "vercel.json",
+      "git_mode": "100644",
+      "git_blob_oid": "b4c6215a1e9599c07feca27fb03d563bf38f1255",
+      "sha256": "e537fc9aa852f0f2e183c4f51b5f365d78d436366e4d9c045015d03909965a14",
+      "bytes": 1005,
+      "source_identity_only": true
+    }
+  ],
+  "workspace_comparison": {
+    "identical_baseline_files": 174,
+    "different_baseline_files": [
+      {
+        "path": "lib/portal/runtime.js",
+        "accepted_sha256": "2c68df9e0358c215f422d0ec978025192cebafe2a9108c104bedf2cfc33295d2",
+        "current_sha256": "d66e0b58ea8391aaefb30e724414966323c8ebab9a00f0f08ecd866ac54e25f3",
+        "current_version_eligible": false
+      },
+      {
+        "path": "lib/portal/shell.js",
+        "accepted_sha256": "98291cd862168084a845a0ece8b35c8375832f6e6482364276963466b5086233",
+        "current_sha256": "91fc32e673224414b0bbd9ed3bd7a2ee359eb0153201ff9a1cc0afb3e469dd5d",
+        "current_version_eligible": false
+      },
+      {
+        "path": "portal/README.md",
+        "accepted_sha256": "2effa2820aee219153a64a753fc3800f189960b74fd5bfceb26d204f123b9c2c",
+        "current_sha256": "0b09bbbcf588d7fcbdce3037c7c211d51b774c09884fab4ba4ab69048843914e",
+        "current_version_eligible": false
+      },
+      {
+        "path": "portal/portal.css",
+        "accepted_sha256": "5494930a4d8258e0af34d226867e14dabce80c25227e2a90211762fa3c7f815b",
+        "current_sha256": "452e86a5b3bee593c14ff41ec8e3c6d3af2b0a7e3246475cf506fb48d0ec7ab9",
+        "current_version_eligible": false
+      },
+      {
+        "path": "portal/portal.js",
+        "accepted_sha256": "75101412b5e3992efbcb571aecf1cc641bae0e6a31238fed7e082a8eb396a1e7",
+        "current_sha256": "d365526bb337adadcee9da62944f726181fb80dc95a6a94b88e1d486c0dbf89f",
+        "current_version_eligible": false
+      },
+      {
+        "path": "scripts/portal/serve-local.mjs",
+        "accepted_sha256": "9ad8a33bf385f0e997eae7ac938531b0f0136a8b10515c58365644afc7cce0f8",
+        "current_sha256": "4086404221a7d011f595b3be2e55db843ef86a7d706e0db3c510eff47b35c1e1",
+        "current_version_eligible": false
+      },
+      {
+        "path": "supabase/README.md",
+        "accepted_sha256": "94164b7762de448debe2104db40f8cac9ab3d63fd008e3b3b6b47683ec5e257b",
+        "current_sha256": "1190429fceddcd8a745ad29c01c85ae536d90bc8d5dddcf8665aecd21df6a4a0",
+        "current_version_eligible": false
+      }
+    ],
+    "note": "Four runtime files, one local adapter and two READMEs differ. Accepted commit bytes remain the authority."
+  },
+  "ineligible": {
+    "current_head_as_release_source": true,
+    "all_sprint_01d_runtime_changes": true,
+    "migrations": [
+      {
+        "label": "M4",
+        "path": "supabase/migrations/20261008000100_portal_mission_status.sql",
+        "observed_head_sha256": "e05eb2bba019b17f4d72b40f7f7b033eef5450fcdb81f90be842a9fc8af5ba6f",
+        "status": "INELIGIBLE",
+        "hash_role": "Identification only; not an allowlist entry"
+      },
+      {
+        "label": "M5",
+        "path": "supabase/migrations/20261008000200_portal_write_generation.sql",
+        "observed_head_sha256": "d958198cc2bb77599e593420c25cb63e33a2748af5ddeed163cdbdfbf7c1c7b0",
+        "status": "INELIGIBLE",
+        "hash_role": "Identification only; not an allowlist entry"
+      }
+    ],
+    "hr03_hook_activation": {
+      "status": "INELIGIBLE",
+      "function": "portal_private.issue_write_generation(jsonb)",
+      "reference_uri": "pg-functions://postgres/portal_private/issue_write_generation",
+      "instruction": "Do not install or activate for this release."
+    },
+    "head_delta": [
+      {
+        "current_sha256": "31342954b23b70ad3b4a565be83c0c815bb6721b3209f40a9daf9ccca400802b",
+        "path": "api/portal/progress.js",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "d0bc5a59d654f6dbb6cf5007213887fc045d2904ebb15e857e914b5005d653e9",
+        "path": "docs/portal/AIEA_Portal_Sprint_01D_A01_Correction_Blocker_Report_v1.0.md",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "a47b2735a49a0e8c86e693e714291de1422cf5bd39eb009ae494bd3aada3793f",
+        "path": "docs/portal/AIEA_Portal_Sprint_01D_Final_Acceptance_and_Repository_Boundary_Review_v1.0.md",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "5149bdc2037ee8b4d9c3eca0d2e541d6c87092a052be18f152e793243d31fe51",
+        "path": "docs/portal/AIEA_Portal_Sprint_01D_HR03_Correction_Implementation_and_Validation_Report_v1.0.md",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "d91491cb8364f7e7256f7b4be1e35d24a06754f3319a27a6e368a50896489ca3",
+        "path": "docs/portal/AIEA_Portal_Sprint_01D_HR03_Independent_ReReview_v1.0.md",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "8f69a39ba1f01e10b7ccfeafdcffd099d97d243c6f707247b65beda7225157c9",
+        "path": "docs/portal/AIEA_Portal_Sprint_01D_HR03_Trusted_Write_Generation_Design_v1.0.md",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "440b08f158dc4c5ede92d6d32cfcccdd1386cca83c095f188bef61191d58f5de",
+        "path": "docs/portal/AIEA_Portal_Sprint_01D_Implementation_Plan_v1.0.md",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "633402fecf4cf436d63fd96b0baa4e222fa1e8dd743e25138ed53b88f43a3e3e",
+        "path": "docs/portal/AIEA_Portal_Sprint_01D_Implementation_and_Validation_Report_v1.0.md",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "aa53235e3fd03361b27915fef763e9ba4023281720ac854de1a4412cb18b56b7",
+        "path": "lib/portal/progress.js",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "d66e0b58ea8391aaefb30e724414966323c8ebab9a00f0f08ecd866ac54e25f3",
+        "path": "lib/portal/runtime.js",
+        "status": "M",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "91fc32e673224414b0bbd9ed3bd7a2ee359eb0153201ff9a1cc0afb3e469dd5d",
+        "path": "lib/portal/shell.js",
+        "status": "M",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "0b09bbbcf588d7fcbdce3037c7c211d51b774c09884fab4ba4ab69048843914e",
+        "path": "portal/README.md",
+        "status": "M",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "452e86a5b3bee593c14ff41ec8e3c6d3af2b0a7e3246475cf506fb48d0ec7ab9",
+        "path": "portal/portal.css",
+        "status": "M",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "d365526bb337adadcee9da62944f726181fb80dc95a6a94b88e1d486c0dbf89f",
+        "path": "portal/portal.js",
+        "status": "M",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "4086404221a7d011f595b3be2e55db843ef86a7d706e0db3c510eff47b35c1e1",
+        "path": "scripts/portal/serve-local.mjs",
+        "status": "M",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "33f5aa4b96740658b2ac9c93d2a7a5b99bd426b43bb927c589c7ff4968c4da89",
+        "path": "scripts/portal/test-progress-browser.mjs",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "e3448b2a879e55b47800f532d1743fa6ee5ab1c0f36363a676aa3a970256b343",
+        "path": "scripts/portal/test-progress-client.mjs",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "b8a8cf815a4680624deda11dbc23b669b5916e99c73cee1c2226472a756b2aa9",
+        "path": "scripts/portal/test-progress-database.mjs",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "c09cff371524e19ac97c855df436ea9b5deed04a94aba477b74ea2b6d53c963b",
+        "path": "scripts/portal/test-progress.mjs",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "1190429fceddcd8a745ad29c01c85ae536d90bc8d5dddcf8665aecd21df6a4a0",
+        "path": "supabase/README.md",
+        "status": "M",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "e05eb2bba019b17f4d72b40f7f7b033eef5450fcdb81f90be842a9fc8af5ba6f",
+        "path": "supabase/migrations/20261008000100_portal_mission_status.sql",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "d958198cc2bb77599e593420c25cb63e33a2748af5ddeed163cdbdfbf7c1c7b0",
+        "path": "supabase/migrations/20261008000200_portal_write_generation.sql",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "01844f06a5e5af6fe74e1ec47ec346ca5ffbdf42510c9384c4c91bc87d3221d6",
+        "path": "supabase/tests/mission-status.assertions.json",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "bf3c21c18a01fbabb227bbcfd4319958a7695252b39cc4ef7078faa90b475c9b",
+        "path": "supabase/tests/mission-status.native.py",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "9f36129eb65cface18786c47332498c38416fcff1452da338ad9c456b1914425",
+        "path": "supabase/tests/mission-status.sql",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "d7cac743084943bab1109670e5b053667f7ea80b87c49e608f5bbe55334ccda3",
+        "path": "supabase/tests/write-generation.assertions.json",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "d5d90a0fd308e03de12e66bac1588804a92fa17176de3b9fb86a7719645e0acf",
+        "path": "supabase/tests/write-generation.native.py",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      },
+      {
+        "current_sha256": "fdf4713417e6dc86f857dbe0491296a8373cd815ef8bab7e5db07d9cec006d82",
+        "path": "supabase/tests/write-generation.sql",
+        "status": "A",
+        "status_in_accepted_release": "INELIGIBLE_HEAD_VERSION_OR_ADDITION"
+      }
+    ],
+    "forbidden_features": [
+      "01D progress GET/POST endpoint",
+      "status recording controls",
+      "mission progress/cohort delivery write RPCs",
+      "private write-session generation registry",
+      "generation allocator",
+      "HR03 token issuance hook",
+      "HR03 claim enforcement",
+      "01D test fixtures/fault injection/negative controls"
+    ]
+  },
+  "release_boundary": {
+    "status": "HOLD",
+    "type": "DECLARATIVE_FAIL_CLOSED_POLICY",
+    "automated_deployment_enforcement_installed": false,
+    "approval_is_not_inferred_from_source_eligibility": true,
+    "reject_current_head_default_migration_deployment": true,
+    "required_migration_source_set": [
+      "supabase/migrations/20261006000100_portal_domains.sql",
+      "supabase/migrations/20261006000200_portal_security.sql",
+      "supabase/migrations/20261006000300_portal_guards.sql"
+    ],
+    "required_migration_execution_order": [
+      "M1",
+      "M2",
+      "M3"
+    ],
+    "reject_unknown_or_unapproved_files": true,
+    "reject_hash_or_mode_mismatch": true,
+    "reject_missing_or_duplicate_files": true,
+    "reject_unknown_gate_results": true,
+    "reject_01d_runtime_or_hook_inputs": true,
+    "deployment_source_must_equal_accepted_commit_or_verified_equivalent_extraction": true,
+    "full_source_inventory_is_not_a_deployment_file_allowlist": true,
+    "artifact_overlays": "D7.2 documentation may accompany the source outside deployment payload; no source or migration additions are eligible by implication.",
+    "future_enforcement_and_runner_requires_separate_approval": true,
+    "on_failure": "STOP before mutation/deployment; report discrepancy; obtain explicit Human Authority decision. Do not repair history, edit accepted migrations, broaden privileges or fall back to current HEAD."
+  },
+  "predeployment_gates": [
+    {
+      "id": "G0",
+      "subject": "Human review of D7.2 and acceptance of release scope",
+      "status": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "id": "G1",
+      "subject": "Exact source, migration allowlist, runtime pins and reviewed artifact integrity",
+      "status": "PREDEPLOYMENT_RECHECK_REQUIRED"
+    },
+    {
+      "id": "G2",
+      "subject": "Target/catalog/history reconciliation and intended migration owner privileges",
+      "status": "UNKNOWN"
+    },
+    {
+      "id": "G3",
+      "subject": "Runner, per-file transactions, partial-commit/history reconciliation and maintenance fencing",
+      "status": "UNKNOWN"
+    },
+    {
+      "id": "G4",
+      "subject": "Final RLS, ACLs, guards, no domain-write RPCs and safe Data API exposure",
+      "status": "UNKNOWN"
+    },
+    {
+      "id": "G5",
+      "subject": "Six-digit OTP, numeric template, adult-only signup policy and production SMTP",
+      "status": "BLOCKED_BY_SUPPLIED_CONFIGURATION"
+    },
+    {
+      "id": "G6",
+      "subject": "Production HTTPS origins, redirect policy, runtime environment and Vercel behavior",
+      "status": "UNKNOWN"
+    },
+    {
+      "id": "G7",
+      "subject": "Backup, restore readiness, forward recovery and abort custody",
+      "status": "UNKNOWN"
+    },
+    {
+      "id": "G8",
+      "subject": "Isolated compatible rehearsal and separately approved hosted validation",
+      "status": "UNKNOWN"
+    },
+    {
+      "id": "G9",
+      "subject": "Dependency resolution, deployment packaging and deployment input provenance",
+      "status": "UNKNOWN"
+    },
+    {
+      "id": "G10",
+      "subject": "Separate human migration/configuration/deployment/release approvals",
+      "status": "ON_HOLD"
+    }
+  ],
+  "evidence_classification": {
+    "verified": [
+      "Local Git identities/tree/blob hashes",
+      "Exactly M1-M3 in accepted tree",
+      "All 181 accepted source blob identities",
+      "Current HEAD 28-path delta",
+      "Frozen architecture source pin",
+      "Six-digit accepted OTP contract",
+      "Each eligible SQL file contains its own transaction commands"
+    ],
+    "supplied_not_reverified": [
+      "D7.1 hosted inventory and settings supplied by Human Authority",
+      "Hosted PG17.11; Portal schemas and migration schema absent; Data API disabled; eight-digit OTP; link template; no SMTP; development Site URL; empty redirect allowlist"
+    ],
+    "reported_not_rerun": [
+      "Historical local implementation and independent test results"
+    ],
+    "unknown": [
+      "Current hosted state and observation completeness",
+      "Effective privileges/owners/default ACLs/event triggers",
+      "Runtime compatibility, exposure and operational fencing",
+      "Backups/recovery, deployment toolchain/packaging, hosted validation"
+    ],
+    "assumptions_not_evidence": [
+      "Any future extraction, migration runner, or build will preserve pinned source bytes; this must be verified before approval."
+    ]
+  },
+  "security_governance": {
+    "hr01": "Preserved: completion requires explicit adult attestation, no required evidence, and idempotency. This release implements no completion write capability.",
+    "hr02": "Preserved: every protected write requires a live/current managed Auth session. This release enables no Portal domain-write endpoint and makes no new global write-session guarantee.",
+    "staff": "Preserve accepted active staff capability + current managed session + verified TOTP-backed aal2 gate.",
+    "notes_open": [
+      "01B-A03",
+      "SNV02",
+      "SNV04",
+      "SNV05",
+      "SNV06"
+    ],
+    "frozen_section_r_and_deferred_scope_not_waived": true,
+    "historical_records_rewritten": false
+  },
+  "inspection_entry": {
+    "tracked_and_nonignored_untracked_file_count": 205,
+    "status": "?? docs/portal/AIEA_Portal_Hosted_Migration_Reconciliation_Handoff_v1.0.md\n?? docs/portal/handoffs/AIEA_Portal_Hosted_Metadata_Preflight_Package_v1.0.md\n?? docs/portal/handoffs/AIEA_Portal_Hosted_Migration_Reconciliation_Handoff_v1.0.md\n",
+    "preexisting_untracked_files": [
+      {
+        "path": "docs/portal/AIEA_Portal_Hosted_Migration_Reconciliation_Handoff_v1.0.md",
+        "sha256": "7cb4ff9baa57d8a1724d5e49ca4dd25812a22c11d8ca094b22a8c4cd16bc04ef",
+        "touch_authorized": false
+      },
+      {
+        "path": "docs/portal/handoffs/AIEA_Portal_Hosted_Metadata_Preflight_Package_v1.0.md",
+        "sha256": "b3f40c9446aaa10e9dffd6ab1d42eaf171e411b41c1bb5251ca59e4cf7b20fd7",
+        "touch_authorized": false
+      },
+      {
+        "path": "docs/portal/handoffs/AIEA_Portal_Hosted_Migration_Reconciliation_Handoff_v1.0.md",
+        "sha256": "93458cf3e81a85577a5330cfad91a9075358e5380f3885ce52748d581ec047a6",
+        "touch_authorized": false
+      }
+    ]
+  },
+  "verification_scope": {
+    "sql_executed": false,
+    "behavioral_tests_executed": false,
+    "hosted_access_performed": false,
+    "baseline_blob_hashes_verified": true,
+    "final_artifact_validation": "Must be performed after artifact creation and reported in the Markdown companion."
+  },
+  "created_artifacts": [
+    "docs/portal/handoffs/AIEA_Portal_D7_2_Accepted_Baseline_Release_Manifest_v1.0.md",
+    "docs/portal/handoffs/AIEA_Portal_D7_2_Accepted_Baseline_Release_Manifest_v1.0.json"
+  ]
+}
+
