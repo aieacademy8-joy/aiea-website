@@ -42,6 +42,25 @@ test('01C signout clears curriculum even if a delayed request resolves',async()=
 
 test('01C unexpected response workspace never renders',async()=>{const f=await fixture();await f.click('programs-open');await f.reply(1,{...data(),workspace_id:S});assert.equal(f.get('curriculum-list').children.length,0);assert.equal(f.get('curriculum-retry').hidden,false);});
 
+test('dynamic sequence metadata displays ordinals without renaming mission identity and clears on revocation',async()=>{
+ const f=await fixture();await missionView(f);
+ await f.click('missions-back');await f.reply(f.requests.length-1,{...data('program'),sequence:{unit:'MISSION',total:1,position:null}});
+ assert.equal(f.get('curriculum-sequence').textContent,'1 mission available');
+ await f.click(f.get('curriculum-list').children[0].children[0]);
+ await f.reply(f.requests.length-1,{...data('mission'),mission:{...data().mission,sequence:9},sequence:{unit:'MISSION',total:1,position:1},navigation:{previous_mission_id:null,next_mission_id:null}});
+ assert.equal(f.get('curriculum-sequence').textContent,'Mission 9 · 1 of 1');
+ assert.ok(f.requests.at(-1).url.includes('mission_id=m1'));
+ await f.click('programs-open');assert.equal(f.get('curriculum-sequence').textContent,'');
+ await f.reply(f.requests.length-1,{error:'workspace_access_denied'},403);
+ assert.equal(f.get('curriculum-sequence').textContent,'');assert.ok(f.cleared());
+});
+for(const sequence of [{unit:'LESSON',total:1,position:1},{unit:'MISSION',total:5,position:6},
+ {unit:'MISSION',total:101,position:1},{unit:'MISSION',total:4,position:2}])test('invalid or reinterpreted sequence metadata fails closed '+JSON.stringify(sequence),async()=>{
+ const f=await fixture();await missionView(f);await f.click('curriculum-retry');
+ await f.reply(f.requests.length-1,{...data('mission'),sequence,navigation:{previous_mission_id:null,next_mission_id:null}});
+ assert.equal(f.get('mission-instructions').textContent,'');assert.equal(f.get('curriculum-sequence').textContent,'');assert.equal(f.get('curriculum-retry').hidden,false);
+});
+
 // 01C-A01: only routing/authority metadata may cross the cleared periodic boundary.
 const changeWorkspace=async(f,w)=>{f.get('workspace-select').value=w;f.get('workspace-select').events.get('change').call(f.get('workspace-select'));await flush();};
 async function periodic(f){await f.advance(30000);assert.ok(f.cleared());return f.requests.length-1;}
@@ -225,4 +244,87 @@ test('01C-A02 changed-context summary refresh also coalesces periodic ticks',asy
   assert.equal(f.requests.length,n+4);await f.advance(90000);
   assert.equal(f.requests.length,n+4,'one bounded summary refresh, no repeated timer reads');assert.equal(f.requests[n+3].options.signal.aborted,false);assert.ok(f.cleared());
   await f.reply(n+3,changed);assert.ok(f.cleared());await f.advance(30000);assert.ok(f.requests.at(-1).url.startsWith('/api/portal/context'));
+});
+
+// Mission navigation and published language choices use the same client lifecycle.
+const lessonIds=[M,'m2','m3'];
+function experience(view='mission',locale='en-US',mid=M){
+  const i=lessonIds.indexOf(mid),localized={...program,available_locales:['en-US','es'],resolved_locale:locale};
+  return {...data(view),requested_locale:locale,program:localized,programs:[localized],
+    missions:lessonIds.map((id,i)=>({id,sequence:[2,5,9][i],title:'Published '+locale+' '+id})),
+    mission:{...data().mission,id:mid,sequence:[2,5,9][i],title:'Published '+locale+' '+mid,instructions:'Published '+locale+' instructions <img>'},
+    navigation:{previous_mission_id:lessonIds[i-1]||null,next_mission_id:lessonIds[i+1]||null}};
+}
+async function experienceView(f){
+  await f.click('programs-open');await f.reply(f.requests.length-1,experience('catalog'));
+  await f.click(f.get('curriculum-list').children[0].children[0]);await f.reply(f.requests.length-1,experience('program'));
+  await f.click(f.get('curriculum-list').children[0].children[0]);await f.reply(f.requests.length-1,experience());
+}
+async function chooseLanguage(f,code){const e=f.get('curriculum-language-select');e.value=code;e.events.get('change').call(e);await flush();}
+const experienceCleared=f=>f.get('mission-navigation').hidden&&f.get('mission-previous').disabled&&f.get('mission-next').disabled&&
+  f.get('curriculum-language-controls').hidden&&f.get('curriculum-language-select').children.length===0&&f.get('curriculum-language-notice').textContent==='';
+test('first, middle and last mission controls keep the exact program and never write',async()=>{
+  const f=await fixture();await experienceView(f);assert.equal(f.get('mission-previous').disabled,true);assert.equal(f.get('mission-next').disabled,false);
+  const before=f.requests.length;await f.click('mission-previous');assert.equal(f.requests.length,before);
+  await f.click('mission-next');assert.ok(f.cleared());assert.ok(experienceCleared(f));assert.match(f.requests.at(-1).url,/program_version_id=v1&mission_id=m2$/);
+  await f.reply(f.requests.length-1,experience('mission','en-US','m2'));assert.equal(f.get('mission-previous').disabled,false);assert.equal(f.get('mission-next').disabled,false);
+  await f.click('mission-next');await f.reply(f.requests.length-1,experience('mission','en-US','m3'));assert.equal(f.get('mission-next').disabled,true);
+  await f.click('mission-previous');await f.reply(f.requests.length-1,experience('mission','en-US','m2'));assert.match(f.get('curriculum-title').textContent,/m2$/);
+  assert.ok(f.requests.every(r=>r.options.method!=='POST'));
+});
+test('only published language choices are offered and literal canonical text is displayed',async()=>{
+  const f=await fixture();await experienceView(f);assert.deepEqual(f.get('curriculum-language-select').children.map(x=>x.value),['en-US','es']);
+  await chooseLanguage(f,'es');assert.ok(f.cleared());assert.ok(experienceCleared(f));assert.match(f.requests.at(-1).url,/locale=es&program_version_id=v1&mission_id=m1$/);
+  await f.reply(f.requests.length-1,experience('mission','es'));assert.equal(f.get('mission-instructions').textContent,'Published es instructions <img>');assert.equal(f.get('mission-instructions').lang,'es');
+  assert.equal(f.get('curriculum-language-select').value,'es');assert.equal(f.get('curriculum-language-notice').textContent,'');
+  const n=f.requests.length;await chooseLanguage(f,'fr-FR');assert.equal(f.requests.length,n,'unsupported choice cannot initiate client navigation');
+});
+test('selected language follows next, previous, mission list, catalog and reopened program',async()=>{
+  const f=await fixture();await experienceView(f);await chooseLanguage(f,'es');await f.reply(f.requests.length-1,experience('mission','es'));
+  for(const [button,view,mid] of [['mission-next','mission','m2'],['mission-previous','mission',M],['missions-back','program',M],['programs-back','catalog',M]]){
+    await f.click(button);assert.match(f.requests.at(-1).url,/locale=es/);await f.reply(f.requests.length-1,experience(view,'es',mid));
+  }
+  await f.click(f.get('curriculum-list').children[0].children[0]);assert.match(f.requests.at(-1).url,/locale=es&program_version_id=v1$/);
+});
+test('single supported language disables the selector without inventing choices',async()=>{
+  const f=await fixture();await f.click('programs-open');const d=experience('catalog');d.programs=[{...d.program,available_locales:['en-US']}];await f.reply(f.requests.length-1,d);
+  assert.equal(f.get('curriculum-language-controls').hidden,false);assert.equal(f.get('curriculum-language-select').disabled,true);
+  assert.deepEqual(f.get('curriculum-language-select').children.map(x=>x.value),['en-US']);
+});
+test('empty authorized catalog has no language controls',async()=>{
+  const f=await fixture();await f.click('programs-open');await f.reply(f.requests.length-1,{...experience('catalog'),programs:[]});assert.equal(f.get('curriculum-language-controls').hidden,true);
+});
+test('explicit fallback is announced and requested language remains selected for navigation',async()=>{
+  const f=await fixture();await experienceView(f);await chooseLanguage(f,'es');const d=experience('mission','es');d.program={...d.program,resolved_locale:'en-US',available_locales:['en-US']};
+  await f.reply(f.requests.length-1,d);assert.match(f.get('curriculum-language-notice').textContent,/es.*unavailable.*published fallback.*en-US/);
+  assert.equal(f.get('mission-instructions').lang,'en-US');assert.deepEqual(f.get('curriculum-language-select').children.map(x=>x.value),['','en-US']);
+  await f.click('mission-next');assert.match(f.requests.at(-1).url,/locale=es&program_version_id=v1&mission_id=m2$/);
+});
+test('catalog without an applicable fallback exposes published choices for an explicit selection',async()=>{
+  const f=await fixture();await f.click('programs-open');const d=experience('catalog');d.programs=[{...d.program,resolved_locale:null,title:null,available_locales:['es']}];
+  await f.reply(f.requests.length-1,d);assert.match(f.get('curriculum-language-notice').textContent,/Choose a published/);assert.deepEqual(f.get('curriculum-language-select').children.map(x=>x.value),['','es']);
+  await chooseLanguage(f,'es');assert.match(f.requests.at(-1).url,/locale=es$/);await f.reply(f.requests.length-1,experience('catalog','es'));assert.equal(f.get('curriculum-language-select').value,'es');
+});
+test('unavailable translation clears canonical text and offers published-language navigation',async()=>{
+  const f=await fixture();await experienceView(f);await chooseLanguage(f,'es');await f.reply(f.requests.length-1,{error:'locale_unavailable'},409);
+  assert.equal(f.get('mission-instructions').textContent,'');assert.ok(experienceCleared(f));assert.match(f.get('curriculum-notice').textContent,/published languages/);
+  await f.click('programs-back');assert.match(f.requests.at(-1).url,/locale=es$/);
+});
+test('periodic revalidation preserves language and exact mission but refetches all private state',async()=>{
+  const f=await fixture();await experienceView(f);await chooseLanguage(f,'es');await f.reply(f.requests.length-1,experience('mission','es'));
+  const n=await periodic(f);assert.ok(experienceCleared(f));await f.reply(n,ctx());assert.match(f.requests[n+1].url,/locale=es&program_version_id=v1&mission_id=m1$/);
+  await f.reply(n+1,experience('mission','es'));assert.ok(f.cleared());assert.ok(experienceCleared(f));await f.reply(n+2,ctx());assert.equal(f.get('curriculum-language-select').value,'es');assert.equal(f.get('mission-next').disabled,false);
+});
+for(const event of ['workspace','pending','signout','blur','pagehide','visibilitychange','expiry'])for(const action of ['neighbor','language'])test(action+' held response across '+event+' cannot restore private controls or content',async()=>{
+  const f=await fixture();await experienceView(f);if(action==='neighbor')await f.click('mission-next');else await chooseLanguage(f,'es');const n=f.requests.length-1;
+  if(event==='workspace')await changeWorkspace(f,S);else if(event==='pending')await f.signal();else if(event==='signout')await f.click('signout');
+  else if(event==='expiry')await f.advance(3600000);else{if(event==='visibilitychange')f.document.hidden=true;await f.event(event,event==='visibilitychange');}
+  await f.reply(n,experience('mission',action==='language'?'es':'en-US',action==='neighbor'?'m2':M));assert.ok(f.cleared());assert.ok(experienceCleared(f));
+});
+for(const [status,error] of [[403,'workspace_access_denied'],[404,'curriculum_unavailable'],[401,'sign_in_required'],[401,'signout_required']])test('navigation '+error+' clears mission and supported-language state',async()=>{
+  const f=await fixture();await experienceView(f);await f.click('mission-next');await f.reply(f.requests.length-1,{error},status);
+  assert.equal(f.get('mission-instructions').textContent,'');assert.ok(experienceCleared(f));if(status===401)assert.ok(f.redirects.length);
+});
+for(const patch of [{navigation:{previous_mission_id:null,next_mission_id:M}},{navigation:{previous_mission_id:'m2',next_mission_id:'m2'}},{requested_locale:'fr-FR'},{program:{...program,program_version_id:'foreign',available_locales:['es']}}])test('mismatched navigation/language payload fails closed '+JSON.stringify(patch),async()=>{
+  const f=await fixture();await experienceView(f);await f.click('curriculum-retry');await f.reply(f.requests.length-1,{...experience(),...patch});assert.equal(f.get('mission-instructions').textContent,'');assert.ok(experienceCleared(f));
 });

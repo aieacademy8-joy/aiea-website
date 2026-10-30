@@ -20,3 +20,15 @@
 .mission-status select { width: 100%; max-width: 30rem; margin: .5rem 0 1rem; }
 .status-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
 #progress-notice { min-height: 1.5em; }
+.progress-summary { padding: 1rem 1.25rem; margin-bottom: 1rem; border: 1px solid var(--line); border-radius: 12px; background: var(--navy); }
+.progress-summary p { margin: 0 0 .75rem; overflow-wrap: anywhere; }
+.continue-mission { border: 0; border-radius: 10px; background: var(--gold); color: var(--navy); font-weight: 600; min-height: 44px; padding: .7rem 1.2rem; }
+.continue-mission:hover { background: #e6c263; }
+#progress-list .curriculum-choice { display: block; }
+.curriculum-language { max-width: 30rem; margin: 1rem 0; }
+#curriculum-language-notice { color: var(--gold); overflow-wrap: anywhere; }
+.mission-navigation { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .75rem; margin: 1.5rem 0; padding: 1rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.mission-navigation button { border: 1px solid var(--line); border-radius: 10px; padding: .5rem 1rem; text-decoration: none; }
+.mission-navigation button:disabled { cursor: default; color: var(--soft); }
+@media(max-width:480px){.mission-navigation button{flex:1;min-width:8rem}}
+.mission-resources{border-top:1px solid var(--line);margin-top:24px;padding-top:20px}

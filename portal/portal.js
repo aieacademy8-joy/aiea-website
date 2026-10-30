@@ -78,12 +78,28 @@
   var curriculumGeneration = 0, curriculumController, curriculumVersion = null, curriculumMission = null;
   var contextAuthority = null, readingContext = null, periodicRequest = 0;
   var progressGeneration = 0, progressController, progressSubject = null, progressData = null;
+  var curriculumMissions = [];
+  var curriculumLocale = 'en-US', curriculumResolvedLocale = null, curriculumLocales = [], missionNavigation = null;
+  var resourceGeneration = 0, resourceController, resourceData = null;
+  function clearResources() {
+    resourceGeneration++; if (resourceController) resourceController.abort(); resourceData = null;
+    $('resources-open').hidden = true; $('resources-open').disabled = false;
+    $('resources-panel').hidden = true; $('resources-list').replaceChildren(); $('resources-notice').textContent = '';
+  }
+  function languageName(code) {
+    try { return new Intl.DisplayNames(['en'], { type: 'language' }).of(code) + ' (' + code + ')'; }
+    catch (_) { return code; }
+  }
   function clearProgress() {
     progressGeneration++; if (progressController) progressController.abort();
     progressSubject = null; progressData = null;
     $('progress-panel').hidden = true; $('progress-open').hidden = true;
     $('subject-select').replaceChildren(); $('progress-list').replaceChildren();
-    ['subject-label','progress-explanation','progress-notice'].forEach(function (id) { $(id).textContent = ''; });
+    $('curriculum-list').hidden = false;
+    $('progress-summary').hidden = true; $('progress-continue').hidden = true;
+    $('progress-summary').className = 'progress-summary';
+    $('progress-meter').hidden = true; $('progress-meter').value = 0; $('progress-meter').max = 1;
+    ['subject-label','progress-explanation','progress-notice','progress-summary-text','progress-title','progress-meter-label'].forEach(function (id) { $(id).textContent = ''; });
     ['progress-start','progress-finish','progress-retry'].forEach(function (id) { $(id).hidden = true; $(id).disabled = false; });
   }
   function authority(data) {
@@ -99,13 +115,20 @@
   }
   function clearCurriculum() {
     clearProgress();
+    clearResources();
     readingContext = null;
+    curriculumMissions = [];
+    curriculumLocales = []; curriculumResolvedLocale = null; missionNavigation = null;
+    $('curriculum-language-controls').hidden = true; $('curriculum-language-select').replaceChildren();
+    $('curriculum-language-select').value = ''; $('curriculum-language-notice').textContent = '';
+    $('mission-navigation').hidden = true; $('mission-previous').disabled = true; $('mission-next').disabled = true;
     curriculumGeneration++; if (curriculumController) curriculumController.abort();
     $('curriculum').hidden = true; $('curriculum-list').replaceChildren();
-    ['curriculum-title','curriculum-locale','curriculum-version','curriculum-description','program-guidance',
+    ['curriculum-title','curriculum-locale','curriculum-version','curriculum-sequence','curriculum-description','program-guidance',
       'mission-instructions','mission-reflection','curriculum-notice'].forEach(function (id) { $(id).textContent = ''; });
     ['programs-back','missions-back','program-guidance-section','mission-instructions-section',
       'mission-reflection-section','curriculum-retry'].forEach(function (id) { $(id).hidden = true; });
+    ['curriculum-title','curriculum-description','program-guidance','mission-instructions','mission-reflection'].forEach(function (id) { $(id).lang = ''; });
   }
   function clear() {
     contextAuthority = null; periodicRequest = 0;
@@ -189,10 +212,11 @@
     var progressResume = resume && resume.progressOpen ? { subject: resume.progressSubject } :
       readingContext && readingContext.progressOpen && readingContext.workspace === selected && readingContext.version === version ?
         { subject: readingContext.progressSubject } : null;
+    var locale = resume && resume.locale || curriculumLocale;
     clearCurriculum(); curriculumVersion = version || null; curriculumMission = mission || null;
     var requestId = curriculumGeneration, workspaceId = selected, sessionGeneration = generation;
     curriculumController = new AbortController(); message('Loading your programs…');
-    var query = '?workspace_id=' + encodeURIComponent(workspaceId) + '&locale=en-US';
+    var query = '?workspace_id=' + encodeURIComponent(workspaceId) + '&locale=' + encodeURIComponent(locale);
     if (version) query += '&program_version_id=' + encodeURIComponent(version);
     if (mission) query += '&mission_id=' + encodeURIComponent(mission);
     function current() { return requestId === curriculumGeneration && sessionGeneration === generation && selected === workspaceId; }
@@ -208,12 +232,25 @@
       }
       if (response.status === 403) { clear(); selected = null; message('Workspace access has changed. Choose an available workspace.'); $('retry').hidden = false; return; }
       if (!response.ok) {
-        var notice = response.status === 409 ? 'This program is unavailable in the requested language.' :
+        var notice = response.status === 409 ? 'This program is unavailable in the requested language. Return to My Programs to choose one of its published languages.' :
           response.status === 404 ? 'This curriculum is no longer available for this workspace.' : 'We couldn’t load your program. Please try again.';
         clearCurriculum(); $('curriculum').hidden = false; $('curriculum-notice').textContent = notice;
         $('programs-back').hidden = false; $('curriculum-retry').hidden = false; message(''); return;
       }
       if (data.workspace_id !== workspaceId || data.view !== (mission ? 'mission' : version ? 'program' : 'catalog')) throw new Error();
+      if (version && (!data.program || data.program.program_version_id !== version || (mission && (!data.mission || data.mission.id !== mission)))) throw new Error();
+      if (data.requested_locale !== undefined && data.requested_locale !== locale) throw new Error();
+      // Legacy mission responses remain mission responses. Do not infer lesson
+      // identity, hierarchy or partial pilot access from their keys or ordinals.
+      if (data.sequence !== undefined) {
+        var sequence = data.sequence;
+        if (data.view === 'catalog' || !sequence || sequence.unit !== 'MISSION' ||
+            !Number.isSafeInteger(sequence.total) || sequence.total < 0 || sequence.total > 100 ||
+            (data.view === 'program' ? sequence.position !== null || !Array.isArray(data.missions) || sequence.total !== data.missions.length :
+              !Number.isSafeInteger(sequence.position) || sequence.position < 1 || sequence.position > sequence.total || !data.navigation ||
+              (data.navigation.previous_mission_id === null) !== (sequence.position === 1) ||
+              (data.navigation.next_mission_id === null) !== (sequence.position === sequence.total))) throw new Error();
+      }
       if (resume) {
         // Reconcile after the fresh curriculum read, before any automatic display.
         var checked = await fetch('/api/portal/context?workspace_id=' + encodeURIComponent(workspaceId),
@@ -240,6 +277,9 @@
       expiry = window.setTimeout(endSession, Math.max(0, data.session_expires_at * 1000 - Date.now()));
       $('curriculum-title').textContent = data.view === 'catalog' ? 'My Programs' : data.view === 'program' ? data.program.title : data.mission.title;
       $('programs-back').hidden = data.view === 'catalog'; $('missions-back').hidden = data.view !== 'mission';
+      if (data.sequence) $('curriculum-sequence').textContent = data.view === 'program' ?
+        data.sequence.total + (data.sequence.total === 1 ? ' mission available' : ' missions available') :
+        'Mission ' + data.mission.sequence + ' · ' + data.sequence.position + ' of ' + data.sequence.total;
       if (data.program) {
         $('curriculum-locale').textContent = data.program.resolved_locale;
         $('curriculum-version').textContent = data.program.title + ' · Version ' + data.program.version_key;
@@ -249,28 +289,60 @@
           $('program-guidance-section').hidden = !data.program.guidance;
         }
       }
+      // Choices come only from published rows in this authorized response.
+      var localizedPrograms = data.view === 'catalog' ? data.programs : [data.program];
+      curriculumLocales = Array.from(new Set(localizedPrograms.flatMap(function (item) { return item.available_locales || []; }))).sort();
+      if (curriculumLocales.some(function (code) { return typeof code !== 'string' || code.length > 35 || !/^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/.test(code); })) throw new Error();
+      if (curriculumLocales.length) {
+        if (!curriculumLocales.includes(locale)) {
+          var chooseLanguage = document.createElement('option'); chooseLanguage.value = ''; chooseLanguage.textContent = 'Choose a published language'; $('curriculum-language-select').append(chooseLanguage);
+        }
+        curriculumLocales.forEach(function (code) { var option = document.createElement('option'); option.value = code; option.textContent = languageName(code); $('curriculum-language-select').append(option); });
+        $('curriculum-language-select').value = curriculumLocales.includes(locale) ? locale : '';
+        $('curriculum-language-select').disabled = curriculumLocales.length === 1 && curriculumLocales.includes(locale);
+        $('curriculum-language-controls').hidden = false;
+      }
+      if (data.view !== 'catalog') {
+        ['curriculum-title','curriculum-description','program-guidance','mission-instructions','mission-reflection'].forEach(function (id) { $(id).lang = data.program.resolved_locale; });
+        if (data.program.resolved_locale !== locale) $('curriculum-language-notice').textContent = languageName(locale) +
+          ' is unavailable for this program. Showing its published fallback: ' + languageName(data.program.resolved_locale) + '.';
+      } else if (curriculumLocales.length && !curriculumLocales.includes(locale)) $('curriculum-language-notice').textContent =
+        'The requested language is unavailable. Choose a published curriculum language.';
       if (data.view === 'mission') {
         $('mission-instructions').textContent = data.mission.instructions;
         $('mission-reflection').textContent = data.mission.reflection;
         $('mission-instructions-section').hidden = false; $('mission-reflection-section').hidden = !data.mission.reflection;
+        $('resources-open').hidden = false;
+        if (data.navigation) {
+          var previous = data.navigation.previous_mission_id, next = data.navigation.next_mission_id;
+          if ([previous,next].some(function (id) { return id !== null && (typeof id !== 'string' || !id || id === mission); }) || (previous && previous === next)) throw new Error();
+          missionNavigation = data.navigation;
+          $('mission-previous').disabled = previous === null; $('mission-next').disabled = next === null; $('mission-navigation').hidden = false;
+        }
       } else {
         var list = data.view === 'catalog' ? data.programs : data.missions;
         list.forEach(function (item) {
           var li = document.createElement('li'), button = document.createElement('button'), detail = document.createElement('span');
           button.type = 'button'; button.className = 'curriculum-choice';
           button.textContent = data.view === 'catalog' ? (item.title || item.program_key) : item.sequence + '. ' + item.title;
+          button.lang = data.view === 'catalog' ? item.resolved_locale || '' : data.program.resolved_locale;
           button.addEventListener('click', function () {
             loadCurriculum(data.view === 'catalog' ? item.program_version_id : version, data.view === 'catalog' ? null : item.id);
           });
           detail.textContent = data.view === 'catalog' ? 'Version ' + item.version_key + (item.resolved_locale ? ' · ' + item.resolved_locale : ' · Language unavailable') : 'Mission ' + item.sequence;
+          if (data.view === 'catalog' && item.resolved_locale && item.resolved_locale !== locale) detail.textContent += ' · Published fallback for ' + languageName(locale);
           li.append(button, detail); $('curriculum-list').append(li);
         });
         if (!list.length) $('curriculum-notice').textContent = data.view === 'catalog' ? 'No programs are available for this workspace.' : 'No missions are published for this program.';
       }
       readingContext = { workspace: contextAuthority.workspace, kind: contextAuthority.kind, role: contextAuthority.role,
-        expires: contextAuthority.expires, versions: contextAuthority.versions, version: version || null, mission: mission || null };
+        expires: contextAuthority.expires, versions: contextAuthority.versions, version: version || null, mission: mission || null, locale: locale };
+      curriculumLocale = locale;
+      curriculumResolvedLocale = data.program && data.program.resolved_locale || null;
+      curriculumMissions = data.view === 'program' ? data.missions : data.view === 'mission' ? [data.mission] : [];
       $('curriculum').hidden = false; message(''); $('curriculum-title').focus();
       $('progress-open').hidden = data.view === 'catalog';
+      $('progress-open').textContent = data.view === 'program' ? 'View program progress' : 'Record mission status';
       if (progressResume) await loadProgress(progressResume.subject);
     } catch (error) {
       if (!current() || error.name === 'AbortError') return;
@@ -278,6 +350,74 @@
       $('programs-back').hidden = false; $('curriculum-retry').hidden = false; message('');
     }
   }
+  async function loadResources() {
+    if (!selected || !curriculumVersion || !curriculumMission || !readingContext || signingOut || remotePending || document.hidden) return;
+    clearResources(); $('resources-open').hidden = false; $('resources-open').disabled = true;
+    $('resources-panel').hidden = false; $('resources-notice').textContent = 'Loading learning resources…';
+    var rid = resourceGeneration, sid = generation, cid = curriculumGeneration;
+    var workspace = selected, version = curriculumVersion, mission = curriculumMission, locale = curriculumLocale;
+    resourceController = new AbortController();
+    function current() { return rid === resourceGeneration && sid === generation && cid === curriculumGeneration; }
+    try {
+      var query = new URLSearchParams({workspace_id:workspace,program_version_id:version,mission_id:mission,locale:locale});
+      var response = await fetch('/api/portal/resources?' + query, {credentials:'same-origin',cache:'no-store',signal:resourceController.signal});
+      if (!current()) return;
+      var data = await response.json(); if (!current()) return;
+      if (response.status === 401) { clear(); window.location.replace('/portal/login.html?' + (data.error === 'signout_required' ? 'signout_pending=1' : 'expired=1')); return; }
+      if (response.status === 403 || response.status === 404) { clearCurriculum(); message('Your curriculum access has changed. Reload your workspace.'); $('retry').hidden = false; return; }
+      if (!response.ok || data.workspace_id !== workspace || data.program_version_id !== version || data.mission_id !== mission ||
+          data.requested_locale !== locale || data.resolved_locale !== curriculumResolvedLocale || !contextAuthority ||
+          data.session_expires_at !== contextAuthority.expires || data.session_expires_at * 1000 <= Date.now() ||
+          !Array.isArray(data.resources) || !Number.isSafeInteger(data.other_language_count) || data.other_language_count < 0 ||
+          new Set(data.resources.map(function (r) { return r.id; })).size !== data.resources.length) throw new Error();
+      data.resources.forEach(function (r) {
+        if (typeof r.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(r.id) ||
+            typeof r.asset_key !== 'string' || !r.asset_key || r.asset_key.length > 200 ||
+            (r.locale_neutral === true ? r.locale_code !== null : r.locale_neutral !== false || r.locale_code !== curriculumResolvedLocale)) throw new Error();
+        var li = document.createElement('li'), button = document.createElement('button');
+        button.type = 'button'; button.className = 'curriculum-choice'; button.textContent = 'Download ' + r.asset_key;
+        button.addEventListener('click', function () { downloadResource(r.id,button); });
+        li.append(button); $('resources-list').append(li);
+      });
+      resourceData = {query:query.toString(),resources:data.resources};
+      $('resources-notice').textContent = (data.resources.length ? 'Downloads use the published files for this program version.' :
+        'No learning resources are published for this mission in this language.') +
+        (data.other_language_count ? ' Additional resources exist in other published languages. Choose a curriculum language to view them.' : '');
+    } catch(error) {
+      if (!current() || error.name === 'AbortError') return;
+      clearResources(); $('resources-open').hidden = false; $('resources-panel').hidden = false;
+      $('resources-notice').textContent = 'We couldn’t load learning resources. Try opening them again.';
+    } finally { if (current()) $('resources-open').disabled = false; }
+  }
+  async function downloadResource(id,button) {
+    if (!resourceData || !resourceData.resources.some(function (r) { return r.id === id; }) || button.disabled || signingOut || remotePending || document.hidden) return;
+    var rid = resourceGeneration, sid = generation, cid = curriculumGeneration;
+    function current() { return rid === resourceGeneration && sid === generation && cid === curriculumGeneration; }
+    button.disabled = true; $('resources-notice').textContent = 'Preparing your download…';
+    try {
+      var response = await fetch('/api/portal/resources?' + resourceData.query + '&resource_id=' + encodeURIComponent(id),
+        {credentials:'same-origin',cache:'no-store',signal:resourceController.signal});
+      if (!current()) return;
+      if (response.status === 401) { var denied = await response.json(); if (!current()) return;
+        clear(); window.location.replace('/portal/login.html?' + (denied.error === 'signout_required' ? 'signout_pending=1' : 'expired=1')); return; }
+      if (response.status === 403 || response.status === 404) { clearCurriculum(); message('Your curriculum access has changed. Reload your workspace.'); $('retry').hidden = false; return; }
+      if (!response.ok) { var failure = await response.json(); if (!current()) return;
+        $('resources-notice').textContent = failure.error === 'resource_too_large' ? 'This file is too large for Portal downloads. Contact AIEA for help.' :
+          failure.error === 'resources_not_configured' ? 'Resource downloads are not available yet. Contact AIEA for help.' : 'We couldn’t prepare this file. Try downloading it again.'; return; }
+      var filename = /^attachment; filename="([A-Za-z0-9_.-]{1,115})"$/.exec(response.headers.get('Content-Disposition') || '');
+      if (!filename || response.headers.get('Content-Type') !== 'application/octet-stream') throw new Error();
+      var file = await response.blob(); if (!current()) return;
+      if (file.size > 4000000) throw new Error();
+      var url = URL.createObjectURL(file), link = document.createElement('a');
+      try { link.href = url; link.download = filename[1]; document.body.append(link); link.click(); }
+      finally { link.remove(); URL.revokeObjectURL(url); }
+      $('resources-notice').textContent = 'Your file is ready. Check your browser’s downloads.';
+    } catch(error) {
+      if (!current() || error.name === 'AbortError') return;
+      $('resources-notice').textContent = 'We couldn’t prepare this file. Try downloading it again.';
+    } finally { if (current()) button.disabled = false; }
+  }
+  $('resources-open').addEventListener('click', loadResources);
   async function loadProgress(subject) {
     if (!selected || !curriculumVersion || !readingContext || signingOut || remotePending || document.hidden) return;
     clearProgress(); $('progress-open').hidden = false;
@@ -286,6 +426,7 @@
     progressSubject = subject || null; progressController = new AbortController();
     function current() { return requestId === progressGeneration && sessionId === generation && curriculumId === curriculumGeneration && selected === workspaceId; }
     $('progress-panel').hidden = false; $('progress-notice').textContent = 'Loading mission status…';
+    $('progress-title').textContent = curriculumMission ? 'Mission status' : 'Program progress';
     var query = '?workspace_id=' + encodeURIComponent(workspaceId) + '&program_version_id=' + encodeURIComponent(versionId);
     if (subject) query += '&subject_id=' + encodeURIComponent(subject);
     try {
@@ -308,7 +449,46 @@
       data.subjects.forEach(function (s) { var option = document.createElement('option'); option.value = s.id; option.textContent = s.display_code; $('subject-select').append(option); });
       $('subject-select').value = progressSubject || '';
       if (subject && !data.subjects.some(function (s) { return s.id === subject; })) throw new Error();
-      if (subject) data.missions.forEach(function (m) { var li = document.createElement('li'); li.textContent = 'Mission ' + m.sequence + ' · ' + m.status.replace(/_/g, ' '); $('progress-list').append(li); });
+      if (subject) {
+        if (!data.summary || data.summary.total !== data.missions.length || !data.summary.counts ||
+            (data.summary.next_mission_id !== null && !data.missions.some(function (m) { return m.mission_id === data.summary.next_mission_id; }))) throw new Error();
+        var done = data.summary.counts[family ? 'COMPLETED' : 'DELIVERED'], active = data.summary.counts[family ? 'IN_PROGRESS' : 'STARTED'];
+        var notStarted = data.summary.counts.NOT_STARTED;
+        if (![done, active, notStarted].every(function (n) { return Number.isSafeInteger(n) && n >= 0; }) ||
+            done + active + notStarted !== data.summary.total) throw new Error();
+        $('progress-summary-text').textContent = done + ' of ' + data.summary.total + ' missions recorded as ' +
+          (family ? 'completed.' : 'delivered to this cohort.') + ' ' + active + (family ? ' in progress' : ' started') + ' · ' + notStarted + ' not started.';
+        // Visualize only recorded completion/delivery; reading and elapsed time
+        // never advance this indicator or infer individual SCHOOL completion.
+        $('progress-meter').max = data.summary.total || 1; $('progress-meter').value = done;
+        $('progress-meter').hidden = data.summary.total === 0;
+        $('progress-meter-label').textContent = data.summary.total ? (family ? 'Recorded learner completion' : 'Recorded cohort delivery') : '';
+        $('progress-summary').className = 'progress-summary' + (data.summary.total > 0 && done === data.summary.total ? ' is-complete' : '');
+        $('progress-summary').hidden = false;
+        var next = data.missions.find(function (m) { return m.mission_id === data.summary.next_mission_id; });
+        $('progress-continue').hidden = !!curriculumMission || !next;
+        $('progress-continue').textContent = next && next.status === 'NOT_STARTED' ? 'Open next mission' : 'Continue mission';
+        data.missions.forEach(function (m) {
+          var li = document.createElement('li');
+          li.className = 'mission-row' + (['COMPLETED','DELIVERED'].includes(m.status) ? ' is-done' : ['IN_PROGRESS','STARTED'].includes(m.status) ? ' is-active' : '');
+          if (curriculumMission) li.textContent = 'Mission ' + m.sequence + ' · ' + m.status.replace(/_/g, ' ');
+          else {
+            var known = curriculumMissions.find(function (item) { return item.id === m.mission_id && item.sequence === m.sequence; });
+            // Join only this freshly read program's titles, never cached content.
+            if (!known) throw new Error();
+            var button = document.createElement('button'), detail = document.createElement('span');
+            button.type = 'button'; button.className = 'curriculum-choice'; button.textContent = m.sequence + '. ' + known.title;
+            button.lang = curriculumResolvedLocale;
+            button.addEventListener('click', function () { loadCurriculum(versionId, m.mission_id); });
+            detail.textContent = ({NOT_STARTED:'Not started',IN_PROGRESS:'In progress',COMPLETED:'Completed',STARTED:'Started',DELIVERED:'Delivered to cohort'})[m.status];
+            li.append(button, detail);
+          }
+          $('progress-list').append(li);
+        });
+        if (!curriculumMission && curriculumMissions.length !== data.missions.length) throw new Error();
+        // The linked status list replaces the plain list for this selection.
+        if (!curriculumMission) $('curriculum-list').hidden = true;
+      }
       var mission = data.missions.find(function (m) { return m.mission_id === curriculumMission; });
       $('progress-start').hidden = !subject || !mission;
       $('progress-start').disabled = !!mission && mission.status !== 'NOT_STARTED';
@@ -316,7 +496,8 @@
       $('progress-finish').textContent = family ? 'Mark completed' : 'Mark delivered';
       $('progress-notice').textContent = !data.subjects.length ? 'No authorized active ' + (family ? 'learner codes' : 'cohorts') + ' are available. Contact AIEA for help.' :
         !subject ? 'Choose a ' + (family ? 'learner code' : 'cohort') + ' to see saved status.' :
-        !curriculumMission ? 'Open a mission to record its status.' : family && mission && mission.status === 'IN_PROGRESS' && !mission.completion_allowed ?
+        !curriculumMission ? !data.missions.length ? 'No missions are published for this program.' : data.summary.next_mission_id ? 'Open a mission to read its instructions and record status.' :
+        family ? 'All missions have a recorded completion for this learner code.' : 'All missions have a recorded delivery to this cohort.' : family && mission && mission.status === 'IN_PROGRESS' && !mission.completion_allowed ?
         'Completion is unavailable under this mission’s published requirements.' : 'Status loaded.';
       readingContext.progressOpen = true; readingContext.progressSubject = progressSubject;
     } catch (error) {
@@ -330,6 +511,9 @@
     var id = progressGeneration, sid = generation, cid = curriculumGeneration, subject = progressSubject;
     var body = { workspace_id: selected, program_version_id: curriculumVersion, mission_id: curriculumMission, subject_id: subject, action: action };
     progressData = null; $('progress-start').disabled = true; $('progress-finish').disabled = true;
+    $('progress-summary').hidden = true; $('progress-continue').hidden = true; $('progress-summary-text').textContent = '';
+    $('progress-summary').className = 'progress-summary';
+    $('progress-meter').hidden = true; $('progress-meter').value = 0; $('progress-meter').max = 1; $('progress-meter-label').textContent = '';
     $('progress-notice').textContent = 'Saving status…';
     function current() { return id === progressGeneration && sid === generation && cid === curriculumGeneration; }
     try {
@@ -349,11 +533,20 @@
     }
   }
   $('progress-open').addEventListener('click', function () { loadProgress(null); });
+  $('progress-continue').addEventListener('click', function () {
+    if (progressData && progressSubject && !curriculumMission && progressData.summary && progressData.summary.next_mission_id)
+      loadCurriculum(curriculumVersion, progressData.summary.next_mission_id);
+  });
   $('subject-select').addEventListener('change', function () { loadProgress(this.value || null); });
   $('progress-start').addEventListener('click', function () { saveProgress('start'); });
   $('progress-finish').addEventListener('click', function () { saveProgress(contextAuthority && contextAuthority.kind === 'FAMILY' ? 'complete' : 'deliver'); });
   $('progress-retry').addEventListener('click', function () { loadProgress(null); });
   $('programs-open').addEventListener('click', function () { loadCurriculum(null, null); });
+  $('mission-previous').addEventListener('click', function () { if (missionNavigation && missionNavigation.previous_mission_id) loadCurriculum(curriculumVersion, missionNavigation.previous_mission_id); });
+  $('mission-next').addEventListener('click', function () { if (missionNavigation && missionNavigation.next_mission_id) loadCurriculum(curriculumVersion, missionNavigation.next_mission_id); });
+  $('curriculum-language-select').addEventListener('change', function () {
+    if (curriculumLocales.includes(this.value)) { curriculumLocale = this.value; loadCurriculum(curriculumVersion, curriculumMission); }
+  });
   $('programs-back').addEventListener('click', function () { loadCurriculum(null, null); });
   $('missions-back').addEventListener('click', function () { loadCurriculum(curriculumVersion, null); });
   $('curriculum-retry').addEventListener('click', function () { loadCurriculum(curriculumVersion, curriculumMission); });

@@ -329,3 +329,67 @@ grant/rollback checks) and write-generation.native.py (genuine Auth/PostgREST/AP
 same-/cross-second refreshes, independent/concurrent sessions, races and hook fault
 injection). Historical 01D-A01 failure/blocker evidence remains unchanged. Local
 validation does not authorize hosted hook activation or self-acceptance.
+
+## Local implementation — program progress overview
+
+Open My Programs → a program → View program progress, then select an existing
+learner code or authorized cohort. The overview shows recorded status counts and
+linked mission titles. Continue mission opens the earliest in-progress/started
+mission; otherwise Open next mission selects the earliest not-started mission.
+Navigation writes nothing. No selection produces no summary; empty programs and
+fully recorded programs have no continuation suggestion. SCHOOL totals describe
+cohort delivery only. Subject selection survives same-version navigation through
+fresh authorization reads and is cleared with the existing session lifecycle.
+
+The existing GET /api/portal/progress adds `summary` (total, status counts and
+next_mission_id), computed from its bounded authorized rows. No additional query,
+migration, Auth hook or write path is introduced. HR01/HR02/HR03 remain unchanged.
+Run `node --test scripts/portal/test-program-progress.mjs scripts/portal/test-progress-client.mjs`
+alongside the existing runtime/curriculum/coordination regressions. For real Chrome
+with synthetic upstream only, set `AIEA_PLAYWRIGHT_MODULE` to an installed Playwright
+module and run `node --test scripts/portal/test-program-progress-browser.mjs`.
+Optional `AIEA_PORTAL_SCREENSHOTS` saves desktop/mobile PNGs outside the repository.
+That browser test starts and closes its own loopback server; it supplies no native
+Auth/database or hosted-readiness evidence.
+
+## Local implementation — mission navigation and curriculum language
+
+Mission pages provide Previous Mission / Next Mission using the exact entitled
+version's ordered mission IDs, including first/last boundaries and sequence gaps.
+Navigation and language changes preserve learner/cohort selection by ID through
+fresh status reads; they never record progress or delivery. Existing private-state
+clearing and periodic authorization reconciliation apply to all new controls.
+
+The curriculum response exposes each program's `available_locales` from its
+PUBLISHED locale rows. The selector offers those codes only (the catalog uses the
+authorized programs' union); it never creates translations. The requested locale
+survives navigation in memory. The existing explicit published fallback is announced
+when used; absent fallback remains unavailable with a return-to-catalog control.
+No default locale becomes an implicit fallback. Published content is unchanged.
+Accepted local fixtures contain en-US and es; hosted language availability was not
+inspected. Curriculum API/client and progress client suites cover these additions;
+the existing synthetic Chrome walkthrough covers desktop/mobile navigation,
+language selection, subject continuity, fallback and revocation.
+
+## Mission learning resources
+
+Mission pages now offer Learning resources. GET `/api/portal/resources` uses the
+same native adult, workspace, exact-version, mission and published-language access
+as curriculum reads. It lists mission and program-wide `resource_asset` records
+for the resolved locale or explicit locale-neutral resources. Other languages are
+reported as unavailable; no translation or per-file fallback is invented.
+
+Adding `resource_id` downloads the existing private Blob object. The server checks
+its full SHA-256 and revalidates access before sending an attachment. No Blob path,
+provider URL or credential is returned. Downloads require the existing
+`@vercel/blob` dependency and server-only `BLOB_READ_WRITE_TOKEN`, or Vercel OIDC
+with `BLOB_STORE_ID`. Files above 4,000,000 bytes fail explicitly so integrity is
+verified before delivery within the buffered function limit. No upload is added.
+
+`test-resources.mjs` and the client suite cover this boundary.
+`test-learning-journey-browser.mjs` exercises the production handlers from adult
+OTP entry through resource download, eight FAMILY completions, reload/resume and
+eight SCHOOL cohort deliveries. Its Auth, curriculum, Blob and RPC records are
+test-only synthetic fixtures, never a Portal data source or persistence fallback.
+Real persistence still requires native Auth, the accepted migrations and trusted
+HR03 issuance. No native stack or hosted provider was changed for this milestone.
