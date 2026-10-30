@@ -32,3 +32,187 @@
 .mission-navigation button:disabled { cursor: default; color: var(--soft); }
 @media(max-width:480px){.mission-navigation button{flex:1;min-width:8rem}}
 .mission-resources{border-top:1px solid var(--line);margin-top:24px;padding-top:20px}
+
+/* Official website palette, typography and colour roles (css/styles.css).
+   Keep Portal layout and interaction styles scoped to these existing surfaces. */
+:root {
+  --navy-2: #0A1838;
+  --navy-3: #0E2049;
+  --purple: #C46BFF;
+  --serif: "Fraunces", "Playfair Display", Georgia, serif;
+  --brand-ramp: linear-gradient(110deg, var(--blue), var(--purple) 55%, var(--gold));
+}
+body {
+  background: radial-gradient(ellipse at 90% 0, #3ba6ff12, transparent 45%),
+    radial-gradient(ellipse at 0 32%, #c46bff12, transparent 50%), var(--navy);
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--gold); color: var(--navy); }
+.c-ai { color: var(--blue); }
+.c-explore { color: var(--purple); }
+.c-acad { color: var(--gold); }
+h1, h2, h3 { letter-spacing: -.015em; }
+button { border-radius: 12px; }
+button:disabled { cursor: default; opacity: .65; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; box-shadow: 0 0 0 2px var(--navy); }
+.topbar {
+  max-width: 1200px; min-height: 124px; padding: 24px 32px;
+  border-bottom: 1px solid var(--line); position: relative;
+}
+.topbar::after {
+  content: ""; position: absolute; left: 32px; right: 32px; bottom: -1px;
+  height: 2px; background: var(--brand-ramp); opacity: .85;
+}
+.brand { display: flex; align-items: center; gap: 16px; min-width: 0; letter-spacing: 0; }
+.brand img { display: block; width: 72px; height: 72px; flex-shrink: 0; border-radius: 14px; }
+.brand .wordmark { display: grid; gap: 5px; font-family: var(--serif); font-size: 21px; font-weight: 700; line-height: 1.15; }
+.brand .wordmark span { display: inline; font-size: inherit; letter-spacing: .025em; }
+.brand .c-ai { color: var(--blue); }
+.brand .c-explore { color: var(--purple); }
+.brand .c-acad { color: var(--gold); }
+.brand .wordmark > .c-acad { font-family: var(--sans); font-size: 12px; letter-spacing: .32em; }
+.brand .trademark { font-size: .65em !important; vertical-align: super; margin-left: 3px; letter-spacing: 0 !important; }
+.header-actions { display: flex; align-items: center; gap: 24px; }
+.top-label { text-transform: uppercase; font-size: 11px; letter-spacing: .16em; }
+#signout { padding: 10px 18px; border: 1px solid var(--line); text-decoration: none; background: var(--navy-2); }
+#signout:hover:not(:disabled) { border-color: var(--gold); background: var(--navy-3); }
+.workspace {
+  max-width: 1120px; margin: 52px auto 72px; padding: 0 32px;
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px;
+}
+.workspace > * { grid-column: 1 / -1; min-width: 0; }
+.portal-welcome { padding: 12px 0 16px; }
+.portal-welcome .eyebrow { color: var(--blue); margin-bottom: 16px; letter-spacing: .2em; }
+.workspace h1 { font-size: clamp(40px, 5vw, 56px); }
+.portal-welcome .intro { margin-bottom: 0; max-width: 600px; }
+#status:empty { display: none; }
+#status { margin: 0; }
+.workspace .panel { margin-top: 0; }
+.panel {
+  background: linear-gradient(135deg, #3ba6ff05, #c46bff04 70%), var(--navy-2);
+  border-color: #405071; box-shadow: 0 16px 48px #00000016; padding: 32px;
+}
+#workspace-controls { grid-column: 1 / 5; border-top: 3px solid var(--blue); }
+#workspace-detail { grid-column: 5 / -1; border-top: 3px solid var(--purple); }
+#workspace-controls h2 { font-size: 28px; }
+input, select { border-color: #64728c; background: var(--navy); }
+input:hover, select:hover { border-color: var(--purple); }
+input:focus, select:focus { border-color: var(--blue); }
+.workspace select { margin-top: 8px; }
+.eyebrow { font-size: 11px; }
+#workspace-kind { color: var(--purple); }
+#entitlements li { padding-top: 0; }
+#entitlements strong { display: inline-block; border: 1px solid #d4af4f66; border-radius: 999px; padding: 4px 10px; background: #d4af4f0c; }
+#entitlements span { display: block; margin-top: 8px; }
+.primary, .continue-mission, #programs-open, #progress-finish {
+  background: linear-gradient(135deg, #F2CD6B, var(--gold)); color: #2A1E00;
+  border: 1px solid transparent; border-radius: 12px; min-height: 48px;
+  padding: 12px 22px; font-weight: 650; box-shadow: 0 5px 22px #d4af4f18;
+}
+.primary:hover:not(:disabled), .continue-mission:hover:not(:disabled),
+#programs-open:hover:not(:disabled), #progress-finish:hover:not(:disabled) { background: #F2CD6B; box-shadow: 0 5px 24px #d4af4f30; }
+.quiet { font-weight: 600; font-size: 14px; }
+.quiet:hover:not(:disabled) { color: var(--white); }
+.curriculum { border-top: 3px solid var(--gold); }
+.curriculum-nav { gap: 12px; }
+.curriculum-nav .quiet { padding: 8px 14px; border: 1px solid var(--line); text-decoration: none; }
+.curriculum-nav .quiet:hover { border-color: var(--purple); }
+.curriculum-language { margin: 24px 0; max-width: 320px; }
+#curriculum-locale { color: var(--blue); font-size: 10px; }
+#curriculum-title { font-size: clamp(30px, 4vw, 40px); }
+.curriculum-text { max-width: 74ch; }
+.version-note { font-size: 13px; margin-bottom: 28px; }
+.curriculum-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.curriculum-list li { border-color: var(--line); background: #07122d80; border-top: 2px solid var(--blue); padding: 18px 22px; }
+.curriculum-list li:nth-child(even) { border-top-color: var(--purple); }
+.curriculum-list li:only-child { grid-column: 1 / -1; }
+.curriculum-list li:hover, .curriculum-list li:focus-within { border-color: var(--purple); background: var(--navy-3); }
+.curriculum-choice { color: var(--white); font-size: 18px; font-family: var(--serif); line-height: 1.4; }
+.curriculum-choice:hover { color: var(--gold); }
+.curriculum-list span { color: var(--soft); }
+.mission-navigation { padding: 18px 0; margin: 28px 0; }
+.mission-navigation button { padding: 12px 22px; min-height: 48px; font-size: 14px; text-decoration: none; }
+#mission-previous { color: var(--purple); background: #c46bff0c; border-color: #c46bff66; }
+#mission-next, #progress-start { background: linear-gradient(115deg, var(--blue), var(--purple)); color: var(--navy); border: 1px solid transparent; font-weight: 650; }
+#mission-next:hover:not(:disabled), #progress-start:hover:not(:disabled) { background: var(--blue); }
+#mission-previous:disabled, #mission-next:disabled { background: var(--navy); border-color: var(--line); color: var(--soft); }
+#progress-start { padding: 12px 22px; min-height: 48px; }
+#resources-open, #progress-open { display: inline-block; border: 1px solid #3ba6ff70; background: #3ba6ff0c; color: var(--blue); padding: 10px 18px; text-decoration: none; }
+#progress-open { margin: 6px 0; }
+#resources-open:hover, #progress-open:hover { border-color: var(--blue); background: #3ba6ff18; }
+.mission-status { border-top: 1px solid var(--line); padding-top: 28px; }
+.mission-status h3 { color: var(--purple); }
+.mission-status > p, .mission-resources > p { color: var(--soft); font-size: 14px; max-width: 74ch; }
+.progress-summary { border-color: #3ba6ff66; padding: 22px; background: linear-gradient(125deg, #3ba6ff0a, #c46bff0a), var(--navy); }
+.progress-summary label { color: var(--blue); font-size: 12px; letter-spacing: .04em; }
+.progress-summary p { font-size: 14px; margin: 14px 0; }
+#progress-meter { display: block; width: 100%; height: 10px; border: 0; border-radius: 999px; overflow: hidden; appearance: none; background: var(--line); accent-color: var(--blue); }
+#progress-meter::-webkit-progress-bar { background: var(--line); border-radius: 999px; }
+#progress-meter::-webkit-progress-value { background: var(--brand-ramp); border-radius: 999px; }
+#progress-meter::-moz-progress-bar { background: var(--brand-ramp); border-radius: 999px; }
+.progress-summary.is-complete { border-color: var(--gold); background: #d4af4f0c; }
+.progress-summary.is-complete label { color: var(--gold); }
+.is-complete #progress-meter::-webkit-progress-value { background: var(--gold); }
+.is-complete #progress-meter::-moz-progress-bar { background: var(--gold); }
+#progress-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 24px 0; }
+#progress-list li { border: 1px solid var(--line); border-left: 3px solid #64728c; border-radius: 12px; padding: 14px 18px; font-size: 13px; background: var(--navy); }
+#progress-list li.is-active { border-left-color: var(--blue); background: #3ba6ff0a; }
+#progress-list li.is-done { border-left-color: var(--gold); background: #d4af4f0a; }
+#progress-list li span { display: inline-block; font-size: 12px; margin-top: 4px; }
+#progress-list li.is-active span { color: var(--blue); }
+#progress-list li.is-done span { color: var(--gold); }
+#progress-notice { color: var(--gold); }
+.login-layout { margin-top: 64px; }
+.login-panel { border-top: 3px solid var(--purple); }
+.welcome .eyebrow { color: var(--blue); }
+.welcome h1 { max-width: 560px; }
+.compass { border-color: #3ba6ff55; background: radial-gradient(circle, #c46bff10, transparent 75%); }
+.compass::after { border-color: #c46bff66; }
+.portal-footer { max-width: 1056px; margin: 0 auto; padding: 32px 24px 40px; border-top: 1px solid var(--line); position: relative; }
+.portal-footer::before { content: ""; position: absolute; top: -1px; left: 25%; right: 25%; height: 2px; background: var(--brand-ramp); }
+.footer-academy { font-size: 11px; text-transform: uppercase; letter-spacing: .2em; margin: 0 0 14px; }
+.footer-motto { font-family: var(--serif); font-size: 19px; letter-spacing: 0; margin: 0; }
+@media (max-width: 800px) {
+  .topbar { min-height: 100px; padding: 20px 24px; }
+  .topbar::after { left: 24px; right: 24px; }
+  .brand { gap: 10px; }
+  .brand img { width: 56px; height: 56px; }
+  .brand .wordmark { font-size: 17px; }
+  .brand .wordmark > .c-acad { font-size: 10px; }
+  .header-actions .top-label { display: none; }
+  #signout { padding: 10px 12px; }
+  .workspace { margin-top: 28px; padding: 0 24px; gap: 20px; }
+  #workspace-controls, #workspace-detail { grid-column: 1 / -1; }
+  .panel { padding: 26px; }
+  .portal-welcome { padding-bottom: 4px; }
+  .workspace h1 { font-size: 40px; }
+  .login-layout { margin-top: 32px; }
+}
+@media (max-width: 480px) {
+  .topbar { padding: 18px; gap: 12px; }
+  .topbar::after { left: 18px; right: 18px; }
+  .brand img { width: 50px; height: 50px; }
+  .brand .wordmark { font-size: 15px; }
+  .brand .wordmark > .c-acad { font-size: 9px; }
+  .workspace, .login-layout { padding: 0 18px; }
+  .panel { padding: 24px 20px; }
+  .workspace h1 { font-size: 36px; }
+  .portal-welcome .eyebrow { font-size: 10px; letter-spacing: .13em; }
+  .curriculum-list, #progress-list { grid-template-columns: minmax(0, 1fr); }
+  .mission-navigation { gap: 10px; }
+  .mission-navigation button { padding: 12px; }
+  .progress-summary { padding: 18px; }
+  .status-actions button { flex: 1; }
+  .footer-motto { font-size: 17px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  button, input, select, .curriculum-list li { transition: background .15s ease, border-color .15s ease, box-shadow .15s ease; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+@media (forced-colors: active) {
+  .panel, .curriculum-list li, #progress-list li, button, .progress-summary { border-color: CanvasText; }
+  :focus-visible { outline-color: Highlight; }
+  #progress-meter { appearance: auto; }
+}
