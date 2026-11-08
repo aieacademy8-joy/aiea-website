@@ -63,7 +63,7 @@
   .ep-passport img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
   /* 4 · Episode collection grid */
-  .ep-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px; }
+  .ep-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
   .ep-card {
     display: flex; flex-direction: column; position: relative;
     background: var(--card); border: 1px solid var(--stroke); border-radius: var(--radius);
@@ -313,8 +313,8 @@
           <span class="ep-status available">Available</span>
         </div>
       </article>
-      <!-- Episode 4 — Coming Soon (not clickable) -->
-      <article class="ep-card soon" aria-labelledby="c-ep4-title">
+      <!-- Episode 4 — Released -->
+      <article class="ep-card available" aria-labelledby="c-ep4-title">
         <span class="ep-num">Episode 4</span>
         <h3 id="c-ep4-title">Can AI Make Mistakes?</h3>
         <p class="ep-focus-line"><span class="ep-k">Compass:</span> Critical Thinking</p>
@@ -322,6 +322,35 @@
         <div class="ep-mission">
           <span class="ep-mission-k">Explorer Mission:</span>
           <p>Try something that feels difficult. If you make a mistake, practice one more time. Tell yourself: “I’m getting better.”</p>
+        </div>
+        <div class="ep-card-foot">
+          <a class="btn-text" href="https://youtu.be/vBA9kbvPpxk" target="_blank" rel="noopener noreferrer">Watch now <span class="arrow">→</span></a>
+          <span class="ep-status available">Available</span>
+        </div>
+      </article>
+      <!-- Episode 5 — Coming Soon (not clickable) -->
+      <article class="ep-card soon" aria-labelledby="c-ep5-title">
+        <span class="ep-num">Episode 5</span>
+        <h3 id="c-ep5-title">AI Is Your Helper</h3>
+        <p class="ep-focus-line"><span class="ep-k">Compass:</span> Human Flourishing</p>
+        <p class="ep-focus-line"><span class="ep-k">Explorer Promise:</span> People Come First</p>
+        <div class="ep-mission">
+          <span class="ep-mission-k">Explorer Mission:</span>
+          <p>❤️ Use AI to help someone today. Maybe write a thank-you note, brainstorm a kind idea, or solve a small problem together.</p>
+        </div>
+        <div class="ep-card-foot">
+          <span class="ep-status soon">Coming Soon</span>
+        </div>
+      </article>
+      <!-- Episode 6 — Coming Soon (not clickable) -->
+      <article class="ep-card soon" aria-labelledby="c-ep6-title">
+        <span class="ep-num">Episode 6</span>
+        <h3 id="c-ep6-title">Ask Better Questions</h3>
+        <p class="ep-focus-line"><span class="ep-k">Compass:</span> Critical Thinking</p>
+        <p class="ep-focus-line"><span class="ep-k">Explorer Promise:</span> Ask Better Questions</p>
+        <div class="ep-mission">
+          <span class="ep-mission-k">Explorer Mission:</span>
+          <p>❓ Ask three thoughtful questions today. Not just to AI—to your parents, teacher, or a friend. Great explorers stay curious.</p>
         </div>
         <div class="ep-card-foot">
           <span class="ep-status soon">Coming Soon</span>
@@ -370,12 +399,31 @@
         </div>
         <p class="ep-print-note">Printing tip: To fit the badge inside your Passport, choose Custom Scale and enter 16% in the print settings.</p>
       </article>
-      <!-- TODO: Activate Episode 4 Keep Practicing Badge after release.
-           Canonical PDF (do not rename): episode-4-keep-practicing-badge.pdf
-           Activation steps are the same as Episode 2 above. -->
-      <article class="ep-card soon ep-badge-card" aria-labelledby="b-ep4-title">
+      <!-- Episode 4 badge — Available -->
+      <article class="ep-card available ep-badge-card" aria-labelledby="b-ep4-title">
         <span class="ep-num">Episode 4: Can AI Make Mistakes?</span>
         <h3 id="b-ep4-title">Keep Practicing Badge</h3>
+        <span class="ep-status available">Available</span>
+        <div class="ep-card-foot">
+          <a class="btn btn-gold btn-sm" href="https://4uo1t9wfadibcgrd.public.blob.vercel-storage.com/season-1/episode-4-keep-practicing-badge.pdf" target="_blank" rel="noopener noreferrer">Get Badge <span class="arrow">→</span></a>
+        </div>
+        <p class="ep-print-note">Printing tip: To fit the badge inside your Passport, choose Custom Scale and enter 16% in the print settings.</p>
+      </article>
+      <!-- TODO: Activate Episode 5 People First Badge after release.
+           Badge PDF URL not yet supplied by the Founder. -->
+      <article class="ep-card soon ep-badge-card" aria-labelledby="b-ep5-title">
+        <span class="ep-num">Episode 5: AI Is Your Helper</span>
+        <h3 id="b-ep5-title">People First Badge</h3>
+        <span class="ep-status soon">Coming Soon</span>
+        <div class="ep-card-foot">
+          <button type="button" class="btn btn-ghost btn-sm" disabled>Coming Soon</button>
+        </div>
+      </article>
+      <!-- TODO: Activate Episode 6 Better Questions Badge after release.
+           Badge PDF URL not yet supplied by the Founder. -->
+      <article class="ep-card soon ep-badge-card" aria-labelledby="b-ep6-title">
+        <span class="ep-num">Episode 6: Ask Better Questions</span>
+        <h3 id="b-ep6-title">Better Questions Badge</h3>
         <span class="ep-status soon">Coming Soon</span>
         <div class="ep-card-foot">
           <button type="button" class="btn btn-ghost btn-sm" disabled>Coming Soon</button>
